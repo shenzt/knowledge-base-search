@@ -17,6 +17,9 @@ models/
 *.swp
 *.swo
 
+# Claude Code local (personal, not shared)
+CLAUDE.local.md
+
 # OS
 .DS_Store
 Thumbs.db

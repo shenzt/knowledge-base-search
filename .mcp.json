@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "knowledge-base": {
+      "command": "python",
+      "args": ["scripts/mcp_server.py"],
+      "env": {
+        "QDRANT_URL": "${QDRANT_URL:-http://localhost:6333}",
+        "COLLECTION_NAME": "${COLLECTION_NAME:-knowledge-base}",
+        "BGE_M3_MODEL": "${BGE_M3_MODEL:-BAAI/bge-m3}",
+        "RERANKER_MODEL": "${RERANKER_MODEL:-BAAI/bge-reranker-v2-m3}"
+      }
+    }
+  }
+}

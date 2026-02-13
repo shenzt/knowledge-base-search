@@ -1,34 +1,36 @@
 # knowledge-base-search
 
-基于 Git + Qdrant + BGE-M3 + Claude Code Agent 的中文知识库检索系统。
+基于 Git + Qdrant + BGE-M3 + Claude Code 的中文知识库检索系统。
 
-## 架构
+## 项目结构
 
-- **数据层**: Git 仓库管理 Markdown 文档
-- **存储层**: Qdrant 向量数据库（本地 Docker 或嵌入式）
-- **检索层**: 自建 MCP Server（BGE-M3 混合检索 + BGE-Reranker 重排序）
-- **编排层**: Claude Code Agent 通过 MCP 协议调用检索工具
+- `docs/` — 知识库文档（Markdown），按 runbook/adr/api/postmortem/meeting-notes 分类
+- `scripts/` — 索引构建、MCP Server 等 Python 脚本
+- `.claude/` — Claude Code 配置（rules、skills、agents）
 
-## 快速开始
+## 技术栈
+
+- Qdrant（本地 Docker 或嵌入式）
+- BGE-M3 embedding + learned sparse vectors
+- BGE-Reranker-v2-M3
+- MCP 协议接入 Claude Code
+
+## 常用命令
 
 ```bash
-# 1. 安装 Python 依赖
-pip install -r scripts/requirements.txt
-
-# 2. 启动 Qdrant
+# 启动 Qdrant
 docker run -d -p 6333:6333 -v $(pwd)/qdrant_storage:/qdrant/storage qdrant/qdrant
 
-# 3. 构建索引
+# 构建索引
 python scripts/index.py
 
-# 4. 启动 MCP Server（由 Claude Code 自动管理，或手动测试）
+# 增量更新（仅变更文件）
+python scripts/index.py --incremental
+
+# 启动 MCP Server（通常由 Claude Code 自动管理）
 python scripts/mcp_server.py
 ```
 
 ## 文档
 
 详细设计文档见 [docs/design.md](docs/design.md)。
-
-## 纯本地方案
-
-所有检索组件（Qdrant、BGE-M3、Reranker）均在本地运行。仅首次需联网下载模型和 Docker 镜像，之后检索管线完全离线。Claude Code 调用 Anthropic API 是唯一持续联网的部分。
