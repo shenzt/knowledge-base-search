@@ -1,4 +1,4 @@
-# Qdrant storage
+# Qdrant storage (Docker volume, not in repo)
 qdrant_storage/
 
 # Python
@@ -19,6 +19,12 @@ models/
 
 # Claude Code local (personal, not shared)
 CLAUDE.local.md
+
+# Eval results (generated, not tracked)
+eval/results/
+
+# Ingest logs (optional: uncomment to track)
+# docs/.ingest_logs/
 
 # OS
 .DS_Store

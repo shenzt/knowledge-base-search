@@ -1,8 +1,8 @@
-# 基于 Git + 向量检索 + Claude Code Agent 的中文知识库检索系统 — 设计文档
+# 基于 Git + Qdrant + MCP + Claude Code 的中文知识库检索系统 — 设计文档
 
-> 版本: v0.2 | 日期: 2025-07
-> 状态: 方案调研 & 架构设计
-> 部署模式: 纯本地（所有组件本地运行，仅首次下载模型/镜像需联网）
+> 版本: v0.4 | 日期: 2026-01
+> 状态: 架构设计（整合多方反馈）
+> 部署模式: 纯本地（支持算力解耦到局域网服务器）
 
 ---
 
@@ -11,464 +11,354 @@
 团队工程文档（Runbook、ADR、API 文档、事后复盘、会议纪要等）散落各处，缺乏统一检索入口。目标：
 
 - Git 仓库作为文档单一事实源（SSOT）：版本化、PR 审核、可追溯、可回滚
-- 本地混合检索（关键词 + 语义），对中文有一流支持
-- AI Agent 自动编排"问题 → 检索 → 取证 → 归纳 → 带引用输出"的完整流程
+- Qdrant 作为可再生索引层：本地混合检索，对中文有一流支持
+- MCP + Skills 做编排：文档预处理、检索、审查全部通过 Claude Code agentic 流程完成
+- 可复现、可追溯、可回归测试
 
 ---
 
-## 2. 方案对比与选型
+## 2. 技术选型
 
-### 2.1 QMD 方案（原始方案）— 不推荐用于中文场景
+### 2.1 向量数据库：Qdrant
 
-QMD 是 Tobi Lütke 开源的本地文档搜索引擎，架构精巧（BM25 + 向量 + query expansion + rerank），但存在中文硬伤：
+选择 Qdrant 而非 ChromaDB：原生 dense + sparse 混合检索 + RRF 融合，multilingual 全文索引（charabia/jieba），生产级成熟度。
 
-| 问题 | 详情 |
-|------|------|
-| Embedding 模型 | embeddinggemma-300M，以英文训练为主，中文语义表示质量未知 |
-| BM25 分词 | SQLite FTS5 默认 tokenizer 不做中文分词，逐字切分或 trigram，召回率差 |
-| Query Expansion | fine-tuned Qwen3-1.7B，虽然 Qwen 系列支持中文，但该微调数据集未公开，中文扩展质量不确定 |
-| Reranker | Qwen3-Reranker-0.6B，中文能力相对可靠，但上游召回差则无用 |
-| 不可替换模型 | 模型硬编码在代码中，无法换成中文专用模型 |
+### 2.2 Embedding：BAAI/bge-m3
 
-结论：QMD 适合英文 Markdown 知识库，中文场景需要另选方案。
+8K 上下文、单模型输出 dense + sparse（learned lexical weights）+ ColBERT，C-MTEB ~62-63。sparse 向量替代传统 jieba + BM25，无需额外分词管线。
 
-### 2.2 向量数据库对比
+### 2.3 Reranker：BAAI/bge-reranker-v2-m3
 
-| 维度 | Qdrant | ChromaDB |
-|------|--------|----------|
-| 部署方式 | Docker / 二进制 / Python 嵌入式 | pip install / Docker / 嵌入式 |
-| 中文向量检索 | ✅ 模型无关，支持任意 embedding | ✅ 模型无关，支持任意 embedding |
-| 中文全文检索 | ✅ `multilingual` tokenizer（基于 charabia/jieba） | ❌ 仅 substring match，无分词 |
-| 混合检索 | ✅ 原生支持 dense + sparse + RRF/DBSF 融合 | ❌ 无 BM25，无混合检索 |
-| 稀疏向量 | ✅ 原生支持（配合 BGE-M3 的 learned sparse） | ❌ 不支持 |
-| MCP Server | ✅ 官方 `qdrant/mcp-server-qdrant`（1.2k stars） | ✅ 官方 `chroma-core/chroma-mcp`（491 stars） |
-| 资源占用 | 10K 文档 ~100MB RAM | 10K 文档 ~100MB RAM |
-| 成熟度 | 22k stars，Rust 实现，生产级 | 26k stars，Rust 核心，广泛采用 |
+同系列，中文 rerank 效果好。
 
-### 2.3 中文 Embedding 模型对比
+### 2.4 文档预处理工具
 
-| 模型 | 维度 | 最大 Token | 参数量 | C-MTEB 均分 | 特点 |
-|------|------|-----------|--------|------------|------|
-| BAAI/bge-large-zh-v1.5 | 1024 | 512 | 326M | **64.53** | 纯中文最强 |
-| BAAI/bge-m3 | 1024 | **8192** | 568M | ~62-63 | 多语言 + 长文档 + 内置 dense/sparse/ColBERT |
-| moka-ai/m3e-base | 768 | 512 | 110M | ~57-58 | 轻量中文，性价比高 |
-| intfloat/multilingual-e5-large | 1024 | 512 | 560M | ~60-61 | 100+ 语言覆盖 |
-| shibing624/text2vec-base-chinese | 768 | 128 | 102M | ~47-51 | 最轻量，但 128 token 限制太短 |
+| 场景 | 推荐工具 | MCP Server | 说明 |
+|------|---------|-----------|------|
+| 中文 PDF | MinerU | ❌ (CLI) | 上海 AI Lab，中文 PDF 解析最强 |
+| 通用文档 (PDF/DOCX/PPTX/XLSX) | Docling (IBM) | ✅ docling-mcp | 格式最广，有 MCP |
+| 高精度表格/公式 PDF | Marker | ❌ (CLI) | LLM 模式下表格/公式最佳 |
+| 网页抓取 | Firecrawl / Crawl4AI | ✅ 均有 MCP | Firecrawl 全站爬取，Crawl4AI 开源本地 |
 
-### 2.4 最终选型
+### 2.5 检索策略定位
 
-| 组件 | 选择 | 理由 |
-|------|------|------|
-| 文档源 | Git 仓库 | 版本化、可审核、可追溯 |
-| 向量数据库 | **Qdrant**（本地 Docker 或嵌入式） | 原生混合检索（dense + sparse + RRF），中文全文索引支持 |
-| Embedding 模型 | **BAAI/bge-m3** | 8K 上下文、单模型输出 dense + sparse + ColBERT、中文表现优秀 |
-| Reranker | **BAAI/bge-reranker-v2-m3** | 同系列，中文 rerank 效果好 |
-| 中文 BM25 | BGE-M3 的 learned sparse 向量（替代传统 jieba + BM25） | 无需额外分词管线 |
-| Agent 编排 | Claude Code + MCP | 原生 MCP 协议，CLAUDE.md 规约控制行为 |
-| MCP Server | 自建薄层（包装 Qdrant hybrid search API） | 官方 MCP Server 仅支持 dense search，需扩展 |
+| 检索通道 | 角色 | 说明 |
+|---------|------|------|
+| BGE-M3 dense | 主力：语义召回 | cosine similarity |
+| BGE-M3 sparse | 主力：词项召回 | learned lexical weights，对中文比 naive full-text 更稳 |
+| RRF 融合 | 主力：结果合并 | Reciprocal Rank Fusion |
+| BGE-Reranker | 主力：精排 | 最终排序 |
+| Qdrant full-text | 补充：fallback/过滤/高亮 | multilingual tokenizer，不作为主要召回通道 |
 
 ---
 
 ## 3. 系统架构
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                    用户 / IDE                            │
-│              (Claude Code / Terminal)                    │
-└──────────────────────┬──────────────────────────────────┘
-                       │ 自然语言问题
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│              Claude Code Agent (编排层)                   │
-│                                                         │
-│  CLAUDE.md 检索规约:                                      │
-│  1. 优先调用 MCP 工具检索，不要 Glob/Grep 全仓库           │
-│  2. hybrid_search → get_document → 归纳回答               │
-│  3. 回答必须带 source + chunk_id 引用                     │
-└──────────────────────┬──────────────────────────────────┘
-                       │ MCP 协议 (stdio / HTTP)
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│           自建 MCP Server (检索层 / Python)               │
-│                                                         │
-│  工具:                                                   │
-│  - hybrid_search: dense + sparse 混合检索 + rerank       │
-│  - keyword_search: 纯关键词检索（Qdrant 全文索引）         │
-│  - get_document: 按 ID/路径取完整文档                     │
-│  - list_collections: 列出可用知识库                       │
-│  - index_status: 索引健康状态                             │
-│                                                         │
-│  内部组件:                                               │
-│  - BGE-M3 encoder (dense + sparse)                      │
-│  - BGE-Reranker-v2-M3                                   │
-│  - Qdrant client                                        │
-└──────────────────────┬──────────────────────────────────┘
-                       │ REST API / gRPC
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│              Qdrant (存储层 / Docker 或嵌入式)             │
-│                                                         │
-│  Collection: knowledge-base                              │
-│  ├── dense vectors (1024d, cosine)                       │
-│  ├── sparse vectors (BGE-M3 lexical weights)             │
-│  ├── full-text index (multilingual tokenizer)            │
-│  └── payload: path, title, owner, tags, chunk_id, ...   │
-└──────────────────────┬──────────────────────────────────┘
-                       │ 文件系统读取
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│              Git 知识库仓库 (数据层)                       │
-│                                                         │
-│  /docs                                                   │
-│    ├── runbook/        运维手册                           │
-│    ├── adr/            架构决策记录                       │
-│    ├── api/            API 文档                          │
-│    ├── postmortem/     事后复盘                           │
-│    └── meeting-notes/  会议纪要                           │
-└─────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    用户 / Claude Code IDE                     │
+└──────────────────────┬──────────────────────────────────────┘
+                       │
+          ┌────────────┼────────────┐
+          ▼            ▼            ▼
+   /search skill  /ingest skill  /review skill
+          │            │            │
+          ▼            ▼            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    MCP Server 层                             │
+│                                                             │
+│  knowledge-base MCP     docling-mcp      firecrawl-mcp     │
+│  (自建检索+索引服务)     (文档解析)        (网页抓取)         │
+│  - hybrid_search        - convert_pdf    - scrape           │
+│  - keyword_search       - to_markdown    - crawl            │
+│  - get_document                                             │
+│  - index_file                                               │
+│  - delete_document                                          │
+│  - index_status                                             │
+└──────────┬──────────────────┬───────────────────────────────┘
+           │                  │
+           ▼                  ▼
+┌──────────────────┐  ┌──────────────────────────────────────┐
+│  Qdrant (本地)    │  │  Git 知识库仓库                       │
+│  dense + sparse   │  │  docs/ ← 预处理后的 Markdown          │
+│  + full-text      │  │  raw/  ← 原始文件 (PDF/HTML/...)     │
+│                   │  │  .index_manifest.jsonl ← 索引清单     │
+└──────────────────┘  └──────────────────────────────────────┘
 ```
-
-### 检索管线
-
-```
-用户查询
-  │
-  ▼
-BGE-M3 编码 ──→ dense vector (1024d) + sparse vector (lexical weights)
-  │
-  ▼
-Qdrant Hybrid Search
-  ├── Prefetch: dense top-20 (cosine similarity)
-  ├── Prefetch: sparse top-20 (dot product)
-  └── Fusion: RRF (Reciprocal Rank Fusion)
-  │
-  ▼
-Top-10 候选 chunks
-  │
-  ▼
-BGE-Reranker-v2-M3 重排序
-  │
-  ▼
-Top-5 最终结果（含 path、chunk_id、score）
-```
-
-### 纯本地部署说明
-
-所有组件均在本地运行，无需云端服务：
-
-| 组件 | 运行位置 | 联网需求 |
-|------|---------|---------|
-| Qdrant | 本地 Docker 或 Python 嵌入式（写本地磁盘） | 仅首次拉取镜像 |
-| BGE-M3 | 本地 Python 进程，HuggingFace 模型缓存 (~2GB) | 仅首次下载模型 |
-| BGE-Reranker | 本地 Python 进程，HuggingFace 模型缓存 (~1.2GB) | 仅首次下载模型 |
-| MCP Server | 本地 Python 进程，stdio/localhost HTTP | 无 |
-| Git 仓库 | 本地文件系统 | 仅 git pull 时 |
-| Claude Code | 本地 IDE/CLI | 调用 Anthropic API（这是唯一持续联网的部分） |
-
-> 注意：Claude Code 本身需要调用 Anthropic API，这是整个方案中唯一需要持续联网的部分。
-> 检索管线（编码 → 搜索 → 重排序）完全离线。
 
 ---
 
-## 4. 详细设计
+## 4. 核心设计
 
-### 4.1 知识库 Git 仓库规范
+### 4.1 doc_id 稳定性设计
 
-#### 目录结构
+路径会变（重命名/移动），所以 doc_id 不能依赖路径。
 
-```
-knowledge-base-search/
-├── docs/
-│   ├── design.md          # 本设计文档
-│   ├── runbook/           # 运维手册
-│   ├── adr/               # 架构决策记录
-│   ├── api/               # API 文档
-│   ├── postmortem/        # 事后复盘
-│   └── meeting-notes/     # 会议纪要
-├── scripts/
-│   ├── index.py           # 索引构建/更新脚本
-│   ├── mcp_server.py      # 自建 MCP Server
-│   └── requirements.txt   # Python 依赖
-├── CLAUDE.md              # Agent 检索行为规约
-├── .gitignore
-└── README.md
-```
-
-#### 文档 Front-matter 规范
+每篇文档 front-matter 必须包含稳定 `id`：
 
 ```yaml
 ---
-title: "xxx 服务故障处理手册"
+id: "d7f3a2b1"              # 稳定主键，首次创建时生成（短 UUID/hash）
+title: "Service A 故障处理手册"
 owner: "@zhangsan"
-tags: [runbook, service-xxx, on-call]
+tags: [runbook, service-a]
 created: 2025-01-15
 last_reviewed: 2025-06-01
-confidence: high          # high / medium / low / deprecated
+confidence: high
 ---
 ```
 
-### 4.2 索引构建（index.py 核心逻辑）
+规则：
+- `id` 是 Qdrant 中所有 chunks 的 `doc_id` 字段，作为稳定主键
+- `path` 只是可变属性，写入 payload 但不作为主键
+- 重命名/移动文件时 `id` 不变，索引自动关联
+- `index_file` 时：先按 `doc_id` 批量 delete 旧 chunks，再 upsert 新 chunks（幂等）
 
-```python
-from FlagEmbedding import BGEM3FlagModel
-from qdrant_client import QdrantClient, models
-import frontmatter, glob, hashlib
+### 4.2 语义分块策略（Semantic Chunking）
 
-# 初始化
-model = BGEM3FlagModel("BAAI/bge-m3", use_fp16=True)
-qdrant = QdrantClient("localhost", port=6333)
+两层切分，避免切烂表格/代码块/章节：
 
-# 创建 collection（首次）
-qdrant.create_collection(
-    collection_name="knowledge-base",
-    vectors_config={
-        "dense": models.VectorParams(size=1024, distance=models.Distance.COSINE),
-    },
-    sparse_vectors_config={
-        "sparse": models.SparseVectorParams(),
-    },
-)
+**第一层：结构切分（Header-based）**
 
-# 创建中文全文索引
-qdrant.create_payload_index(
-    collection_name="knowledge-base",
-    field_name="content",
-    field_schema=models.TextIndexParams(
-        type="text",
-        tokenizer=models.TokenizerType.MULTILINGUAL,  # charabia/jieba
-        min_token_len=1,
-        max_token_len=20,
-    ),
-)
+按 Markdown heading 层级分 section，每个 section 保留完整的标题路径（`h1 > h2 > h3`）。
 
-def chunk_markdown(text: str, max_chars: int = 3200, overlap: int = 480) -> list[str]:
-    """按段落/句子边界切分，3200 字符 (~800 token)，15% 重叠"""
-    # 优先在 \n\n → \n → 。→ 空格 处切分
-    ...
+**第二层：长度切分**
 
-def index_file(filepath: str):
-    post = frontmatter.load(filepath)
-    chunks = chunk_markdown(post.content)
+- 单个 section 超过 3200 字符（~800 token）时，按段落/句子边界再切
+- 切分时保留 15% 重叠（480 字符）
+- 切分优先级：`\n\n` → `\n` → `。` → `；` → 空格
+- 表格和代码块视为原子单元，不在中间切断
 
-    # BGE-M3 同时输出 dense + sparse
-    output = model.encode(chunks, return_dense=True, return_sparse=True)
-
-    points = []
-    for i, chunk in enumerate(chunks):
-        chunk_id = hashlib.md5(f"{filepath}:{i}".encode()).hexdigest()
-        sparse = output["lexical_weights"][i]
-
-        points.append(models.PointStruct(
-            id=chunk_id,
-            vector={
-                "dense": output["dense_vecs"][i].tolist(),
-                "sparse": models.SparseVector(
-                    indices=list(sparse.keys()),
-                    values=list(sparse.values()),
-                ),
-            },
-            payload={
-                "content": chunk,
-                "path": filepath,
-                "chunk_index": i,
-                "title": post.metadata.get("title", ""),
-                "owner": post.metadata.get("owner", ""),
-                "tags": post.metadata.get("tags", []),
-                "confidence": post.metadata.get("confidence", "unknown"),
-                "last_reviewed": post.metadata.get("last_reviewed", ""),
-            },
-        ))
-
-    qdrant.upsert(collection_name="knowledge-base", points=points)
-
-# 索引所有文档
-for f in glob.glob("docs/**/*.md", recursive=True):
-    index_file(f)
-```
-
-### 4.3 自建 MCP Server（mcp_server.py 核心逻辑）
-
-使用 `mcp` Python SDK 构建，暴露 5 个工具：
-
-```python
-from mcp.server import Server
-from mcp.types import Tool, TextContent
-from FlagEmbedding import BGEM3FlagModel, FlagReranker
-from qdrant_client import QdrantClient, models
-
-app = Server("knowledge-base-search")
-model = BGEM3FlagModel("BAAI/bge-m3", use_fp16=True)
-reranker = FlagReranker("BAAI/bge-reranker-v2-m3", use_fp16=True)
-qdrant = QdrantClient("localhost", port=6333)
-
-@app.tool()
-async def hybrid_search(query: str, top_k: int = 5, min_score: float = 0.3,
-                         collection: str = "knowledge-base",
-                         scope: str = None) -> str:
-    """混合检索：dense + sparse + RRF + rerank"""
-    # 1. 编码查询
-    q = model.encode([query], return_dense=True, return_sparse=True)
-    dense_vec = q["dense_vecs"][0].tolist()
-    sparse = q["lexical_weights"][0]
-    sparse_vec = models.SparseVector(
-        indices=list(sparse.keys()), values=list(sparse.values())
-    )
-
-    # 2. 构造过滤条件（按 scope 过滤目录）
-    filter_cond = None
-    if scope:
-        filter_cond = models.Filter(must=[
-            models.FieldCondition(key="path", match=models.MatchText(text=f"/{scope}/"))
-        ])
-
-    # 3. Qdrant hybrid search (dense + sparse + RRF)
-    results = qdrant.query_points(
-        collection_name=collection,
-        prefetch=[
-            models.Prefetch(query=dense_vec, using="dense", limit=20, filter=filter_cond),
-            models.Prefetch(query=sparse_vec, using="sparse", limit=20, filter=filter_cond),
-        ],
-        query=models.FusionQuery(fusion=models.Fusion.RRF),
-        limit=top_k * 2,
-    )
-
-    # 4. Rerank
-    if results.points:
-        pairs = [(query, p.payload["content"]) for p in results.points]
-        scores = reranker.compute_score(pairs)
-        ranked = sorted(zip(results.points, scores), key=lambda x: -x[1])
-        ranked = [(p, s) for p, s in ranked if s >= min_score][:top_k]
-
-    # 5. 格式化输出
-    output = []
-    for point, score in ranked:
-        output.append({
-            "score": round(score, 4),
-            "path": point.payload["path"],
-            "chunk_index": point.payload["chunk_index"],
-            "title": point.payload.get("title", ""),
-            "confidence": point.payload.get("confidence", ""),
-            "content_preview": point.payload["content"][:500],
-        })
-    return json.dumps(output, ensure_ascii=False, indent=2)
-
-@app.tool()
-async def keyword_search(query: str, top_k: int = 10,
-                          collection: str = "knowledge-base") -> str:
-    """纯关键词检索（Qdrant multilingual 全文索引）"""
-    ...
-
-@app.tool()
-async def get_document(path: str, collection: str = "knowledge-base") -> str:
-    """按路径获取文档所有 chunks 的完整内容"""
-    ...
-
-@app.tool()
-async def list_collections() -> str:
-    """列出所有可用知识库集合"""
-    ...
-
-@app.tool()
-async def index_status(collection: str = "knowledge-base") -> str:
-    """索引健康状态：文档数、向量数、最后更新时间"""
-    ...
-```
-
-#### MCP 配置（~/.claude/settings.json）
+每个 chunk 的 payload：
 
 ```json
 {
-  "mcpServers": {
-    "knowledge-base": {
-      "command": "python",
-      "args": ["/path/to/scripts/mcp_server.py"],
-      "env": {
-        "QDRANT_URL": "http://localhost:6333"
-      }
-    }
-  }
+  "doc_id": "d7f3a2b1",
+  "chunk_id": "d7f3a2b1-003",
+  "path": "docs/runbook/service-a.md",
+  "section_path": "Service A 故障处理手册 > 常见故障 > 连接超时",
+  "source_line_range": [42, 78],
+  "chunk_index": 3,
+  "doc_hash": "sha256:abc123...",
+  "kb_commit": "ff41edc",
+  "title": "Service A 故障处理手册",
+  "confidence": "high",
+  "tags": ["runbook", "service-a"],
+  "text": "..."
 }
 ```
 
-### 4.4 索引更新策略
+### 4.3 Index Manifest（可复现、可追溯）
 
-| 策略 | 实现方式 | 适用场景 |
-|------|---------|---------|
-| 手动更新 | `python scripts/index.py` | 开发者本地，按需 |
-| Git Hook | `post-merge` hook 触发增量更新 | 每次 git pull 后自动更新 |
-| 定时任务 | cron 每日执行 | 低频更新的知识库 |
+每次索引构建追加一条记录到 `.index_manifest.jsonl`（进 Git）：
 
-增量更新逻辑：对比 git diff 获取变更文件列表，仅重新索引变更文件，删除已移除文件的 chunks。
+```jsonl
+{"timestamp":"2026-01-15T10:30:00Z","kb_commit":"ff41edc","action":"full_rebuild","chunking_version":"v1","chunk_size":3200,"chunk_overlap":480,"embedding_model":"BAAI/bge-m3","reranker_model":"BAAI/bge-reranker-v2-m3","total_docs":48,"total_chunks":342,"docs_added":48,"docs_updated":0,"docs_deleted":0}
+```
 
----
+用途：
+- 回答结果可追溯到"某个 commit + 某个 chunk + 某次索引构建"
+- 出现"同一问题今天和昨天答案不一样"时，快速定位是文档变了还是切块/模型/策略变了
 
-## 5. 与 QMD 方案的对比总结
+### 4.4 增量索引（doc_hash 驱动）
 
-| 维度 | QMD 方案 | 本方案（Qdrant + BGE-M3） |
-|------|---------|--------------------------|
-| 中文 BM25 | ❌ FTS5 无中文分词 | ✅ BGE-M3 learned sparse + Qdrant multilingual |
-| 中文语义检索 | ⚠️ embeddinggemma 中文未验证 | ✅ BGE-M3 C-MTEB ~62-63 |
-| 混合检索 | ✅ 内置 RRF | ✅ Qdrant 原生 RRF/DBSF |
-| Rerank | ✅ Qwen3-Reranker | ✅ BGE-Reranker-v2-M3（中文更强） |
-| 模型可替换 | ❌ 硬编码 | ✅ 任意 HuggingFace 模型 |
-| 部署复杂度 | 低（单 CLI） | 中（Qdrant + Python MCP Server） |
-| MCP 集成 | ✅ 原生 | ✅ 自建（更灵活） |
-| 适合场景 | 英文 Markdown | 中文/多语言文档 |
-
----
-
-## 6. 已知风险与缓解
-
-| 风险 | 缓解措施 |
-|------|---------|
-| BGE-M3 模型较大（~568M 参数，~2GB 磁盘） | 可降级为 m3e-base（110M）牺牲精度换速度 |
-| Qdrant 需要额外运维（Docker） | 可用 Python 嵌入式模式（无需 Docker），适合个人使用 |
-| 自建 MCP Server 有开发成本 | 核心代码 ~200 行，可参考上方示例快速实现 |
-| 首次索引较慢（BGE-M3 编码） | GPU 加速；或用 fp16 + batch encoding |
-| 官方 Qdrant MCP Server 不支持 hybrid search | 自建 MCP Server 解决；或等官方支持 |
-| Claude Code 需要联网调用 Anthropic API | 这是方案中唯一持续联网的部分，检索管线本身完全离线 |
-
----
-
-## 7. 实施路线
-
-### Phase 1: 验证（2-3 天）
-- [ ] 本地部署 Qdrant（Docker 或嵌入式）
-- [ ] 用 BGE-M3 对 20-30 篇中文文档做索引
-- [ ] 中文检索 benchmark：30+ 查询，对比 dense / sparse / hybrid 的召回率和准确率
-- [ ] 验证 Qdrant multilingual tokenizer 的中文全文检索效果
-
-### Phase 2: MCP Server 开发（2-3 天）
-- [ ] 实现 5 个 MCP 工具（hybrid_search / keyword_search / get_document / list_collections / index_status）
-- [ ] 集成 BGE-Reranker-v2-M3
-- [ ] 接入 Claude Code，端到端验证
-
-### Phase 3: 工程化（3-5 天）
-- [ ] 编写索引构建/增量更新脚本
-- [ ] 制定文档 front-matter 规范，存量文档补充元数据
-- [ ] 编写 CLAUDE.md 检索规约
-- [ ] 配置 Git hook 自动更新索引
-- [ ] 编写团队使用指南
-
-### Phase 4: 团队推广（1 周）
-- [ ] 每人本地初始化环境
-- [ ] 收集反馈，调优参数（min_score、top_k、RRF vs DBSF、reranker 权重）
-- [ ] 抽象为可复用 Skill，支持多仓库/多知识库切换
-
----
-
-## 8. 依赖清单
+不全量重建，以 `doc_hash = sha256(normalized_markdown)` 为驱动：
 
 ```
-# Python
-FlagEmbedding          # BGE-M3 + Reranker
-qdrant-client          # Qdrant Python SDK
-mcp                    # MCP Server SDK
-python-frontmatter     # Markdown front-matter 解析
-torch                  # PyTorch (FlagEmbedding 依赖)
+git diff --name-status HEAD~1 HEAD -- docs/
+  │
+  ├── A (新增) → 解析 front-matter → 切块 → 编码 → upsert
+  ├── M (修改) → 计算 doc_hash
+  │     ├── hash 未变 → 跳过
+  │     └── hash 变了 → 按 doc_id delete 旧 chunks → 重新切块 → upsert
+  └── D (删除) → 按 doc_id delete 所有 chunks
+```
 
-# 基础设施
-Docker                 # 运行 Qdrant（或用嵌入式模式免 Docker）
-Git                    # 文档版本管理
-Claude Code            # Agent 编排（唯一需要持续联网的组件）
+### 4.5 /ingest Skill — 文档导入（带审计日志）
+
+导入流程输出结构化结果：
+
+```json
+{
+  "raw_artifact_path": "raw/performance-report-2025.pdf",
+  "converter_used": "mineru",
+  "converter_version": "1.3.0",
+  "markdown_path": "docs/api/performance-report-2025.md",
+  "doc_id": "e8f4b2c1",
+  "doc_hash": "sha256:def456...",
+  "index_points": 12,
+  "warnings": ["第 15 页表格 OCR 置信度低 (0.62)", "第 23 页公式可能不完整"]
+}
+```
+
+转换日志落盘到 `docs/.ingest_logs/`。
+
+### 4.6 /search Skill — 引用作为一等公民
+
+`hybrid_search` 返回完整追溯信息：
+
+```json
+{
+  "doc_id": "d7f3a2b1",
+  "chunk_id": "d7f3a2b1-003",
+  "section_path": "Service A 故障处理手册 > 常见故障 > 连接超时",
+  "source_path": "docs/runbook/service-a.md",
+  "source_line_range": [42, 78],
+  "kb_commit": "ff41edc",
+  "score_dense": 0.82,
+  "score_sparse": 0.71,
+  "score_rrf": 0.76,
+  "score_rerank": 0.89,
+  "confidence": "high",
+  "text": "..."
+}
+```
+
+### 4.7 /review Skill — 健康度仪表盘
+
+| 检查项 | 说明 |
+|--------|------|
+| front-matter 完整性 | id/title/owner/tags/created/last_reviewed/confidence |
+| 时效性 | last_reviewed 超过 6 个月 |
+| deprecated 引用 | confidence=deprecated 的文档是否仍被引用 |
+| 孤儿文档 | 长期从未被检索命中的文档 |
+| 近重复文档 | 同一主题多份版本，需合并或标注 deprecated |
+| 索引一致性 | docs/ 与 Qdrant 中的文档是否一致 |
+| 内容质量 | 空章节、TODO 标记、占位符内容 |
+
+输出健康度评分（0-100）+ 按严重程度分类的问题列表。
+
+### 4.8 Eval 回归框架
+
+```
+eval/
+├── questions.jsonl        # 测试问题集
+├── eval.py                # 评测脚本
+└── results/               # 历史评测结果
+```
+
+questions.jsonl 格式：
+```jsonl
+{"question":"Redis 主从切换后客户端如何自动重连？","expected_doc_ids":["d7f3a2b1"],"expected_keywords":["sentinel","重连","failover"],"scope":"runbook"}
+```
+
+评测指标：Retrieval@K、Chunk Hit Rate、答案一致性（LLM-as-judge）。
+
+---
+
+## 5. 算力解耦
+
+| 组件 | 部署位置 | 说明 |
+|------|---------|------|
+| Claude Code + 轻量 MCP | 本地开发机 | 编排层，低算力 |
+| Qdrant + 检索 MCP | 本地或局域网服务器 | 检索层，中等算力 |
+| 预处理 MCP (Docling/MinerU) | GPU 服务器 / NAS | 重算力，按需调用 |
+
+MCP HTTP transport 天然支持远程调用：
+```json
+{"mcpServers": {"knowledge-base": {"type": "http", "url": "http://gpu-server:8181/mcp"}}}
+```
+
+---
+
+## 6. 示例仓库
+
+### 6.1 kb-example-sre-runbook（推荐首选）
+
+最贴近实际痛点，可直接迁移到团队内部。
+
+内容：3-5 篇 runbook + 2 篇 postmortem + 1-2 份公开 PDF
+
+配套：docker-compose.yml、Makefile（bootstrap/ingest/index/search/review/eval）、eval 问题集
+
+### 6.2 kb-example-ai-agent-docs（动态知识库）
+
+用 Crawl4AI 定期爬取 Agent 框架文档，解决"框架更新快、训练数据跟不上"的痛点。
+
+### 6.3 kb-example-quant-research（高难度预处理）
+
+展示 MinerU 在复杂金融 PDF（公式、密集表格）上的解析能力。
+
+---
+
+## 7. 项目目录结构
+
+```
+knowledge-base-search/
+├── CLAUDE.md
+├── .mcp.json
+├── Makefile
+├── docker-compose.yml
+├── .claude/
+│   ├── rules/
+│   │   ├── retrieval-strategy.md
+│   │   ├── doc-frontmatter.md
+│   │   └── python-style.md
+│   ├── skills/
+│   │   ├── search/SKILL.md
+│   │   ├── ingest/SKILL.md
+│   │   ├── index-docs/SKILL.md
+│   │   └── review/SKILL.md
+│   └── agents/
+│       └── doc-reviewer.md
+├── scripts/
+│   ├── mcp_server.py
+│   ├── index.py
+│   ├── chunker.py
+│   └── requirements.txt
+├── docs/
+│   ├── design.md
+│   ├── .ingest_logs/
+│   ├── runbook/
+│   ├── adr/
+│   ├── api/
+│   ├── postmortem/
+│   └── meeting-notes/
+├── raw/
+├── eval/
+│   ├── questions.jsonl
+│   ├── eval.py
+│   └── results/
+├── .index_manifest.jsonl
+└── .gitignore
+```
+
+---
+
+## 8. 实施路线
+
+### Phase 1: 核心脚本（3-5 天）
+- [ ] chunker.py — Header-based + 长度切分
+- [ ] index.py — doc_hash 驱动增量索引 + manifest
+- [ ] mcp_server.py — Qdrant 混合检索 + Reranker
+
+### Phase 2: Skills 和配置（2-3 天）
+- [ ] /ingest、/search、/review skills
+- [ ] Makefile + docker-compose.yml
+
+### Phase 3: 示例仓库（3-5 天）
+- [ ] kb-example-sre-runbook + eval 回归
+
+### Phase 4: 迭代优化（持续）
+- [ ] 中文 benchmark + 参数调优
+- [ ] 更多示例仓库
+- [ ] CI 集成检索回归
+
+---
+
+## 9. 依赖清单
+
+```
+# 核心
+FlagEmbedding>=1.2.0       # BGE-M3 + Reranker
+qdrant-client>=1.9.0       # Qdrant Python SDK
+mcp>=1.0.0                 # MCP Server SDK
+python-frontmatter>=1.1.0  # front-matter 解析
+torch>=2.0.0               # PyTorch
+numpy>=1.24.0              # 向量计算
+
+# 预处理（按需）
+magic-pdf                  # MinerU
+docling                    # Docling
+marker-pdf                 # Marker
 ```

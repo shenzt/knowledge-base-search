@@ -1,34 +1,40 @@
 # knowledge-base-search
 
-基于 Git + Qdrant + BGE-M3 + Claude Code 的中文知识库检索系统。
+基于 Git + Qdrant + BGE-M3 + MCP + Claude Code 的中文知识库检索系统。
 
-## 项目结构
+## 架构
 
-- `docs/` — 知识库文档（Markdown），按 runbook/adr/api/postmortem/meeting-notes 分类
-- `scripts/` — 索引构建、MCP Server 等 Python 脚本
-- `.claude/` — Claude Code 配置（rules、skills、agents）
+- Git 仓库 = 文档单一事实源（SSOT），通过 commit 管理版本
+- Qdrant = 可再生索引层（本地 Docker），dense + sparse 混合检索
+- MCP Server = 检索 + 预处理工具层，Claude Code 通过 Skills 编排
+- 可复现（index manifest）、可追溯（引用链）、可回归（eval 框架）
 
-## 技术栈
+## 快速开始
 
-- Qdrant（本地 Docker 或嵌入式）
-- BGE-M3 embedding + learned sparse vectors
-- BGE-Reranker-v2-M3
-- MCP 协议接入 Claude Code
+```bash
+make bootstrap          # 安装依赖 + 启动 Qdrant
+make index              # 构建索引
+```
+
+在 Claude Code 中使用：
+```
+/search Redis 主从切换后如何重连？
+/ingest raw/report.pdf
+/review
+```
 
 ## 常用命令
 
 ```bash
-# 启动 Qdrant
-docker run -d -p 6333:6333 -v $(pwd)/qdrant_storage:/qdrant/storage qdrant/qdrant
-
-# 构建索引
-python scripts/index.py
-
-# 增量更新（仅变更文件）
-python scripts/index.py --incremental
-
-# 启动 MCP Server（通常由 Claude Code 自动管理）
-python scripts/mcp_server.py
+make bootstrap           # 一键初始化
+make ingest SRC=raw/x.pdf DEST=docs/runbook/  # 导入文档
+make index               # 增量更新索引
+make index-full          # 全量重建索引
+make index-status        # 查看索引状态
+make search Q="查询内容"  # 交互式检索
+make review              # 文档健康度检查
+make eval                # 检索回归测试
+make clean               # 停止 Qdrant
 ```
 
 ## 文档
