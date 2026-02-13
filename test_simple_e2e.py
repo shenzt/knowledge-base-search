@@ -3,7 +3,14 @@
 
 import asyncio
 import json
+import os
 from datetime import datetime
+from pathlib import Path
+
+# 加载 .env 文件
+from dotenv import load_dotenv
+load_dotenv()
+
 from simple_rag_worker import search_with_rag
 
 # 测试用例

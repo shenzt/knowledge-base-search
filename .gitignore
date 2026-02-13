@@ -20,6 +20,20 @@ models/
 # Claude Code local (personal)
 CLAUDE.local.md
 
+# API Keys and Credentials
+.env
+.env.local
+.env.*.local
+anthropic_api_key.txt
+api_keys.txt
+credentials.json
+secrets.json
+config.local.json
+
+# Test outputs with sensitive data
+*_with_keys.json
+*_credentials.log
+
 # OS
 .DS_Store
 Thumbs.db
