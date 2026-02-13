@@ -17,3 +17,11 @@ You're using a XLMRobertaTokenizerFast tokenizer. Please note that with a fast t
 [Simple RAG] 生成答案失败: No module named 'anthropic'
 [Simple RAG] 查询: Redis 管道技术如何工作？
 HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
+[Simple RAG] 检索到 1 个结果
+[Simple RAG] 生成答案失败: No module named 'anthropic'
+[Simple RAG] 查询: Kubernetes Service 是什么？
+HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
+[Simple RAG] 检索到 3 个结果
+[Simple RAG] 生成答案失败: No module named 'anthropic'
+[Simple RAG] 查询: What are Init Containers?
+HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
