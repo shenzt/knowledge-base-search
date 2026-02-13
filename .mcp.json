@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "knowledge-base": {
-      "command": "python",
+      "command": ".venv/bin/python",
       "args": ["scripts/mcp_server.py"],
       "env": {
         "QDRANT_URL": "${QDRANT_URL:-http://localhost:6333}",
