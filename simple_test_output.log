@@ -7,3 +7,9 @@ Simple E2E 测试 - 使用 Anthropic SDK
 [1/4] 测试: test-001
 查询: What is a Pod in Kubernetes?
 Fetching 30 files:   0%|          | 0/30 [00:00<?, ?it/s]Fetching 30 files: 100%|██████████| 30/30 [00:00<00:00, 168220.75it/s]
+loading existing colbert_linear and sparse_linear---------
+加载 reranker 模型: BAAI/bge-reranker-v2-m3
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+You're using a XLMRobertaTokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
+You're using a XLMRobertaTokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
