@@ -11,6 +11,12 @@
 - Qdrant = 可再生向量索引（不进 Git）
 - MCP Server = 唯一的自建代码（向量检索需要常驻模型）
 
+## 前置条件
+
+- Python 3.10+
+- Docker（用于运行 Qdrant）
+- 约 3GB 磁盘空间（BGE-M3 模型首次运行时自动下载）
+
 ## 快速开始
 
 ```bash
@@ -24,11 +30,17 @@ python3 -m venv .venv
 # 3. 启动 Qdrant
 docker compose up -d
 
-# 4. 索引示例文档
+# 4. 索引示例文档（首次运行会下载 BGE-M3 模型，约 2-3 分钟）
 .venv/bin/python scripts/index.py --file docs/runbook/redis-failover.md
 .venv/bin/python scripts/index.py --file docs/runbook/kubernetes-pod-crashloop.md
 .venv/bin/python scripts/index.py --file docs/api/authentication.md
+
+# 5. 确认索引状态
+.venv/bin/python scripts/index.py --status
 ```
+
+> CPU-only PyTorch 即可运行（约 190MB），无需 GPU。安装时可用：
+> `pip install torch --index-url https://download.pytorch.org/whl/cpu`
 
 在 Claude Code 中使用：
 ```
