@@ -5,20 +5,7 @@
       "args": ["scripts/mcp_server.py"],
       "env": {
         "QDRANT_URL": "${QDRANT_URL:-http://localhost:6333}",
-        "COLLECTION_NAME": "${COLLECTION_NAME:-knowledge-base}",
-        "BGE_M3_MODEL": "${BGE_M3_MODEL:-BAAI/bge-m3}",
-        "RERANKER_MODEL": "${RERANKER_MODEL:-BAAI/bge-reranker-v2-m3}"
-      }
-    },
-    "docling": {
-      "command": "uvx",
-      "args": ["--from", "docling-mcp", "docling-mcp-server"]
-    },
-    "firecrawl": {
-      "command": "npx",
-      "args": ["-y", "firecrawl-mcp"],
-      "env": {
-        "FIRECRAWL_API_KEY": "${FIRECRAWL_API_KEY:-}"
+        "COLLECTION_NAME": "${COLLECTION_NAME:-knowledge-base}"
       }
     }
   }

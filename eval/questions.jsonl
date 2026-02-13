@@ -1,5 +1,0 @@
-{"question": "Redis 主从切换后客户端如何自动重连？", "expected_doc_ids": [], "expected_keywords": ["sentinel", "重连", "failover"], "scope": "runbook"}
-{"question": "HAProxy idle close 导致什么现象？", "expected_doc_ids": [], "expected_keywords": ["502", "keep-alive", "timeout"], "scope": "runbook"}
-{"question": "K8s Pod CrashLoopBackOff 的排查步骤？", "expected_doc_ids": [], "expected_keywords": ["OOMKilled", "日志", "describe", "events"], "scope": "runbook"}
-{"question": "2025年3月那次故障的根因是什么？", "expected_doc_ids": [], "expected_keywords": ["根因", "时间线", "改进措施"], "scope": "postmortem"}
-{"question": "为什么选择 Qdrant 而不是 ChromaDB？", "expected_doc_ids": [], "expected_keywords": ["sparse", "混合检索", "RRF"], "scope": "adr"}

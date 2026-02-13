@@ -1,56 +1,67 @@
 ---
 name: ingest
-description: 导入文档到知识库。支持 PDF、网页 URL、DOCX 等格式。当用户提到"导入文档"、"添加到知识库"、"抓取网页"、"解析 PDF" 时触发。
-argument-hint: [文件路径或URL] [--converter docling|mineru|marker|firecrawl]
-allowed-tools: Read, Bash, Glob
+description: 导入文档到知识库。支持 PDF、网页、DOCX 等。当用户提到"导入"、"添加文档"、"解析 PDF"、"抓取网页" 时触发。
+argument-hint: <文件路径或URL> [目标目录]
+allowed-tools: Read, Bash, Glob, Write
 ---
 
 # 文档导入
 
+将外部文档转换为 Markdown 并纳入知识库版本管理。
+
 ## 输入
-- $0: 文件路径（本地 PDF/DOCX/PPTX）或网页 URL
-- --converter: 指定预处理工具（可选，默认自动选择）
-
-## 自动选择预处理工具
-
-| 输入类型 | 默认工具 | 备选 |
-|---------|---------|------|
-| 中文 PDF | MinerU (CLI) | Docling MCP |
-| 英文/通用 PDF | Docling MCP | Marker (高精度表格/公式) |
-| DOCX/PPTX/XLSX | Docling MCP | — |
-| 网页 URL | Firecrawl MCP | Crawl4AI MCP |
+- $0: 文件路径或网页 URL
+- $1: 目标子目录（可选，如 runbook/adr/api/postmortem/meeting-notes）
 
 ## 执行流程
 
-1. 判断输入类型（文件扩展名或 URL 格式）
-2. 将原始文件复制到 `raw/` 目录
-3. 调用对应的预处理工具转换为 Markdown
-4. 为输出的 Markdown 补充 front-matter：
-   - 生成 `id`（8 位短 hash）
-   - 填入 title（从文档标题提取）
-   - 设置 confidence: medium（新导入默认）
-   - 设置 created 和 last_reviewed 为今天
-5. 保存到 `docs/` 对应子目录
-6. 调用 knowledge-base MCP 的 `index_file` 建立索引
-7. 将转换日志写入 `docs/.ingest_logs/`
-8. 执行 `git add` + `git commit`
+### 1. 判断输入类型并转换
 
-## 输出格式
+PDF 文件（优先用 MinerU，备选 Docling/Marker）：
+```bash
+# MinerU
+magic-pdf -p "$0" -o /tmp/mineru_output -m auto
+# 或 Docling
+docling "$0" --output /tmp/docling_output
+# 或 Marker
+marker_single "$0" /tmp/marker_output
+```
 
-```json
-{
-  "raw_artifact_path": "raw/xxx.pdf",
-  "converter_used": "mineru",
-  "converter_version": "1.3.0",
-  "markdown_path": "docs/api/xxx.md",
-  "doc_id": "e8f4b2c1",
-  "doc_hash": "sha256:...",
-  "index_points": 12,
-  "warnings": []
-}
+网页 URL（用 curl + 简单清洗，或已安装的工具）：
+```bash
+# 简单方式：curl + pandoc
+curl -s "$0" | pandoc -f html -t markdown -o /tmp/output.md
+# 或 Crawl4AI / Firecrawl CLI（如已安装）
+```
+
+DOCX/PPTX：
+```bash
+docling "$0" --output /tmp/docling_output
+# 或 pandoc
+pandoc "$0" -t markdown -o /tmp/output.md
+```
+
+### 2. 整理 Markdown
+
+- 读取转换后的 Markdown
+- 补充 front-matter（生成 id、填入 title、设置 confidence: medium）
+- 保存到 `docs/<目标子目录>/`
+- 将原始文件复制到 `raw/`
+
+### 3. 版本管理
+
+```bash
+git add docs/ raw/
+git commit -m "docs: 导入 <文件名>"
+```
+
+### 4. 建立索引
+
+```bash
+python scripts/index.py --file docs/<目标路径>
 ```
 
 ## 注意事项
-- 导入前确认目标子目录（runbook/adr/api/postmortem/meeting-notes）
-- 如果 OCR 置信度低或表格解析异常，在 warnings 中标注
-- 导入完成后提示用户检查 Markdown 质量并补充 front-matter 中的 owner 和 tags
+- 转换工具按本地已安装的来选，不强制依赖特定工具
+- 如果没有安装任何转换工具，提示用户安装建议
+- 导入后提示用户检查 Markdown 质量、补充 owner 和 tags
