@@ -1,0 +1,125 @@
+{
+  "timestamp": "2026-02-13T16:14:06.238042",
+  "total": 4,
+  "passed": 4,
+  "failed": 0,
+  "errors": 0,
+  "results": [
+    {
+      "test_id": "test-001",
+      "query": "What is a Pod in Kubernetes?",
+      "status": "passed",
+      "num_results": 3,
+      "answer_length": 1728,
+      "sources": [
+        {
+          "title": "Pods",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md",
+          "score": 6.437,
+          "doc_id": "1cea6b36"
+        },
+        {
+          "title": "Pods",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md",
+          "score": 4.5316,
+          "doc_id": "1cea6b36"
+        },
+        {
+          "title": "Pods",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md",
+          "score": 4.0432,
+          "doc_id": "1cea6b36"
+        }
+      ],
+      "usage": {
+        "input_tokens": 171,
+        "output_tokens": 394,
+        "total_tokens": 565
+      }
+    },
+    {
+      "test_id": "test-002",
+      "query": "Redis 管道技术如何工作？",
+      "status": "passed",
+      "num_results": 1,
+      "answer_length": 732,
+      "sources": [
+        {
+          "title": "How fast is Redis? – Redis",
+          "path": "/home/shenzt/ws/kb-test-redis-cn/docs/topics/benchmarks.md",
+          "score": 0.5593,
+          "doc_id": "redis-topics-benchmarks"
+        }
+      ],
+      "usage": {
+        "input_tokens": 125,
+        "output_tokens": 592,
+        "total_tokens": 717
+      }
+    },
+    {
+      "test_id": "test-003",
+      "query": "Kubernetes Service 是什么？",
+      "status": "passed",
+      "num_results": 3,
+      "answer_length": 1072,
+      "sources": [
+        {
+          "title": "Service",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md",
+          "score": 5.1616,
+          "doc_id": "e8324c20"
+        },
+        {
+          "title": "Service",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md",
+          "score": 2.7681,
+          "doc_id": "e8324c20"
+        },
+        {
+          "title": "Service",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md",
+          "score": 2.3995,
+          "doc_id": "e8324c20"
+        }
+      ],
+      "usage": {
+        "input_tokens": 181,
+        "output_tokens": 646,
+        "total_tokens": 827
+      }
+    },
+    {
+      "test_id": "test-004",
+      "query": "What are Init Containers?",
+      "status": "passed",
+      "num_results": 3,
+      "answer_length": 2354,
+      "sources": [
+        {
+          "title": "Init Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/init-containers.md",
+          "score": 6.4301,
+          "doc_id": "5781cb7a"
+        },
+        {
+          "title": "Init Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/init-containers.md",
+          "score": 4.5935,
+          "doc_id": "5781cb7a"
+        },
+        {
+          "title": "Sidecar Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/sidecar-containers.md",
+          "score": 2.6051,
+          "doc_id": "24479a08"
+        }
+      ],
+      "usage": {
+        "input_tokens": 182,
+        "output_tokens": 468,
+        "total_tokens": 650
+      }
+    }
+  ]
+}

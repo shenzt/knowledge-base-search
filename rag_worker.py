@@ -31,7 +31,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)
 
 # 配置
-WORKER_MODEL = os.environ.get("WORKER_MODEL", "claude-sonnet-4-20250514")
+WORKER_MODEL = os.environ.get("WORKER_MODEL", "claude-sonnet-4-5-20250929")
 KB_SKILLS_DIR = os.environ.get("KB_SKILLS_DIR", "./kb_skills")
 
 

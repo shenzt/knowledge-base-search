@@ -13,3 +13,73 @@ HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
 You're using a XLMRobertaTokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
 HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
 You're using a XLMRobertaTokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+[Simple RAG] 检索到 3 个结果
+HTTP Request: POST https://claude-code.club/api/v1/messages "HTTP/1.1 200 OK"
+[Simple RAG] 生成答案成功
+[Simple RAG] 查询: Redis 管道技术如何工作？
+HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
+[Simple RAG] 检索到 1 个结果
+HTTP Request: POST https://claude-code.club/api/v1/messages "HTTP/1.1 200 OK"
+[Simple RAG] 生成答案成功
+[Simple RAG] 查询: Kubernetes Service 是什么？
+HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
+[Simple RAG] 检索到 3 个结果
+HTTP Request: POST https://claude-code.club/api/v1/messages "HTTP/1.1 200 OK"
+[Simple RAG] 生成答案成功
+[Simple RAG] 查询: What are Init Containers?
+HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
+[Simple RAG] 检索到 3 个结果
+HTTP Request: POST https://claude-code.club/api/v1/messages "HTTP/1.1 200 OK"
+[Simple RAG] 生成答案成功
+状态: ✅ 通过
+检索结果: 3 个
+答案长度: 1738 字符
+--------------------------------------------------------------------------------
+
+[2/4] 测试: test-002
+查询: Redis 管道技术如何工作？
+状态: ✅ 通过
+检索结果: 1 个
+答案长度: 762 字符
+--------------------------------------------------------------------------------
+
+[3/4] 测试: test-003
+查询: Kubernetes Service 是什么？
+状态: ✅ 通过
+检索结果: 3 个
+答案长度: 1052 字符
+--------------------------------------------------------------------------------
+
+[4/4] 测试: test-004
+查询: What are Init Containers?
+状态: ✅ 通过
+检索结果: 3 个
+答案长度: 2461 字符
+--------------------------------------------------------------------------------
+
+================================================================================
+测试总结
+================================================================================
+
+总用例: 4
+通过: 4 (100.0%)
+失败: 0 (0.0%)
+错误: 0 (0.0%)
+
+结果已保存: eval/simple_test_20260213_161133.json
+
+✅ 通过的测试:
+  - test-001: What is a Pod in Kubernetes?...
+    检索: 3 个结果, 答案: 1738 字符
+    Token: 569
+  - test-002: Redis 管道技术如何工作？...
+    检索: 1 个结果, 答案: 762 字符
+    Token: 761
+  - test-003: Kubernetes Service 是什么？...
+    检索: 3 个结果, 答案: 1052 字符
+    Token: 823
+  - test-004: What are Init Containers?...
+    检索: 3 个结果, 答案: 2461 字符
+    Token: 692
+
+================================================================================
