@@ -1,0 +1,271 @@
+# Agentic RAG 测试查询集
+
+## 测试规模建议
+
+- **快速验证**: 10-15 个查询（覆盖主要场景）
+- **完整测试**: 30-50 个查询（覆盖所有场景和边界情况）
+- **压力测试**: 100+ 个查询（评估稳定性和性能）
+
+当前建议：**先用 30 个查询进行完整测试**
+
+## 测试查询集（30个）
+
+### A. 基础检索（8个）
+
+```yaml
+- id: basic-001
+  query: "What is a Pod in Kubernetes?"
+  language: en
+  expected_strategy: mcp_search
+  expected_keywords: [pod, container, smallest unit]
+
+- id: basic-002
+  query: "Kubernetes Service 是什么？"
+  language: zh
+  expected_strategy: mcp_search
+  expected_keywords: [service, 网络, 负载均衡]
+
+- id: basic-003
+  query: "What are Init Containers?"
+  language: en
+  expected_strategy: mcp_search
+  expected_keywords: [init, container, startup]
+
+- id: basic-004
+  query: "Explain Kubernetes Deployment"
+  language: en
+  expected_strategy: mcp_search
+  expected_keywords: [deployment, replica, rolling update]
+
+- id: basic-005
+  query: "什么是 ReplicaSet？"
+  language: zh
+  expected_strategy: mcp_search
+  expected_keywords: [replicaset, 副本, pod]
+
+- id: basic-006
+  query: "What is a Namespace in Kubernetes?"
+  language: en
+  expected_strategy: mcp_search
+  expected_keywords: [namespace, isolation, resource]
+
+- id: basic-007
+  query: "Kubernetes ConfigMap 的作用"
+  language: zh
+  expected_strategy: mcp_search
+  expected_keywords: [configmap, 配置, 环境变量]
+
+- id: basic-008
+  query: "What are Kubernetes Secrets?"
+  language: en
+  expected_strategy: mcp_search
+  expected_keywords: [secret, sensitive, credential]
+```
+
+### B. 跨语言检索（5个）
+
+```yaml
+- id: cross-001
+  query: "Redis 管道技术如何工作？"
+  language: zh
+  doc_language: en
+  expected_strategy: mcp_search
+  expected_keywords: [pipeline, batch, performance]
+
+- id: cross-002
+  query: "How does Redis pipelining improve performance?"
+  language: en
+  doc_language: zh
+  expected_strategy: mcp_search
+  expected_keywords: [管道, 批量, 性能]
+
+- id: cross-003
+  query: "Kubernetes 中的 Service Discovery 如何实现？"
+  language: zh
+  doc_language: en
+  expected_strategy: mcp_search
+  expected_keywords: [service, discovery, dns]
+
+- id: cross-004
+  query: "How to configure Kubernetes networking?"
+  language: en
+  doc_language: mixed
+  expected_strategy: mcp_search
+  expected_keywords: [network, cni, pod]
+
+- id: cross-005
+  query: "Redis 持久化机制有哪些？"
+  language: zh
+  doc_language: en
+  expected_strategy: mcp_search
+  expected_keywords: [persistence, rdb, aof]
+```
+
+### C. 复杂推理（7个）
+
+```yaml
+- id: complex-001
+  query: "Compare Kubernetes Deployment and StatefulSet"
+  language: en
+  expected_strategy: multi_doc
+  expected_keywords: [deployment, statefulset, difference, stateless, stateful]
+
+- id: complex-002
+  query: "How to troubleshoot CrashLoopBackOff in Kubernetes?"
+  language: en
+  expected_strategy: multi_step
+  expected_keywords: [crashloopbackoff, debug, logs, events]
+
+- id: complex-003
+  query: "Kubernetes 资源限制的最佳实践"
+  language: zh
+  expected_strategy: multi_doc
+  expected_keywords: [resource, limit, request, best practice]
+
+- id: complex-004
+  query: "What's the difference between ClusterIP, NodePort, and LoadBalancer?"
+  language: en
+  expected_strategy: multi_doc
+  expected_keywords: [clusterip, nodeport, loadbalancer, service type]
+
+- id: complex-005
+  query: "如何实现 Kubernetes 高可用架构？"
+  language: zh
+  expected_strategy: multi_doc
+  expected_keywords: [高可用, ha, etcd, control plane]
+
+- id: complex-006
+  query: "Kubernetes storage options and when to use each"
+  language: en
+  expected_strategy: multi_doc
+  expected_keywords: [storage, volume, pv, pvc, storageclass]
+
+- id: complex-007
+  query: "Redis 集群模式 vs 哨兵模式的区别"
+  language: zh
+  expected_strategy: multi_doc
+  expected_keywords: [cluster, sentinel, 区别, 高可用]
+```
+
+### D. 精确匹配（应该用 Grep）（4个）
+
+```yaml
+- id: grep-001
+  query: "JWT authentication"
+  language: en
+  expected_strategy: grep
+  expected_keywords: [jwt, token, authentication]
+
+- id: grep-002
+  query: "CrashLoopBackOff error"
+  language: en
+  expected_strategy: grep
+  expected_keywords: [crashloopbackoff, error, pod]
+
+- id: grep-003
+  query: "Redis CLUSTER SLOTS 命令"
+  language: zh
+  expected_strategy: grep
+  expected_keywords: [cluster, slots, command]
+
+- id: grep-004
+  query: "Kubernetes API version v1"
+  language: en
+  expected_strategy: grep
+  expected_keywords: [api, version, v1]
+```
+
+### E. 操作指南（3个）
+
+```yaml
+- id: howto-001
+  query: "How to create a Pod with multiple containers?"
+  language: en
+  expected_strategy: mcp_search
+  expected_keywords: [pod, multi-container, yaml, sidecar]
+
+- id: howto-002
+  query: "如何配置 Kubernetes Ingress？"
+  language: zh
+  expected_strategy: mcp_search
+  expected_keywords: [ingress, 配置, 路由, nginx]
+
+- id: howto-003
+  query: "How to scale a Deployment in Kubernetes?"
+  language: en
+  expected_strategy: mcp_search
+  expected_keywords: [scale, deployment, replica, kubectl]
+```
+
+### F. 边界情况（3个）
+
+```yaml
+- id: edge-001
+  query: "Kubernetes blockchain integration"
+  language: en
+  expected_strategy: mcp_search
+  expect_no_results: true
+  note: "不存在的内容"
+
+- id: edge-002
+  query: "超级复杂的多层网络策略配置"
+  language: zh
+  expected_strategy: multi_doc
+  note: "可能需要多个文档"
+
+- id: edge-003
+  query: "What is a sidecar container pattern?"
+  language: en
+  expected_strategy: mcp_search
+  expected_keywords: [sidecar, pattern, container]
+```
+
+## 评估维度
+
+### 1. 策略选择准确性
+- Grep 策略: 4/4 = 100%
+- MCP Search: ?/? = ?%
+- Multi-doc: ?/? = ?%
+
+### 2. 答案质量
+- 准确性: ?/30 = ?%
+- 完整性: ?/30 = ?%
+- 引用正确: ?/30 = ?%
+
+### 3. 性能指标
+- 平均响应时间: ? 秒
+- 平均 Token 消耗: ? tokens
+- P95 响应时间: ? 秒
+
+### 4. 跨语言能力
+- 中文查英文: ?/5 = ?%
+- 英文查中文: ?/5 = ?%
+
+## 测试执行方式
+
+### 方式 1: 手动测试（推荐先做）
+```bash
+# 在 Claude Code 中逐个执行
+/search What is a Pod in Kubernetes?
+/search Kubernetes Service 是什么？
+# ... 记录结果
+```
+
+### 方式 2: 自动化测试
+```python
+# tests/e2e/test_agentic_search.py
+# 读取查询集，自动执行并评估
+```
+
+### 方式 3: 交互式评估
+```bash
+# 生成测试报告，人工评分
+python scripts/run_agentic_test.py --interactive
+```
+
+## 下一步
+
+1. **立即**: 手动测试前 10 个查询，验证基本功能
+2. **短期**: 完成全部 30 个查询测试
+3. **中期**: 扩展到 50-100 个查询
+4. **长期**: 建立持续评估体系
