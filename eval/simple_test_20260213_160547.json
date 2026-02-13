@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-02-13T16:05:47.548270",
+  "total": 4,
+  "passed": 0,
+  "failed": 4,
+  "errors": 0,
+  "results": [
+    {
+      "test_id": "test-001",
+      "query": "What is a Pod in Kubernetes?",
+      "status": "partial",
+      "error": "No module named 'anthropic'",
+      "num_results": 3
+    },
+    {
+      "test_id": "test-002",
+      "query": "Redis 管道技术如何工作？",
+      "status": "partial",
+      "error": "No module named 'anthropic'",
+      "num_results": 1
+    },
+    {
+      "test_id": "test-003",
+      "query": "Kubernetes Service 是什么？",
+      "status": "partial",
+      "error": "No module named 'anthropic'",
+      "num_results": 3
+    },
+    {
+      "test_id": "test-004",
+      "query": "What are Init Containers?",
+      "status": "partial",
+      "error": "No module named 'anthropic'",
+      "num_results": 3
+    }
+  ]
+}
