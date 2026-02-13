@@ -72,7 +72,7 @@ async def run_rag_task(
         model=SONNET_MODEL,
         allowed_tools=allowed_tools,
         setting_sources=["project"],  # 使用 kb_skills 中的配置
-        working_directory=working_dir,
+        cwd=working_dir,  # 正确的参数名是 cwd
         max_turns=max_turns
     )
 
@@ -163,7 +163,7 @@ async def resume_task(
     options = ClaudeAgentOptions(
         model=SONNET_MODEL,
         resume=session_id,
-        working_directory=working_dir
+        cwd=working_dir
     )
 
     result_text = ""

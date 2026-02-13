@@ -24,7 +24,16 @@ def load_test_cases(config_file: str = "eval/test_cases.json") -> Dict:
     try:
         with open(config_file, "r", encoding="utf-8") as f:
             config = json.load(f)
-        return config["test_suites"]
+
+        # 提取 test_cases 列表
+        test_suites = {}
+        for suite_name, suite_data in config["test_suites"].items():
+            if isinstance(suite_data, dict) and "test_cases" in suite_data:
+                test_suites[suite_name] = suite_data["test_cases"]
+            else:
+                test_suites[suite_name] = suite_data
+
+        return test_suites
     except FileNotFoundError:
         print(f"⚠️  配置文件未找到: {config_file}，使用默认测试用例")
         return get_default_test_cases()
@@ -148,7 +157,7 @@ class E2ETestRunner:
 
         suite_results = []
         for test_case in test_cases:
-            result = await run_test_case(test_case)
+            result = await self.run_test_case(test_case)
             suite_results.append(result)
 
             # 短暂延迟，避免过载

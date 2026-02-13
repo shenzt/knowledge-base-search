@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-02-13T15:43:36.336407",
+  "total": 4,
+  "passed": 0,
+  "failed": 0,
+  "errors": 4,
+  "results": [
+    {
+      "test_id": "quick-001",
+      "status": "error",
+      "error": "ClaudeAgentOptions.__init__() got an unexpected keyword argument 'working_directory'"
+    },
+    {
+      "test_id": "quick-002",
+      "status": "error",
+      "error": "ClaudeAgentOptions.__init__() got an unexpected keyword argument 'working_directory'"
+    },
+    {
+      "test_id": "quick-003",
+      "status": "error",
+      "error": "ClaudeAgentOptions.__init__() got an unexpected keyword argument 'working_directory'"
+    },
+    {
+      "test_id": "quick-004",
+      "status": "error",
+      "error": "ClaudeAgentOptions.__init__() got an unexpected keyword argument 'working_directory'"
+    }
+  ]
+}
