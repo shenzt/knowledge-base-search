@@ -1,0 +1,229 @@
+{
+  "test_suites": {
+    "basic_search": {
+      "description": "基础检索测试 - 简单的单文档查询",
+      "test_cases": [
+        {
+          "id": "basic-001",
+          "query": "What is a Pod in Kubernetes?",
+          "language": "en",
+          "category": "k8s-basic",
+          "expected_keywords": ["pod", "container", "smallest", "deployable"],
+          "min_score": 0.5,
+          "expected_doc": "pods/_index.md"
+        },
+        {
+          "id": "basic-002",
+          "query": "Kubernetes Service 是什么？",
+          "language": "zh",
+          "category": "k8s-basic",
+          "expected_keywords": ["service", "网络", "暴露", "endpoint"],
+          "min_score": 0.5,
+          "expected_doc": "service.md"
+        },
+        {
+          "id": "basic-003",
+          "query": "How does Kubernetes Deployment work?",
+          "language": "en",
+          "category": "k8s-deployment",
+          "expected_keywords": ["deployment", "replica", "rolling update", "controller"],
+          "min_score": 0.5,
+          "expected_doc": "deployment.md"
+        },
+        {
+          "id": "basic-004",
+          "query": "Redis 管道技术如何工作？",
+          "language": "zh",
+          "category": "redis-pipeline",
+          "expected_keywords": ["pipeline", "管道", "批量", "rtt"],
+          "min_score": 0.3,
+          "expected_doc": "pipelining.md"
+        },
+        {
+          "id": "basic-005",
+          "query": "What is a Kubernetes Volume?",
+          "language": "en",
+          "category": "k8s-storage",
+          "expected_keywords": ["volume", "storage", "persistent", "mount"],
+          "min_score": 0.5,
+          "expected_doc": "volumes.md"
+        }
+      ]
+    },
+    "cross_language": {
+      "description": "跨语言检索测试 - 中文查询英文文档或反之",
+      "test_cases": [
+        {
+          "id": "cross-001",
+          "query": "What is Redis pipelining?",
+          "language": "en",
+          "category": "redis-pipeline",
+          "target_doc_lang": "zh",
+          "expected_keywords": ["pipeline", "redis", "batch"],
+          "min_score": 0.3
+        },
+        {
+          "id": "cross-002",
+          "query": "Kubernetes Pod 的生命周期",
+          "language": "zh",
+          "category": "k8s-lifecycle",
+          "target_doc_lang": "en",
+          "expected_keywords": ["lifecycle", "pod", "phase", "pending", "running"],
+          "min_score": 0.4
+        },
+        {
+          "id": "cross-003",
+          "query": "Redis 性能基准测试",
+          "language": "zh",
+          "category": "redis-benchmark",
+          "target_doc_lang": "en",
+          "expected_keywords": ["benchmark", "performance", "redis"],
+          "min_score": 0.3
+        }
+      ]
+    },
+    "complex_reasoning": {
+      "description": "复杂推理测试 - 需要多文档综合或多步推理",
+      "test_cases": [
+        {
+          "id": "complex-001",
+          "query": "How to troubleshoot a Pod that is in CrashLoopBackOff state?",
+          "language": "en",
+          "category": "k8s-troubleshooting",
+          "expected_keywords": ["pod", "crash", "logs", "events", "describe"],
+          "min_score": 0.4,
+          "requires_multi_doc": true
+        },
+        {
+          "id": "complex-002",
+          "query": "Compare Kubernetes Deployment and StatefulSet",
+          "language": "en",
+          "category": "k8s-comparison",
+          "expected_keywords": ["deployment", "statefulset", "difference", "stateless", "stateful"],
+          "min_score": 0.4,
+          "requires_multi_doc": true
+        },
+        {
+          "id": "complex-003",
+          "query": "Redis 性能优化的最佳实践",
+          "language": "zh",
+          "category": "redis-optimization",
+          "expected_keywords": ["性能", "优化", "redis", "pipeline", "benchmark"],
+          "min_score": 0.3,
+          "requires_multi_doc": true
+        },
+        {
+          "id": "complex-004",
+          "query": "What are the differences between Init Containers and Sidecar Containers?",
+          "language": "en",
+          "category": "k8s-containers",
+          "expected_keywords": ["init", "sidecar", "container", "difference"],
+          "min_score": 0.4,
+          "requires_multi_doc": true
+        }
+      ]
+    },
+    "technical_details": {
+      "description": "技术细节测试 - 需要精确的技术信息",
+      "test_cases": [
+        {
+          "id": "tech-001",
+          "query": "What are the different types of Kubernetes Services?",
+          "language": "en",
+          "category": "k8s-service-types",
+          "expected_keywords": ["clusterip", "nodeport", "loadbalancer", "externalname"],
+          "min_score": 0.5
+        },
+        {
+          "id": "tech-002",
+          "query": "Kubernetes Volume 的类型有哪些？",
+          "language": "zh",
+          "category": "k8s-volumes",
+          "expected_keywords": ["volume", "persistent", "emptydir", "hostpath", "configmap"],
+          "min_score": 0.4
+        },
+        {
+          "id": "tech-003",
+          "query": "How does Kubernetes Ingress routing work?",
+          "language": "en",
+          "category": "k8s-ingress",
+          "expected_keywords": ["ingress", "routing", "path", "host", "rule"],
+          "min_score": 0.5
+        },
+        {
+          "id": "tech-004",
+          "query": "What is Pod QoS in Kubernetes?",
+          "language": "en",
+          "category": "k8s-qos",
+          "expected_keywords": ["qos", "guaranteed", "burstable", "besteffort"],
+          "min_score": 0.5
+        },
+        {
+          "id": "tech-005",
+          "query": "Redis 客户端有哪些？",
+          "language": "zh",
+          "category": "redis-clients",
+          "expected_keywords": ["client", "客户端", "redis", "library"],
+          "min_score": 0.3
+        }
+      ]
+    },
+    "edge_cases": {
+      "description": "边界情况测试 - 测试系统的鲁棒性",
+      "test_cases": [
+        {
+          "id": "edge-001",
+          "query": "非常模糊的查询",
+          "language": "zh",
+          "category": "edge-vague",
+          "expected_keywords": [],
+          "min_score": 0.0,
+          "expect_no_result": true
+        },
+        {
+          "id": "edge-002",
+          "query": "What is Docker?",
+          "language": "en",
+          "category": "edge-out-of-scope",
+          "expected_keywords": [],
+          "min_score": 0.0,
+          "expect_no_result": true,
+          "note": "Docker 不在知识库范围内"
+        },
+        {
+          "id": "edge-003",
+          "query": "k8s pod svc deploy",
+          "language": "en",
+          "category": "edge-keywords-only",
+          "expected_keywords": ["pod", "service", "deployment"],
+          "min_score": 0.3,
+          "note": "仅关键词查询"
+        }
+      ]
+    }
+  },
+  "evaluation_criteria": {
+    "keyword_coverage": {
+      "excellent": 0.8,
+      "good": 0.6,
+      "acceptable": 0.4,
+      "poor": 0.2
+    },
+    "response_time": {
+      "fast": 1.0,
+      "normal": 3.0,
+      "slow": 5.0
+    },
+    "min_score_thresholds": {
+      "high_confidence": 0.7,
+      "medium_confidence": 0.5,
+      "low_confidence": 0.3
+    }
+  },
+  "metadata": {
+    "version": "1.0",
+    "created": "2025-02-13",
+    "total_test_cases": 22,
+    "description": "E2E 测试用例集 - 覆盖基础检索、跨语言、复杂推理、技术细节和边界情况"
+  }
+}
