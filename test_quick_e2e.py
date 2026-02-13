@@ -4,7 +4,7 @@
 import asyncio
 import json
 from datetime import datetime
-from sonnet_worker import search_knowledge_base
+from rag_worker import search_knowledge_base
 
 # 精选测试用例
 QUICK_TEST_CASES = [

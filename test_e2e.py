@@ -16,7 +16,7 @@ import os
 from datetime import datetime
 from typing import Dict, List, Any
 
-from sonnet_worker import run_rag_task, search_knowledge_base
+from rag_worker import run_rag_task, search_knowledge_base
 
 # 加载测试用例
 def load_test_cases(config_file: str = "eval/test_cases.json") -> Dict:

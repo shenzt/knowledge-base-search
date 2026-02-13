@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""测试 Sonnet Worker 基本功能"""
+"""测试 RAG Worker 基本功能"""
 
 import asyncio
-from sonnet_worker import run_rag_task
+from rag_worker import run_rag_task
 
 async def test_basic():
     """测试基本任务执行"""
@@ -68,7 +68,7 @@ async def test_kb_skills():
     return result
 
 async def main():
-    print("\n🚀 Sonnet Worker 测试套件\n")
+    print("\n🚀 RAG Worker 测试套件\n")
 
     # 测试 1: 基本操作
     result1 = await test_basic()

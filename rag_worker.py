@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Sonnet Worker - Layer 2 执行引擎
+"""RAG Worker - Layer 2 执行引擎
 
-使用 Claude Agent SDK 调用 Sonnet 模型执行知识库任务。
-这是被 Layer 1 (Opus) 调用的执行层。
+使用 Claude Agent SDK 调用较弱模型（如 Sonnet）执行知识库任务。
+这是被 Layer 1 (较强模型如 Opus) 调用的执行层。
 
 职责:
 - 文档处理 (HTML 转换、分块)
@@ -11,7 +11,7 @@
 - 数据同步 (双仓同步)
 
 使用方式:
-    from sonnet_worker import run_rag_task
+    from rag_worker import run_rag_task
 
     result = await run_rag_task(
         task="请将 Redis 文档从 HTML 转换为 Markdown",
@@ -31,7 +31,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)
 
 # 配置
-SONNET_MODEL = os.environ.get("SONNET_MODEL", "claude-3-5-sonnet-20241022")
+WORKER_MODEL = os.environ.get("WORKER_MODEL", "claude-sonnet-4-20250514")
 KB_SKILLS_DIR = os.environ.get("KB_SKILLS_DIR", "./kb_skills")
 
 
@@ -60,8 +60,8 @@ async def run_rag_task(
             "usage": {...}
         }
     """
-    log.info(f"[Sonnet Worker] 启动任务: {task}")
-    log.info(f"[Sonnet Worker] 工作目录: {working_dir}")
+    log.info(f"[RAG Worker] 启动任务: {task}")
+    log.info(f"[RAG Worker] 工作目录: {working_dir}")
 
     # 默认工具
     if allowed_tools is None:
@@ -69,7 +69,7 @@ async def run_rag_task(
 
     # 配置选项
     options = ClaudeAgentOptions(
-        model=SONNET_MODEL,
+        model=WORKER_MODEL,
         allowed_tools=allowed_tools,
         setting_sources=["project"],  # 使用 kb_skills 中的配置
         cwd=working_dir,  # 正确的参数名是 cwd
@@ -97,12 +97,12 @@ async def run_rag_task(
             # 捕获 session_id
             if hasattr(message, "session_id"):
                 session_id = message.session_id
-                log.info(f"[Sonnet Worker] Session ID: {session_id}")
+                log.info(f"[RAG Worker] Session ID: {session_id}")
 
             # 收集最终结果
             if hasattr(message, "result"):
                 result_text = message.result
-                log.info(f"[Sonnet Worker] 任务完成")
+                log.info(f"[RAG Worker] 任务完成")
 
             # 收集工具调用日志
             if hasattr(message, "type") and message.type == "tool_use":
@@ -111,7 +111,7 @@ async def run_rag_task(
                     "input": message.input if hasattr(message, "input") else {}
                 }
                 tool_calls.append(tool_call)
-                log.info(f"[Sonnet Worker] 工具调用: {tool_call['tool']}")
+                log.info(f"[RAG Worker] 工具调用: {tool_call['tool']}")
 
             # 收集 token 使用
             if hasattr(message, "usage"):
@@ -133,7 +133,7 @@ async def run_rag_task(
         }
 
     except Exception as e:
-        log.error(f"[Sonnet Worker] 任务失败: {e}")
+        log.error(f"[RAG Worker] 任务失败: {e}")
         return {
             "status": "error",
             "error": str(e),
@@ -157,11 +157,11 @@ async def resume_task(
     Returns:
         执行结果字典
     """
-    log.info(f"[Sonnet Worker] 恢复 Session: {session_id}")
-    log.info(f"[Sonnet Worker] 新指令: {new_prompt}")
+    log.info(f"[RAG Worker] 恢复 Session: {session_id}")
+    log.info(f"[RAG Worker] 新指令: {new_prompt}")
 
     options = ClaudeAgentOptions(
-        model=SONNET_MODEL,
+        model=WORKER_MODEL,
         resume=session_id,
         cwd=working_dir
     )
@@ -188,7 +188,7 @@ async def resume_task(
         }
 
     except Exception as e:
-        log.error(f"[Sonnet Worker] 恢复任务失败: {e}")
+        log.error(f"[RAG Worker] 恢复任务失败: {e}")
         return {
             "status": "error",
             "error": str(e),
@@ -290,7 +290,7 @@ async def main():
 
     # 输出结果
     print("\n" + "="*80)
-    print("Sonnet Worker 执行结果")
+    print("RAG Worker 执行结果")
     print("="*80)
 
     if result["status"] == "success":

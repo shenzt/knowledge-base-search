@@ -1,0 +1,13 @@
+[RAG Worker] 启动任务: 
+请在知识库中检索以下问题的答案:
+
+问题: What is a Pod in Kubernetes?
+
+要求:
+1. 使用混合检索 (Dense + Sparse + RRF)
+2. 返回 top 3 结果
+3. 包含文档标题、路径、得分、内容片段
+4. 基于检索结果回答问题
+
+[RAG Worker] 工作目录: ./kb_skills
+Using bundled Claude Code CLI: /home/shenzt/ws/knowledge-base-search/.venv/lib/python3.12/site-packages/claude_agent_sdk/_bundled/claude

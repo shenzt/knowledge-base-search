@@ -1,0 +1,38 @@
+[
+  {
+    "test_id": "test-001",
+    "query": "What is a Pod in Kubernetes?",
+    "status": "success",
+    "top_score": 6.437,
+    "num_results": 3,
+    "answer": "根据检索结果，What is a Pod in Kubernetes?\n\n【来源】Pods\n【得分】6.4370\n【路径】/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md\n\n【内容摘要】\n<!-- overview -->\n\n_Pods_ are the smallest deployable units of computing that you can create and manage in Kubernetes.\n\nA _Pod_ (as in a pod of whales or pea pod) is a group of one or more\n{{< glossary_tooltip text=\"containers\" term_id=\"container\" >}}, with shared storage and network resources, and a specification for how to run the containers. A Pod's contents are always co-located and\nco-scheduled, and run in a shared context. A Pod models an\napplication-specific \"logical host\": it contains on...\n\n【其他相关文档】\n2. Pods (得分: 4.5316)\n3. Pods (得分: 4.0432)\n",
+    "passed": true
+  },
+  {
+    "test_id": "test-002",
+    "query": "Redis 管道技术如何工作？",
+    "status": "success",
+    "top_score": 0.5593,
+    "num_results": 1,
+    "answer": "根据检索结果，Redis 管道技术如何工作？\n\n【来源】How fast is Redis? – Redis\n【得分】0.5593\n【路径】/home/shenzt/ws/kb-test-redis-cn/docs/topics/benchmarks.md\n\n【内容摘要】\n$ redis-benchmark -n 100000 -q script load \"redis.call('set','foo','bar')\"\n    script load redis.call('set','foo','bar'): 69881.20 requests per second\n\n## Selecting the size of the key space\n\nBy default the benchmark runs against a single key. In Redis the\ndifference between such a synthetic benchmark and a real one is not huge\nsince it is an in-memory system, however it is possible to stress cache\nmisses and in general to simulate a more real-world work load by using a\nlarge key space.\n\nThis is...\n",
+    "passed": true
+  },
+  {
+    "test_id": "test-003",
+    "query": "Kubernetes Service 是什么？",
+    "status": "success",
+    "top_score": 5.1616,
+    "num_results": 3,
+    "answer": "根据检索结果，Kubernetes Service 是什么？\n\n【来源】Service\n【得分】5.1616\n【路径】/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md\n\n【内容摘要】\n<!-- overview -->\n\n{{< glossary_definition term_id=\"service\" length=\"short\" prepend=\"In Kubernetes, a Service is\" >}}\n\nA key aim of Services in Kubernetes is that you don't need to modify your existing\napplication to use an unfamiliar service discovery mechanism.\nYou can run code in Pods, whether this is a code designed for a cloud-native world, or\nan older app you've containerized. You use a Service to make that set of Pods available\non the network so that clients can interact with it.\n\nIf you ...\n\n【其他相关文档】\n2. Service (得分: 2.7681)\n3. Service (得分: 2.3995)\n",
+    "passed": true
+  },
+  {
+    "test_id": "test-004",
+    "query": "What are Init Containers?",
+    "status": "success",
+    "top_score": 6.4301,
+    "num_results": 3,
+    "answer": "根据检索结果，What are Init Containers?\n\n【来源】Init Containers\n【得分】6.4301\n【路径】/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/init-containers.md\n\n【内容摘要】\n<!-- overview -->\nThis page provides an overview of init containers: specialized containers that run\nbefore app containers in a {{< glossary_tooltip text=\"Pod\" term_id=\"pod\" >}}.\nInit containers can contain utilities or setup scripts not present in an app image.\n\nYou can specify init containers in the Pod specification alongside the `containers`\narray (which describes app containers).\n\nIn Kubernetes, a [sidecar container](/docs/concepts/workloads/pods/sidecar-containers/) is a container that\nsta...\n\n【其他相关文档】\n2. Init Containers (得分: 4.5935)\n3. Sidecar Containers (得分: 2.6051)\n",
+    "passed": true
+  }
+]

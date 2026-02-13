@@ -1,0 +1,270 @@
+加载 embedding 模型: BAAI/bge-m3
+================================================================================
+Search Skill 测试 - 混合检索验证
+================================================================================
+
+================================================================================
+测试 1/4: What is a Pod in Kubernetes?
+================================================================================
+Fetching 30 files:   0%|          | 0/30 [00:00<?, ?it/s]Fetching 30 files: 100%|██████████| 30/30 [00:00<00:00, 191229.67it/s]
+loading existing colbert_linear and sparse_linear---------
+加载 reranker 模型: BAAI/bge-reranker-v2-m3
+HTTP Request: GET http://localhost:6333 "HTTP/1.1 200 OK"
+You're using a XLMRobertaTokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
+You're using a XLMRobertaTokenizerFast tokenizer. Please note that with a fast tokenizer, using the `__call__` method is faster than using a method to encode the text followed by a call to the `pad` method to get a padded encoding.
+HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
+HTTP Request: POST http://localhost:6333/collections/knowledge-base/points/query "HTTP/1.1 200 OK"
+
+✅ 找到 3 个结果
+
+结果 1:
+  标题: Pods
+  文档: 1cea6b36
+  得分: 6.4370
+  路径: /home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md
+  内容: <!-- overview -->
+
+_Pods_ are the smallest deployable units of computing that you can create and manage in Kubernetes.
+
+A _Pod_ (as in a pod of whales or pea pod) is a group of one or more
+{{< glossar...
+
+结果 2:
+  标题: Pods
+  文档: 1cea6b36
+  得分: 4.5316
+  路径: /home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md
+  内容: * Learn about the [lifecycle of a Pod](/docs/concepts/workloads/pods/pod-lifecycle/).
+* Read about [PodDisruptionBudget](/docs/concepts/workloads/pods/disruptions/)
+  and how you can use it to manage ...
+
+结果 3:
+  标题: Pods
+  文档: 1cea6b36
+  得分: 4.0432
+  路径: /home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md
+  内容: * **Pods that run a single container**. The "one-container-per-Pod" model is the
+  most common Kubernetes use case; in this case, you can think of a Pod as a
+  wrapper around a single container; Kuber...
+
+生成的回答:
+根据检索结果，What is a Pod in Kubernetes?
+
+【来源】Pods
+【得分】6.4370
+【路径】/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md
+
+【内容摘要】
+<!-- overview -->
+
+_Pods_ are the smallest deployable units of computing that you can create and manage in Kubernetes.
+
+A _Pod_ (as in a pod of whales or pea pod) is a group of one or more
+{{< glossary_tooltip text="containers" term_id="container" >}}, with shared storage and network resources, and a specification for how to run the containers. A Pod's contents are always co-located and
+co-scheduled, and run in a shared context. A Pod models an
+application-specific "logical host": it contains on...
+
+【其他相关文档】
+2. Pods (得分: 4.5316)
+3. Pods (得分: 4.0432)
+
+
+✅ 测试通过 (得分: 6.4370)
+
+================================================================================
+测试 2/4: Redis 管道技术如何工作？
+================================================================================
+
+✅ 找到 1 个结果
+
+结果 1:
+  标题: How fast is Redis? – Redis
+  文档: redis-topics-benchmarks
+  得分: 0.5593
+  路径: /home/shenzt/ws/kb-test-redis-cn/docs/topics/benchmarks.md
+  内容: $ redis-benchmark -n 100000 -q script load "redis.call('set','foo','bar')"
+    script load redis.call('set','foo','bar'): 69881.20 requests per second
+
+## Selecting the size of the key space
+
+By defau...
+
+生成的回答:
+根据检索结果，Redis 管道技术如何工作？
+
+【来源】How fast is Redis? – Redis
+【得分】0.5593
+【路径】/home/shenzt/ws/kb-test-redis-cn/docs/topics/benchmarks.md
+
+【内容摘要】
+$ redis-benchmark -n 100000 -q script load "redis.call('set','foo','bar')"
+    script load redis.call('set','foo','bar'): 69881.20 requests per second
+
+## Selecting the size of the key space
+
+By default the benchmark runs against a single key. In Redis the
+difference between such a synthetic benchmark and a real one is not huge
+since it is an in-memory system, however it is possible to stress cache
+misses and in general to simulate a more real-world work load by using a
+large key space.
+
+This is...
+
+
+✅ 测试通过 (得分: 0.5593)
+
+================================================================================
+测试 3/4: Kubernetes Service 是什么？
+================================================================================
+
+✅ 找到 3 个结果
+
+结果 1:
+  标题: Service
+  文档: e8324c20
+  得分: 5.1616
+  路径: /home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md
+  内容: <!-- overview -->
+
+{{< glossary_definition term_id="service" length="short" prepend="In Kubernetes, a Service is" >}}
+
+A key aim of Services in Kubernetes is that you don't need to modify your existin...
+
+结果 2:
+  标题: Service
+  文档: e8324c20
+  得分: 2.7681
+  路径: /home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md
+  内容: ```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app.kubernetes.io/name: MyApp
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 491...
+
+结果 3:
+  标题: Service
+  文档: e8324c20
+  得分: 2.3995
+  路径: /home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md
+  内容: The [Gateway](https://gateway-api.sigs.k8s.io/#what-is-the-gateway-api) API for Kubernetes
+provides extra capabilities beyond Ingress and Service. You can add Gateway to your cluster -
+it is a family ...
+
+生成的回答:
+根据检索结果，Kubernetes Service 是什么？
+
+【来源】Service
+【得分】5.1616
+【路径】/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md
+
+【内容摘要】
+<!-- overview -->
+
+{{< glossary_definition term_id="service" length="short" prepend="In Kubernetes, a Service is" >}}
+
+A key aim of Services in Kubernetes is that you don't need to modify your existing
+application to use an unfamiliar service discovery mechanism.
+You can run code in Pods, whether this is a code designed for a cloud-native world, or
+an older app you've containerized. You use a Service to make that set of Pods available
+on the network so that clients can interact with it.
+
+If you ...
+
+【其他相关文档】
+2. Service (得分: 2.7681)
+3. Service (得分: 2.3995)
+
+
+✅ 测试通过 (得分: 5.1616)
+
+================================================================================
+测试 4/4: What are Init Containers?
+================================================================================
+
+✅ 找到 3 个结果
+
+结果 1:
+  标题: Init Containers
+  文档: 5781cb7a
+  得分: 6.4301
+  路径: /home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/init-containers.md
+  内容: <!-- overview -->
+This page provides an overview of init containers: specialized containers that run
+before app containers in a {{< glossary_tooltip text="Pod" term_id="pod" >}}.
+Init containers can c...
+
+结果 2:
+  标题: Init Containers
+  文档: 5781cb7a
+  得分: 4.5935
+  路径: /home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/init-containers.md
+  内容: Init containers run and complete their tasks before the main application container starts.
+Unlike [sidecar containers](/docs/concepts/workloads/pods/sidecar-containers),
+init containers are not contin...
+
+结果 3:
+  标题: Sidecar Containers
+  文档: 24479a08
+  得分: 2.6051
+  路径: /home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/sidecar-containers.md
+  内容: <!-- overview -->
+{{< feature-state feature_gate_name="SidecarContainers" >}}
+
+Sidecar containers are the secondary containers that run along with the main
+application container within the same {{< gl...
+
+生成的回答:
+根据检索结果，What are Init Containers?
+
+【来源】Init Containers
+【得分】6.4301
+【路径】/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/init-containers.md
+
+【内容摘要】
+<!-- overview -->
+This page provides an overview of init containers: specialized containers that run
+before app containers in a {{< glossary_tooltip text="Pod" term_id="pod" >}}.
+Init containers can contain utilities or setup scripts not present in an app image.
+
+You can specify init containers in the Pod specification alongside the `containers`
+array (which describes app containers).
+
+In Kubernetes, a [sidecar container](/docs/concepts/workloads/pods/sidecar-containers/) is a container that
+sta...
+
+【其他相关文档】
+2. Init Containers (得分: 4.5935)
+3. Sidecar Containers (得分: 2.6051)
+
+
+✅ 测试通过 (得分: 6.4301)
+
+================================================================================
+测试总结
+================================================================================
+
+通过率: 4/4 (100.0%)
+
+✅ test-001: What is a Pod in Kubernetes?
+   得分: 6.4370, 结果数: 3
+✅ test-002: Redis 管道技术如何工作？
+   得分: 0.5593, 结果数: 1
+✅ test-003: Kubernetes Service 是什么？
+   得分: 5.1616, 结果数: 3
+✅ test-004: What are Init Containers?
+   得分: 6.4301, 结果数: 3
+
+结果已保存: eval/search_skill_test_results.json
+
+================================================================================
+
