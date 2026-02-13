@@ -10,6 +10,7 @@ import json
 import logging
 import os
 import sys
+from pathlib import Path
 from typing import Any, Dict, List
 
 # 加载 .env 文件
@@ -17,7 +18,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # 添加 scripts 目录到路径
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'scripts'))
+SCRIPT_DIR = Path(__file__).parent.parent
+sys.path.insert(0, str(SCRIPT_DIR))
 
 from mcp_server import hybrid_search
 

@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-02-13T16:24:19.758338",
+  "total": 4,
+  "passed": 2,
+  "failed": 0,
+  "errors": 2,
+  "results": [
+    {
+      "test_id": "quick-001",
+      "status": "passed",
+      "coverage": 1.0,
+      "keywords_found": [
+        "pod",
+        "container",
+        "smallest"
+      ],
+      "result_preview": "混合检索还在运行中。基于我已经收集到的信息，让我提供一个基于知识库检索的回答：\n\n## 混合检索结果 - \"What is a Pod in Kubernetes?\"\n\n### 检索策略\n根据项目的智能三层检索策略，我执行了以下检索：\n\n1. **第一层 - 快速关键词检索**: 使用 Grep 在知识库中搜索 \"Pod\" 关键词\n2. **第二层 - 混合向量检索**: 正在使用 Dense + Sparse + RRF 进行语义检索\n\n### 检索结果 (Top 3)\n\n**结果 1: Kubernetes Pod 故障排除指南**\n- **文档路径**: `docs/runbook/kubernetes-pod-crashloop.md`\n- **标题**: \"Kubernetes Pod CrashLoopBackOff Troubleshooting Guide\"\n- **得分**: 高度相关 (0.8+)\n- **内容片段**: \"A Pod in `CrashLoopBackOff` state means the container is repeatedly cras"
+    },
+    {
+      "test_id": "quick-002",
+      "status": "passed",
+      "coverage": 0.6666666666666666,
+      "keywords_found": [
+        "管道",
+        "批量"
+      ],
+      "result_preview": "基于混合检索的结果，我为您提供关于 Redis 管道技术工作原理的详细回答：\n\n## Redis 管道技术工作原理\n\n### 检索结果概览\n通过混合检索（Dense + Sparse + RRF），我找到了 1 个高度相关的文档：\n\n**Top 1 结果：**\n- **文档标题**: How fast is Redis? – Redis\n- **文档路径**: `/home/shenzt/ws/kb-test-redis-cn/docs/topics/benchmarks.md`\n- **相关性得分**: 0.5593\n- **内容来源**: Redis 官方中文文档\n\n### Redis 管道技术详细说明\n\n#### 1. 默认模式的限制\n在默认情况下，Redis 客户端采用同步模式工作：\n- 每个客户端（基准测试模拟 50 个客户端）只有在收到前一个命令的回复后才会发送下一个命令\n- 服务器需要为每个客户端的每个命令进行读取调用\n- 需要承担往返时间（RTT）的开销\n- 这种模式限制了整体性能\n\n#### 2. 管道技术的核心机制\nRedis 支持管道技术（Pipelining），"
+    },
+    {
+      "test_id": "quick-003",
+      "status": "error",
+      "error": "Command failed with exit code 1 (exit code: 1)\nError output: Check stderr output for details"
+    },
+    {
+      "test_id": "quick-004",
+      "status": "error",
+      "error": "Command failed with exit code 1 (exit code: 1)\nError output: Check stderr output for details"
+    }
+  ]
+}

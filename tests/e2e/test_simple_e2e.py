@@ -4,12 +4,16 @@
 import asyncio
 import json
 import os
+import sys
 from datetime import datetime
 from pathlib import Path
 
 # 加载 .env 文件
 from dotenv import load_dotenv
 load_dotenv()
+
+# Add scripts to path
+sys.path.insert(0, str(Path(__file__).parent.parent.parent / "scripts" / "workers"))
 
 from simple_rag_worker import search_with_rag
 

@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-02-13T16:30:09.127379",
+  "total": 4,
+  "passed": 0,
+  "failed": 0,
+  "errors": 4,
+  "results": [
+    {
+      "test_id": "quick-001",
+      "status": "error",
+      "error": "Command failed with exit code 1 (exit code: 1)\nError output: Check stderr output for details"
+    },
+    {
+      "test_id": "quick-002",
+      "status": "error",
+      "error": "Command failed with exit code 1 (exit code: 1)\nError output: Check stderr output for details"
+    },
+    {
+      "test_id": "quick-003",
+      "status": "error",
+      "error": "Command failed with exit code 1 (exit code: 1)\nError output: Check stderr output for details"
+    },
+    {
+      "test_id": "quick-004",
+      "status": "error",
+      "error": "Command failed with exit code 1 (exit code: 1)\nError output: Check stderr output for details"
+    }
+  ]
+}
