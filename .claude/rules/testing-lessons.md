@@ -66,7 +66,35 @@
 - `runbook/kubernetes-pod-crashloop.md` — K8s CrashLoopBackOff 排查
 - `api/authentication.md` — OAuth 2.0 + JWT API 认证设计
 
-### 评测用例（v3, 64 个）
+### 评测用例（v4, 64 个）
 - Local: 17 (exact/scenario/cross-lang/howto/multi-doc)
-- Qdrant: 40 (Redis 20 + K8s 20)
-- Notfound: 7
+- Qdrant: 41 (Redis 20 + K8s 21, 含 HPA)
+- Notfound: 6 (MongoDB/Kafka/Prometheus/Nginx/MySQL/Docker Compose)
+
+### 评测经验教训
+
+## 教训 6：eval_module 必须正确解析 MCP 工具结果
+
+**问题**：MCP hybrid_search 返回的 JSON 路径经过多层转义（SDK 序列化），`_extract_doc_paths()` 无法提取，导致 gate 的 `expected_doc_hit` 全部判 False。21 个 qdrant 用例被误判为失败。
+
+**规则**：
+- MCP 工具名含连字符（如 `mcp__knowledge-base__hybrid_search`），regex 必须支持 `[\w-]+`
+- ToolResultBlock 的 content 经过多层 JSON 转义，需要多轮 `replace('\\"', '"')` 反转义
+- 并行工具调用（Grep + hybrid_search）必须按 `tool_use_id` 精确匹配，不能用"最近未匹配"
+- 每次修改 eval_module 后，用已有 detail.jsonl 重新评分验证
+
+## 教训 7：测试用例的 expected_doc 必须基于实际索引内容
+
+**问题**：notfound-001 (HPA) 实际在 K8s 文档中存在（`horizontal-pod-autoscale.md`），但被标记为 notfound。
+
+**规则**：
+- 编写 notfound 用例前，先用 `hybrid_search` 确认 KB 中确实没有
+- K8s concepts 文档覆盖面很广，不要想当然地认为某个概念不在 KB 中
+
+## 教训 8：禁用 session 复用
+
+**问题**：session 复用导致 Claude 从上下文记忆回答，跳过工具调用，`extract_contexts()` 返回空。
+
+**规则**：
+- 评测时每个用例必须独立 session（`session_id=None`）
+- 确保每次查询都触发完整的工具调用链

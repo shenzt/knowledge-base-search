@@ -27,7 +27,7 @@ from eval_module import extract_contexts, gate_check, get_tools_used, get_retrie
 
 TEST_CASES = [
     # ══════════════════════════════════════════════════════════════════
-    # v3: 基于全量 K8s + Redis 官方文档的测试用例
+    # v4: 基于全量 K8s + Redis 官方文档的测试用例
     #
     # 数据源 1 — 本地 docs/（Grep/Glob/Read 可达）:
     #   - runbook/redis-failover.md (中文, Redis Sentinel 主从切换)
@@ -37,10 +37,12 @@ TEST_CASES = [
     # 数据源 2 — Qdrant 索引（MCP hybrid_search 可达）:
     #   K8s: 144 docs from kubernetes/website (concepts section)
     #     Pod, Service, Ingress, Deployment, ConfigMap, Secret, Probes,
-    #     Volumes, Namespaces, Labels, Nodes, GC, ResourceQuota, etc.
+    #     Volumes, Namespaces, Labels, Nodes, GC, ResourceQuota, HPA, etc.
     #   Redis: ~62 docs from redis/docs (official English)
     #     Sentinel, Replication, Persistence, Scaling, Data Types,
     #     Pipelining, Transactions, ACL, Latency, Memory, Debugging, etc.
+    #
+    # 用例: 17 local + 41 qdrant + 6 notfound = 64 total
     # ══════════════════════════════════════════════════════════════════
 
     # ── A. 本地文档：精确关键词（Grep 直接命中）──
@@ -306,11 +308,6 @@ TEST_CASES = [
      "expected_doc": "limit-range.md,resource-quotas.md"},
 
     # ── H. 未收录内容（应明确说"未找到"）──
-    {"id": "notfound-001",
-     "query": "Kubernetes HPA 自动扩缩容怎么配置",
-     "category": "not-in-kb", "type": "notfound", "source": "none",
-     "expect_no_results": True,
-     "note": "KB 没有 HPA 内容"},
     {"id": "notfound-002",
      "query": "MongoDB 分片集群如何配置",
      "category": "not-in-kb", "type": "notfound", "source": "none",
@@ -341,6 +338,13 @@ TEST_CASES = [
      "category": "not-in-kb", "type": "notfound", "source": "none",
      "expect_no_results": True,
      "note": "KB 没有 Docker Compose 内容"},
+
+    # ── I. 原 notfound-001 (HPA) 实际在 K8s 文档中存在，改为 qdrant 用例 ──
+    {"id": "qdrant-k8s-hpa-001",
+     "query": "Kubernetes HPA 自动扩缩容怎么配置",
+     "category": "k8s-hpa", "type": "howto", "source": "qdrant",
+     "expected_doc": "horizontal-pod-autoscale.md",
+     "note": "HPA 在 K8s concepts 中有文档"},
 ]
 
 KEYWORD_CHECKS = {
@@ -392,6 +396,7 @@ KEYWORD_CHECKS = {
     "k8s-deploy-vs-rc": ["deployment", "replicationcontroller", "replicaset", "replica"],
     "k8s-lifecycle-hooks": ["preStop", "postStart", "hook", "lifecycle", "graceful"],
     "k8s-policy": ["limitrange", "resourcequota", "limit", "quota", "constraint"],
+    "k8s-hpa": ["hpa", "horizontal", "autoscal", "scale", "cpu", "metric", "replica"],
 }
 
 # 是否启用 MCP（模型加载需要 15-20 分钟，可选关闭）
