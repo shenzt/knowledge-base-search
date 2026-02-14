@@ -30,20 +30,23 @@ def extract_contexts(messages_log: list[dict]) -> list[dict]:
         # ── 格式 1: 字符串序列化 (当前 SDK 行为) ──
         if isinstance(content, str):
             # 解析 ToolUseBlock
+            # 注意: MCP 工具名含连字符如 mcp__knowledge-base__hybrid_search
             tool_match = re.search(
-                r"ToolUseBlock\(id='[^']*', name='(\w+)', input=(\{[^)]+\})\)",
+                r"ToolUseBlock\(id='([^']*)', name='([\w-]+(?:__[\w-]+)*)', input=(\{.*\})\)",
                 content,
             )
             if tool_match:
-                tool_name = tool_match.group(1)
+                tool_id = tool_match.group(1)
+                tool_name = tool_match.group(2)
                 try:
-                    tool_input = eval(tool_match.group(2))  # safe: only from our own logs
+                    tool_input = eval(tool_match.group(3))  # safe: only from our own logs
                 except Exception:
                     tool_input = {}
 
                 contexts.append({
                     "type": "tool_call",
                     "tool": tool_name,
+                    "tool_use_id": tool_id,
                     "input": tool_input,
                 })
                 continue
@@ -57,21 +60,34 @@ def extract_contexts(messages_log: list[dict]) -> list[dict]:
                 tool_use_id = result_match.group(1)
                 result_text = result_match.group(2).replace("\\n", "\n")
 
-                # 找到对应的 tool_call 并合并
+                # 按 tool_use_id 精确匹配对应的 tool_call
+                matched = False
                 for ctx in reversed(contexts):
-                    if ctx.get("type") == "tool_call":
+                    if ctx.get("type") == "tool_call" and ctx.get("tool_use_id") == tool_use_id:
                         ctx["type"] = "context"
                         ctx["result"] = result_text
-                        ctx["tool_use_id"] = tool_use_id
-                        # 提取 doc_paths
                         tool = ctx.get("tool", "")
                         ctx["doc_paths"] = _extract_doc_paths(result_text, tool)
-                        # Read 工具: 从 input 中提取 file_path
                         if tool == "Read":
                             fp = ctx.get("input", {}).get("file_path", "")
                             if fp:
                                 ctx["doc_paths"] = [fp]
+                        matched = True
                         break
+                # Fallback: 如果 ID 匹配失败，退回到最近未匹配的 tool_call
+                if not matched:
+                    for ctx in reversed(contexts):
+                        if ctx.get("type") == "tool_call":
+                            ctx["type"] = "context"
+                            ctx["result"] = result_text
+                            ctx["tool_use_id"] = tool_use_id
+                            tool = ctx.get("tool", "")
+                            ctx["doc_paths"] = _extract_doc_paths(result_text, tool)
+                            if tool == "Read":
+                                fp = ctx.get("input", {}).get("file_path", "")
+                                if fp:
+                                    ctx["doc_paths"] = [fp]
+                            break
                 continue
 
         # ── 格式 2: 结构化 list[dict] (未来兼容) ──
@@ -118,9 +134,20 @@ def _extract_doc_paths(text: str, tool: str) -> list[str]:
 
     # MCP hybrid_search / keyword_search: 解析 JSON 中的 "path" 字段
     if "mcp__" in tool or "hybrid_search" in tool or "keyword_search" in tool:
-        # 提取 JSON 中所有 "path": "..." 字段
-        for m in re.finditer(r'"path"\s*:\s*"([^"]+)"', text):
+        # SDK 序列化产生多层转义: \\\\"path\\\\" → 需要多次反转义
+        normalized = text
+        for _ in range(3):  # 最多 3 轮反转义
+            prev = normalized
+            normalized = normalized.replace('\\\\"', '"').replace('\\\\', '\\')
+            normalized = normalized.replace('\\"', '"')
+            if normalized == prev:
+                break
+        for m in re.finditer(r'"path"\s*:\s*"([^"]+)"', normalized):
             paths.append(m.group(1))
+        if not paths:
+            # Fallback: 直接匹配各种转义变体
+            for m in re.finditer(r'\\*"path\\*"\s*:\s*\\*"([^"\\]+)\\*"', text):
+                paths.append(m.group(1))
         return list(set(paths))
 
     if tool == "Read":

@@ -63,6 +63,34 @@ class TestExtractContexts:
         contexts = extract_contexts(messages)
         assert len(contexts) == 0
 
+    def test_mcp_tool_name_with_hyphens(self):
+        """MCP 工具名含连字符和双下划线，如 mcp__knowledge-base__hybrid_search。"""
+        messages = [
+            {"content": "[ToolUseBlock(id='tool123', name='mcp__knowledge-base__hybrid_search', input={'query': 'Redis sentinel', 'top_k': 5})]"},
+            {"content": r"""[ToolResultBlock(tool_use_id='tool123', content='{"result":"[{\"path\": \"redis-docs/sentinel.md\", \"score\": 3.4}]"}', is_error=None)]"""},
+        ]
+        contexts = extract_contexts(messages)
+        assert len(contexts) == 1
+        assert contexts[0]["tool"] == "mcp__knowledge-base__hybrid_search"
+        assert any("sentinel.md" in p for p in contexts[0]["doc_paths"])
+
+    def test_parallel_tool_calls_matched_by_id(self):
+        """并行工具调用（Grep + hybrid_search）按 tool_use_id 正确匹配。"""
+        messages = [
+            {"content": "[ToolUseBlock(id='grep1', name='Grep', input={'-i': True, 'path': 'docs', 'pattern': 'RDB'})]"},
+            {"content": "[ToolUseBlock(id='mcp1', name='mcp__knowledge-base__hybrid_search', input={'query': 'RDB AOF', 'top_k': 5})]"},
+            {"content": "[ToolResultBlock(tool_use_id='grep1', content='No files found', is_error=None)]"},
+            {"content": r"""[ToolResultBlock(tool_use_id='mcp1', content='{"result":"[{\"path\": \"redis-docs/persistence.md\", \"score\": 4.2}]"}', is_error=None)]"""},
+        ]
+        contexts = extract_contexts(messages)
+        assert len(contexts) == 2
+        # Grep context
+        grep_ctx = [c for c in contexts if c["tool"] == "Grep"][0]
+        assert grep_ctx["result"] == "No files found"
+        # MCP context
+        mcp_ctx = [c for c in contexts if "hybrid_search" in c["tool"]][0]
+        assert any("persistence.md" in p for p in mcp_ctx["doc_paths"])
+
 
 class TestGateCheck:
     def test_local_found_passes(self):
