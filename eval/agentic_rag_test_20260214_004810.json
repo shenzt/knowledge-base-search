@@ -1,0 +1,331 @@
+{
+  "timestamp": "2026-02-14T00:54:17.459860",
+  "test_type": "agentic_rag",
+  "method": "claude_agent_sdk_session_reuse",
+  "total": 15,
+  "passed": 15,
+  "failed": 0,
+  "errors": 0,
+  "total_time": 366.621684551239,
+  "total_cost": 1.27261725,
+  "results": [
+    {
+      "test_id": "basic-001",
+      "category": "k8s-basic",
+      "query": "What is a Pod in Kubernetes?",
+      "status": "passed",
+      "elapsed_seconds": 20.21230125427246,
+      "cost_usd": 0.03715575,
+      "num_turns": 4,
+      "answer_length": 470,
+      "tools_used": [
+        "Glob",
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "pod",
+        "container",
+        "kubernetes"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 Kubernetes Pod 的信息：\n\n**什么是 Pod？**\n\n根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档中的内容，Pod 是 Kubernetes 中的基本运行单元。文档中提到：\n\n- Pod 是容器的运行载体，当 Pod 处于 `CrashLoopBackOff` 状态时，意味着容器反复崩溃，Kubernetes 会在重启前进行退避等待\n- Pod 可以包含一个或多个容器（文档中提到 `spec.containers[*]`）\n- Pod 有自己的生命周期状态（如 Running、Cr"
+    },
+    {
+      "test_id": "basic-002",
+      "category": "k8s-service",
+      "query": "Kubernetes Service 是什么？",
+      "status": "passed",
+      "elapsed_seconds": 34.47059392929077,
+      "cost_usd": 0.06291625,
+      "num_turns": 6,
+      "answer_length": 497,
+      "tools_used": [
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "service",
+        "load"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 Kubernetes Service 的信息：\n\n**什么是 Kubernetes Service？**\n\n根据测试文档中的记录，\"Kubernetes Service 是什么？\" 是一个测试查询，在混合检索测试中获得了 **5.1616 的优秀得分**（满分约 6.4）。\n\n虽然这些文档主要是项目状态和测试报告，没有直接详细解释 Service 的概念，但从测试覆盖范围可以看出：\n\n- Service 是 Kubernetes 的基础概念之一\n- 文档中提到了 \"Service 类型\" 作为技术细节测试用例\n- Service 与 Pod、Dep"
+    },
+    {
+      "test_id": "basic-003",
+      "category": "k8s-init",
+      "query": "What are Init Containers?",
+      "status": "passed",
+      "elapsed_seconds": 20.722301483154297,
+      "cost_usd": 0.056181249999999995,
+      "num_turns": 3,
+      "answer_length": 439,
+      "tools_used": [
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "init",
+        "container"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 Init Containers 的信息：\n\n**什么是 Init Containers？**\n\n根据测试文档中的记录，\"What are Init Containers?\" 是一个测试查询，在混合检索测试中获得了 **6.4301 的优秀得分**（接近满分）。\n\n这表明：\n- Init Containers 是 Kubernetes 的重要概念之一\n- 知识库中包含关于 Init Containers 的详细文档\n- 该查询的检索效果非常好，说明相关文档质量较高\n\n不过，当前 docs/ 目录中的文档主要是项目状态和测试报告，没有直接详细解释 In"
+    },
+    {
+      "test_id": "cross-lang-001",
+      "category": "redis-pipeline",
+      "query": "Redis 管道技术如何工作？",
+      "status": "passed",
+      "elapsed_seconds": 29.7341046333313,
+      "cost_usd": 0.08252875000000001,
+      "num_turns": 4,
+      "answer_length": 414,
+      "tools_used": [
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "pipeline",
+        "管道",
+        "redis"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档搜索结果，我没有找到专门讲解 Redis 管道技术工作原理的文档。\n\n我找到的 Redis 相关文档是 `docs/runbook/redis-failover.md`，这是一份关于 **Redis 主从切换故障恢复** 的运维手册，主要涵盖：\n- Redis Sentinel 主从切换流程\n- 故障现象和排查步骤\n- 自动/手动恢复操作\n- 预防措施\n\n但这份文档并不涉及 Redis 管道（Pipeline）技术的工作原理。\n\n根据之前看到的测试报告，\"Redis 管道技术如何工作？\" 这个查询在混合检索测试中得分为 **0.5593**（较低分数），测试文档中"
+    },
+    {
+      "test_id": "cross-lang-002",
+      "category": "redis-pipeline",
+      "query": "How does Redis pipelining improve performance?",
+      "status": "passed",
+      "elapsed_seconds": 16.462628602981567,
+      "cost_usd": 0.04668975,
+      "num_turns": 2,
+      "answer_length": 372,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "pipeline",
+        "管道",
+        "redis"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录的搜索结果，我没有找到关于 Redis pipelining 性能提升的相关文档。\n\n正如之前搜索 \"Redis 管道技术如何工作？\" 时发现的，docs/ 目录中：\n\n- **没有** Redis Pipeline/Pipelining 相关的技术文档\n- 只有一份 `docs/runbook/redis-failover.md`，是关于 Redis 主从切换故障恢复的运维手册\n- 测试报告中明确指出：**知识库覆盖不足 (Redis Pipeline 文档缺失)**\n\n因此，无法从当前 docs/ 目录中回答 \"How does Redis pipelining im"
+    },
+    {
+      "test_id": "complex-001",
+      "category": "k8s-comparison",
+      "query": "What's the difference between Deployment and StatefulSet?",
+      "status": "passed",
+      "elapsed_seconds": 32.20188903808594,
+      "cost_usd": 0.09619275,
+      "num_turns": 4,
+      "answer_length": 470,
+      "tools_used": [
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "deployment",
+        "statefulset",
+        "区别"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 Deployment 和 StatefulSet 区别的信息：\n\n**Deployment vs StatefulSet 的区别**\n\n在 `docs/e2e-testing.md` 文档中，\"对比分析 (Deployment vs StatefulSet)\" 被列为 **复杂推理测试用例** 之一（第 122 行）。\n\n这表明：\n- Deployment 和 StatefulSet 的对比是一个需要复杂推理的技术问题\n- 知识库中应该包含这两个概念的详细对比文档\n- 这个查询被归类为需要多文档综合分析的复杂场景\n\n不过，当前 docs/ 目录中的"
+    },
+    {
+      "test_id": "complex-002",
+      "category": "k8s-troubleshooting",
+      "query": "How to troubleshoot CrashLoopBackOff in Kubernetes?",
+      "status": "passed",
+      "elapsed_seconds": 28.78734278678894,
+      "cost_usd": 0.09914025,
+      "num_turns": 3,
+      "answer_length": 1230,
+      "tools_used": [
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "crashloopbackoff",
+        "排查",
+        "log"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 Kubernetes CrashLoopBackOff 故障排查的详细信息：\n\n**如何排查 Kubernetes CrashLoopBackOff？**\n\n根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档：\n\n## 什么是 CrashLoopBackOff？\nPod 处于 `CrashLoopBackOff` 状态意味着容器反复崩溃，Kubernetes 在重启前会进行退避等待。\n\n## 故障症状\n- `kubectl get pods` 显示状态为 `CrashLoopBackOff`\n- Pod"
+    },
+    {
+      "test_id": "complex-003",
+      "category": "k8s-service-discovery",
+      "query": "Kubernetes 中如何实现服务发现？",
+      "status": "passed",
+      "elapsed_seconds": 30.273582220077515,
+      "cost_usd": 0.1219265,
+      "num_turns": 4,
+      "answer_length": 460,
+      "tools_used": [
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "service",
+        "发现",
+        "dns"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录的搜索结果，我没有找到关于 Kubernetes 服务发现的相关文档。\n\n搜索结果显示：\n- `docs/api/authentication.md` 是关于 API 认证与授权的设计文档，与 Kubernetes 服务发现无关\n- `docs/runbook/kubernetes-pod-crashloop.md` 是关于 Pod 故障排查的运维手册，也不涉及服务发现\n\n虽然 docs/ 目录中包含一些 Kubernetes 相关的文档（如 Pod、CrashLoopBackOff 故障排查），但目前没有专门讲解 Kubernetes 服务发现机制的文档。\n\n从测试用例"
+    },
+    {
+      "test_id": "howto-001",
+      "category": "k8s-howto",
+      "query": "How to create a Pod with multiple containers?",
+      "status": "passed",
+      "elapsed_seconds": 30.42471933364868,
+      "cost_usd": 0.1296065,
+      "num_turns": 4,
+      "answer_length": 416,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "pod",
+        "container",
+        "多容器",
+        "sidecar"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录的搜索结果，我没有找到关于如何创建多容器 Pod 的详细技术文档。\n\n在 `docs/e2e-testing.md` 中，我只找到了一个测试用例的提及：\n- **容器类型对比 (Init vs Sidecar)** - 这是复杂推理测试套件中的一个测试用例（第 123 行）\n\n这表明知识库中应该包含关于不同容器类型（Init Container、Sidecar Container 等）的文档，但当前 docs/ 目录中没有具体的技术实现文档来说明如何创建多容器 Pod。\n\n从测试用例的设计来看，知识库可能在其他目录中包含以下内容：\n- 多容器 Pod 的 YAML 配置示"
+    },
+    {
+      "test_id": "howto-002",
+      "category": "k8s-resources",
+      "query": "如何配置 Kubernetes 资源限制？",
+      "status": "passed",
+      "elapsed_seconds": 18.41849446296692,
+      "cost_usd": 0.071998,
+      "num_turns": 2,
+      "answer_length": 603,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "resource",
+        "limit",
+        "request",
+        "资源",
+        "cpu",
+        "memory"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 Kubernetes 资源限制配置的信息：\n\n**如何配置 Kubernetes 资源限制？**\n\n根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档中的内容：\n\n## 检查资源限制\n\n使用以下命令查看 Pod 的资源配置：\n```bash\nkubectl get pod <pod-name> -n <namespace> -o jsonpath='{.spec.containers[*].resources}'\n```\n\n## 配置资源限制\n\n如果容器被 OOMKilled（内存溢出），需要增加内存限"
+    },
+    {
+      "test_id": "concept-001",
+      "category": "k8s-concept",
+      "query": "What is the purpose of a ReplicaSet?",
+      "status": "passed",
+      "elapsed_seconds": 15.730016231536865,
+      "cost_usd": 0.06939225,
+      "num_turns": 2,
+      "answer_length": 313,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "replicaset",
+        "replica"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录的搜索结果，我没有找到关于 ReplicaSet 的相关文档。\n\n搜索显示 docs/ 目录中没有包含 \"replicaset\" 或 \"replica set\" 关键词的文档。\n\n虽然 docs/ 目录中包含一些 Kubernetes 相关的文档（如 Pod、Deployment、CrashLoopBackOff 故障排查），但目前没有专门讲解 ReplicaSet 概念和用途的文档。\n\n从之前看到的测试用例来看，知识库可能在其他目录中包含关于 ReplicaSet 的技术文档，但这些内容不在当前的 docs/ 目录中。如果需要了解 ReplicaSet 的详细信息，可能"
+    },
+    {
+      "test_id": "concept-002",
+      "category": "k8s-namespace",
+      "query": "Kubernetes 命名空间的作用是什么？",
+      "status": "passed",
+      "elapsed_seconds": 22.198920249938965,
+      "cost_usd": 0.10593799999999999,
+      "num_turns": 3,
+      "answer_length": 537,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "namespace",
+        "命名空间",
+        "隔离"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录的搜索结果，我找到了 namespace（命名空间）在 Kubernetes 命令中的使用，但没有找到专门解释命名空间作用的文档。\n\n在 `docs/runbook/kubernetes-pod-crashloop.md` 和 `docs/runbook/redis-failover.md` 中，namespace 只是作为 kubectl 命令的参数出现，例如：\n\n```bash\nkubectl describe pod <pod-name> -n <namespace>\nkubectl logs <pod-name> -n <namespace>\nkubectl ro"
+    },
+    {
+      "test_id": "edge-001",
+      "category": "k8s-pattern",
+      "query": "What is a sidecar container?",
+      "status": "passed",
+      "elapsed_seconds": 33.46673226356506,
+      "cost_usd": 0.1412675,
+      "num_turns": 4,
+      "answer_length": 443,
+      "tools_used": [
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "sidecar",
+        "container"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录的搜索结果，我没有找到关于 sidecar container 的详细技术文档。\n\n在 `docs/e2e-testing.md` 中，我只找到了一个测试用例的提及：\n- **容器类型对比 (Init vs Sidecar)** - 这是复杂推理测试套件中的一个测试用例（第 123 行）\n\n这表明：\n- Sidecar Container 是 Kubernetes 中的一个重要概念\n- 知识库中应该包含关于 Init Container 和 Sidecar Container 对比的文档\n- 这个查询被归类为需要复杂推理的测试场景\n\n但是，当前 docs/ 目录中没有专门"
+    },
+    {
+      "test_id": "edge-002",
+      "category": "k8s-daemonset",
+      "query": "Kubernetes 中的 DaemonSet 是什么？",
+      "status": "passed",
+      "elapsed_seconds": 16.27428698539734,
+      "cost_usd": 0.07426274999999999,
+      "num_turns": 2,
+      "answer_length": 307,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "daemonset"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录的搜索结果，我没有找到关于 DaemonSet 的相关文档。\n\n搜索显示 docs/ 目录中没有包含 \"daemonset\" 或 \"daemon set\" 关键词的文档。\n\n虽然 docs/ 目录中包含一些 Kubernetes 相关的文档（如 Pod、Deployment、CrashLoopBackOff 故障排查），但目前没有专门讲解 DaemonSet 概念和用途的文档。\n\n从之前看到的测试用例来看，知识库可能在其他目录中包含关于 DaemonSet 的技术文档，但这些内容不在当前的 docs/ 目录中。如果需要了解 DaemonSet 的详细信息，可能需要搜索知识"
+    },
+    {
+      "test_id": "notfound-001",
+      "category": "not-in-kb",
+      "query": "How to configure Kubernetes with blockchain?",
+      "status": "passed",
+      "elapsed_seconds": 17.243771076202393,
+      "cost_usd": 0.077421,
+      "num_turns": 2,
+      "answer_length": 360,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": false,
+      "matched_keywords": [],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录的搜索结果，我没有找到关于 Kubernetes 与区块链配置的相关文档。\n\n搜索显示 docs/ 目录中没有包含 \"blockchain\"、\"区块链\"、\"bitcoin\"、\"ethereum\" 或 \"hyperledger\" 等区块链相关关键词的文档。\n\n当前 docs/ 目录主要包含：\n- Kubernetes 基础概念和故障排查文档（Pod、CrashLoopBackOff）\n- Redis 相关的运维文档（主从切换）\n- API 认证授权设计文档\n- 项目测试和架构文档\n\n但没有涉及区块链技术或 Kubernetes 与区块链集成的内容。这个查询可能超出了当前知识"
+    }
+  ]
+}
