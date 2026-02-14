@@ -1,0 +1,610 @@
+{
+  "timestamp": "2026-02-13T23:43:20.986194",
+  "total": 15,
+  "passed": 8,
+  "failed": 7,
+  "errors": 0,
+  "total_time": 694.679293,
+  "total_tokens": 8499,
+  "results": [
+    {
+      "test_id": "basic-001",
+      "category": "k8s-basic",
+      "query": "What is a Pod in Kubernetes?",
+      "status": "passed",
+      "num_results": 5,
+      "max_score": 6.437,
+      "answer_length": 1718,
+      "elapsed_seconds": 64.838248,
+      "sources": [
+        {
+          "title": "Pods",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md",
+          "score": 6.437,
+          "doc_id": "1cea6b36"
+        },
+        {
+          "title": "Pods",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md",
+          "score": 4.5316,
+          "doc_id": "1cea6b36"
+        },
+        {
+          "title": "Pods",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md",
+          "score": 4.0432,
+          "doc_id": "1cea6b36"
+        },
+        {
+          "title": "Pod Lifecycle",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/pod-lifecycle.md",
+          "score": 3.4596,
+          "doc_id": "1d8d27c6"
+        },
+        {
+          "title": "Service",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md",
+          "score": 3.2021,
+          "doc_id": "e8324c20"
+        }
+      ],
+      "usage": {
+        "input_tokens": 229,
+        "output_tokens": 380,
+        "total_tokens": 609
+      },
+      "failure_reasons": []
+    },
+    {
+      "test_id": "basic-002",
+      "category": "k8s-service",
+      "query": "Kubernetes Service 是什么？",
+      "status": "passed",
+      "num_results": 5,
+      "max_score": 5.1616,
+      "answer_length": 965,
+      "elapsed_seconds": 54.786147,
+      "sources": [
+        {
+          "title": "Service",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md",
+          "score": 5.1616,
+          "doc_id": "e8324c20"
+        },
+        {
+          "title": "Service",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md",
+          "score": 2.7681,
+          "doc_id": "e8324c20"
+        },
+        {
+          "title": "Service",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md",
+          "score": 2.3995,
+          "doc_id": "e8324c20"
+        },
+        {
+          "title": "Service",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md",
+          "score": 1.8688,
+          "doc_id": "e8324c20"
+        },
+        {
+          "title": "Ingress",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/ingress.md",
+          "score": 1.8179,
+          "doc_id": "f9c28688"
+        }
+      ],
+      "usage": {
+        "input_tokens": 253,
+        "output_tokens": 587,
+        "total_tokens": 840
+      },
+      "failure_reasons": []
+    },
+    {
+      "test_id": "basic-003",
+      "category": "k8s-init",
+      "query": "What are Init Containers?",
+      "status": "passed",
+      "num_results": 5,
+      "max_score": 6.4301,
+      "answer_length": 1812,
+      "elapsed_seconds": 48.421479,
+      "sources": [
+        {
+          "title": "Init Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/init-containers.md",
+          "score": 6.4301,
+          "doc_id": "5781cb7a"
+        },
+        {
+          "title": "Init Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/init-containers.md",
+          "score": 4.5935,
+          "doc_id": "5781cb7a"
+        },
+        {
+          "title": "Sidecar Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/sidecar-containers.md",
+          "score": 2.6051,
+          "doc_id": "24479a08"
+        },
+        {
+          "title": "Sidecar Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/sidecar-containers.md",
+          "score": 1.9783,
+          "doc_id": "24479a08"
+        },
+        {
+          "title": "Sidecar Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/sidecar-containers.md",
+          "score": 1.7402,
+          "doc_id": "24479a08"
+        }
+      ],
+      "usage": {
+        "input_tokens": 234,
+        "output_tokens": 405,
+        "total_tokens": 639
+      },
+      "failure_reasons": []
+    },
+    {
+      "test_id": "cross-lang-001",
+      "category": "redis-pipeline",
+      "query": "Redis 管道技术如何工作？",
+      "status": "failed",
+      "num_results": 1,
+      "max_score": 0.5593,
+      "answer_length": 722,
+      "elapsed_seconds": 46.630059,
+      "sources": [
+        {
+          "title": "How fast is Redis? – Redis",
+          "path": "/home/shenzt/ws/kb-test-redis-cn/docs/topics/benchmarks.md",
+          "score": 0.5593,
+          "doc_id": "redis-topics-benchmarks"
+        }
+      ],
+      "usage": {
+        "input_tokens": 122,
+        "output_tokens": 524,
+        "total_tokens": 646
+      },
+      "failure_reasons": [
+        "得分过低 (0.56 < 2.0)",
+        "缺失关键词: ['pipeline', '批量']"
+      ]
+    },
+    {
+      "test_id": "cross-lang-002",
+      "category": "redis-pipeline",
+      "query": "How does Redis pipelining improve performance?",
+      "status": "passed",
+      "num_results": 5,
+      "max_score": 4.3375,
+      "answer_length": 1746,
+      "elapsed_seconds": 44.753438,
+      "sources": [
+        {
+          "title": "How fast is Redis? – Redis",
+          "path": "/home/shenzt/ws/kb-test-redis-cn/docs/topics/benchmarks.md",
+          "score": 4.3375,
+          "doc_id": "redis-topics-benchmarks"
+        },
+        {
+          "title": "Request/Response protocols and RTT – Redis",
+          "path": "/home/shenzt/ws/kb-test-redis-cn/docs/topics/pipelining.md",
+          "score": 3.5929,
+          "doc_id": "redis-topics-pipelining"
+        },
+        {
+          "title": "How fast is Redis? – Redis",
+          "path": "/home/shenzt/ws/kb-test-redis-cn/docs/topics/benchmarks.md",
+          "score": 0.8929,
+          "doc_id": "redis-topics-benchmarks"
+        },
+        {
+          "title": "Request/Response protocols and RTT – Redis",
+          "path": "/home/shenzt/ws/kb-test-redis-cn/docs/topics/pipelining.md",
+          "score": 0.5975,
+          "doc_id": "redis-topics-pipelining"
+        },
+        {
+          "title": "How fast is Redis? – Redis",
+          "path": "/home/shenzt/ws/kb-test-redis-cn/docs/topics/benchmarks.md",
+          "score": 0.3294,
+          "doc_id": "redis-topics-benchmarks"
+        }
+      ],
+      "usage": {
+        "input_tokens": 248,
+        "output_tokens": 429,
+        "total_tokens": 677
+      },
+      "failure_reasons": []
+    },
+    {
+      "test_id": "complex-001",
+      "category": "k8s-comparison",
+      "query": "What's the difference between Deployment and StatefulSet?",
+      "status": "failed",
+      "num_results": 2,
+      "max_score": 1.8623,
+      "answer_length": 1473,
+      "elapsed_seconds": 40.656178,
+      "sources": [
+        {
+          "title": "Deployments",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/controllers/deployment.md",
+          "score": 1.8623,
+          "doc_id": "82c79152"
+        },
+        {
+          "title": "Deployments",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/controllers/deployment.md",
+          "score": 0.8694,
+          "doc_id": "82c79152"
+        }
+      ],
+      "usage": {
+        "input_tokens": 152,
+        "output_tokens": 312,
+        "total_tokens": 464
+      },
+      "failure_reasons": [
+        "得分过低 (1.86 < 3.0)"
+      ]
+    },
+    {
+      "test_id": "complex-002",
+      "category": "k8s-troubleshooting",
+      "query": "How to troubleshoot CrashLoopBackOff in Kubernetes?",
+      "status": "failed",
+      "num_results": 3,
+      "max_score": 1.2478,
+      "answer_length": 1982,
+      "elapsed_seconds": 41.226325,
+      "sources": [
+        {
+          "title": "Pod Lifecycle",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/pod-lifecycle.md",
+          "score": 1.2478,
+          "doc_id": "1d8d27c6"
+        },
+        {
+          "title": "Pod Lifecycle",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/pod-lifecycle.md",
+          "score": 1.013,
+          "doc_id": "1d8d27c6"
+        },
+        {
+          "title": "Pod Lifecycle",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/pod-lifecycle.md",
+          "score": 0.9729,
+          "doc_id": "1d8d27c6"
+        }
+      ],
+      "usage": {
+        "input_tokens": 184,
+        "output_tokens": 454,
+        "total_tokens": 638
+      },
+      "failure_reasons": [
+        "得分过低 (1.25 < 3.0)"
+      ]
+    },
+    {
+      "test_id": "complex-003",
+      "category": "k8s-service-discovery",
+      "query": "Kubernetes 中如何实现服务发现？",
+      "status": "passed",
+      "num_results": 3,
+      "max_score": 3.1208,
+      "answer_length": 1032,
+      "elapsed_seconds": 49.394543,
+      "sources": [
+        {
+          "title": "Service",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md",
+          "score": 3.1208,
+          "doc_id": "e8324c20"
+        },
+        {
+          "title": "Service",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md",
+          "score": 2.4309,
+          "doc_id": "e8324c20"
+        },
+        {
+          "title": "Service",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/services-networking/service.md",
+          "score": 2.4224,
+          "doc_id": "e8324c20"
+        }
+      ],
+      "usage": {
+        "input_tokens": 196,
+        "output_tokens": 599,
+        "total_tokens": 795
+      },
+      "failure_reasons": []
+    },
+    {
+      "test_id": "howto-001",
+      "category": "k8s-howto",
+      "query": "How to create a Pod with multiple containers?",
+      "status": "passed",
+      "num_results": 5,
+      "max_score": 3.2108,
+      "answer_length": 1963,
+      "elapsed_seconds": 43.093606,
+      "sources": [
+        {
+          "title": "Pods",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md",
+          "score": 3.2108,
+          "doc_id": "1cea6b36"
+        },
+        {
+          "title": "Sidecar Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/sidecar-containers.md",
+          "score": 2.9586,
+          "doc_id": "24479a08"
+        },
+        {
+          "title": "Init Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/init-containers.md",
+          "score": 2.3086,
+          "doc_id": "5781cb7a"
+        },
+        {
+          "title": "Pods",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md",
+          "score": 2.1889,
+          "doc_id": "1cea6b36"
+        },
+        {
+          "title": "Pods",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md",
+          "score": 1.8528,
+          "doc_id": "1cea6b36"
+        }
+      ],
+      "usage": {
+        "input_tokens": 239,
+        "output_tokens": 498,
+        "total_tokens": 737
+      },
+      "failure_reasons": []
+    },
+    {
+      "test_id": "howto-002",
+      "category": "k8s-resources",
+      "query": "如何配置 Kubernetes 资源限制？",
+      "status": "failed",
+      "num_results": 1,
+      "max_score": 1.8453,
+      "answer_length": 993,
+      "elapsed_seconds": 53.148118,
+      "sources": [
+        {
+          "title": "Pod Quality of Service Classes",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/pod-qos.md",
+          "score": 1.8453,
+          "doc_id": "6a08dcae"
+        }
+      ],
+      "usage": {
+        "input_tokens": 133,
+        "output_tokens": 685,
+        "total_tokens": 818
+      },
+      "failure_reasons": [
+        "得分过低 (1.85 < 2.5)"
+      ]
+    },
+    {
+      "test_id": "concept-001",
+      "category": "k8s-concept",
+      "query": "What is the purpose of a ReplicaSet?",
+      "status": "failed",
+      "num_results": 3,
+      "max_score": 1.6489,
+      "answer_length": 1353,
+      "elapsed_seconds": 49.519994,
+      "sources": [
+        {
+          "title": "Deployments",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/controllers/deployment.md",
+          "score": 1.6489,
+          "doc_id": "82c79152"
+        },
+        {
+          "title": "ReplicationController",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/controllers/replicationcontroller.md",
+          "score": 0.5845,
+          "doc_id": "d21209ae"
+        },
+        {
+          "title": "Deployments",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/controllers/deployment.md",
+          "score": 0.3533,
+          "doc_id": "82c79152"
+        }
+      ],
+      "usage": {
+        "input_tokens": 175,
+        "output_tokens": 306,
+        "total_tokens": 481
+      },
+      "failure_reasons": [
+        "得分过低 (1.65 < 3.0)"
+      ]
+    },
+    {
+      "test_id": "concept-002",
+      "category": "k8s-namespace",
+      "query": "Kubernetes 命名空间的作用是什么？",
+      "status": "failed",
+      "num_results": 0,
+      "max_score": 0,
+      "answer_length": 17,
+      "elapsed_seconds": 36.985911,
+      "sources": [],
+      "usage": {},
+      "failure_reasons": [
+        "无检索结果",
+        "得分过低 (0.00 < 2.5)",
+        "缺失关键词: ['namespace', '隔离', '资源']"
+      ]
+    },
+    {
+      "test_id": "edge-001",
+      "category": "k8s-pattern",
+      "query": "What is a sidecar container?",
+      "status": "passed",
+      "num_results": 5,
+      "max_score": 6.2836,
+      "answer_length": 1702,
+      "elapsed_seconds": 49.184616,
+      "sources": [
+        {
+          "title": "Sidecar Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/sidecar-containers.md",
+          "score": 6.2836,
+          "doc_id": "24479a08"
+        },
+        {
+          "title": "Init Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/init-containers.md",
+          "score": 3.3822,
+          "doc_id": "5781cb7a"
+        },
+        {
+          "title": "Sidecar Containers",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/sidecar-containers.md",
+          "score": 2.838,
+          "doc_id": "24479a08"
+        },
+        {
+          "title": "Pods",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md",
+          "score": 2.4245,
+          "doc_id": "1cea6b36"
+        },
+        {
+          "title": "Pod Lifecycle",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/pod-lifecycle.md",
+          "score": 1.9225,
+          "doc_id": "1d8d27c6"
+        }
+      ],
+      "usage": {
+        "input_tokens": 230,
+        "output_tokens": 368,
+        "total_tokens": 598
+      },
+      "failure_reasons": []
+    },
+    {
+      "test_id": "edge-002",
+      "category": "k8s-daemonset",
+      "query": "Kubernetes 中的 DaemonSet 是什么？",
+      "status": "failed",
+      "num_results": 1,
+      "max_score": 0.853,
+      "answer_length": 768,
+      "elapsed_seconds": 42.987413,
+      "sources": [
+        {
+          "title": "Pods",
+          "path": "/home/shenzt/ws/kb-test-k8s-en/content/en/docs/concepts/workloads/pods/_index.md",
+          "score": 0.853,
+          "doc_id": "1cea6b36"
+        }
+      ],
+      "usage": {
+        "input_tokens": 127,
+        "output_tokens": 430,
+        "total_tokens": 557
+      },
+      "failure_reasons": [
+        "得分过低 (0.85 < 2.0)"
+      ]
+    },
+    {
+      "test_id": "notfound-001",
+      "category": "not-in-kb",
+      "query": "How to configure Kubernetes with blockchain?",
+      "status": "passed",
+      "num_results": 0,
+      "max_score": 0,
+      "answer_length": 17,
+      "elapsed_seconds": 29.053218,
+      "sources": [],
+      "usage": {},
+      "failure_reasons": []
+    }
+  ],
+  "categories": {
+    "k8s-basic": {
+      "total": 1,
+      "passed": 1
+    },
+    "k8s-service": {
+      "total": 1,
+      "passed": 1
+    },
+    "k8s-init": {
+      "total": 1,
+      "passed": 1
+    },
+    "redis-pipeline": {
+      "total": 2,
+      "passed": 1
+    },
+    "k8s-comparison": {
+      "total": 1,
+      "passed": 0
+    },
+    "k8s-troubleshooting": {
+      "total": 1,
+      "passed": 0
+    },
+    "k8s-service-discovery": {
+      "total": 1,
+      "passed": 1
+    },
+    "k8s-howto": {
+      "total": 1,
+      "passed": 1
+    },
+    "k8s-resources": {
+      "total": 1,
+      "passed": 0
+    },
+    "k8s-concept": {
+      "total": 1,
+      "passed": 0
+    },
+    "k8s-namespace": {
+      "total": 1,
+      "passed": 0
+    },
+    "k8s-pattern": {
+      "total": 1,
+      "passed": 1
+    },
+    "k8s-daemonset": {
+      "total": 1,
+      "passed": 0
+    },
+    "not-in-kb": {
+      "total": 1,
+      "passed": 1
+    }
+  }
+}
