@@ -21,6 +21,10 @@ from claude_agent_sdk import query, ClaudeAgentOptions
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
+# 导入评测模块
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from eval_module import extract_contexts, gate_check, get_tools_used, get_retrieved_doc_paths, get_kb_commit
+
 TEST_CASES = [
     # ══════════════════════════════════════════════════════════════════
     # v2: 基于实际知识库内容的测试用例
@@ -465,74 +469,53 @@ async def run_query(prompt: str, session_id: Optional[str], log_file) -> Dict[st
 
 
 def evaluate(tc: Dict, result: Dict) -> Dict:
-    """评估答案"""
-    ev = {"passed": False, "reasons": [], "quality": {}}
+    """两阶段评估: Gate 门禁 (确定性) → 关键词质量检查 (辅助)。"""
+    ev = {"passed": False, "reasons": [], "quality": {}, "gate": {}}
+
     if result["status"] != "success":
         ev["reasons"].append(f"执行失败: {result.get('error', '')[:80]}")
         return ev
 
     answer = result.get("answer", "")
+    messages_log = result.get("messages_log", [])
 
-    if tc.get("expect_no_results"):
-        nf = ["未找到", "没有找到", "not found", "no relevant", "无法找到", "no results",
-              "没有相关", "don't have", "没有专门", "不包含"]
-        if any(w.lower() in answer.lower() for w in nf) or len(answer) < 500:
-            ev["passed"] = True
-            ev["quality"]["no_results_ok"] = True
-        else:
-            ev["reasons"].append("应识别为无结果")
+    # ── Stage 1: 结构化 context 提取 ──
+    contexts = extract_contexts(messages_log)
+    ev["quality"]["contexts_count"] = len(contexts)
+    ev["quality"]["tools_used"] = get_tools_used(contexts)
+    ev["quality"]["retrieved_paths"] = get_retrieved_doc_paths(contexts)
+
+    # ── Stage 2: Gate 门禁 ──
+    gate = gate_check(tc, answer, contexts)
+    ev["gate"] = gate
+
+    if not gate["passed"]:
+        ev["passed"] = False
+        ev["reasons"] = gate["reasons"]
         return ev
 
+    # ── Stage 3: 质量检查 (Gate 通过后的辅助指标) ──
     if len(answer) < 50:
         ev["reasons"].append(f"答案过短 ({len(answer)})")
         return ev
 
-    # 检查引用
-    ev["quality"]["has_citation"] = any(m in answer for m in ["来源:", "docs/", "[来源", ".md"])
+    # 引用质量 (从 gate 获取)
+    ev["quality"]["has_citation"] = gate["checks"].get("has_citation", False)
 
-    # 检查是否引用了正确的文档
-    expected_docs = EXPECTED_DOCS.get(tc["category"], [])
-    if expected_docs:
-        cited_correct = any(doc in answer for doc in expected_docs)
-        ev["quality"]["correct_doc"] = cited_correct
-    else:
-        ev["quality"]["correct_doc"] = None  # 无法判断
-
-    # 关键词匹配
+    # 关键词匹配 (辅助信号，不作为 pass/fail 判据)
     expected = KEYWORD_CHECKS.get(tc["category"], [])
     matched = [k for k in expected if k.lower() in answer.lower()]
     ev["quality"]["keywords"] = matched
 
-    # 检查是否明确说"未找到"（说明 Claude 没有从文档中检索到内容）
-    not_found_phrases = ["未找到", "没有找到", "not found", "没有相关", "没有关于",
-                         "没有专门", "不包含", "无法找到", "no relevant"]
-    admits_no_docs = any(p.lower() in answer.lower() for p in not_found_phrases)
-    ev["quality"]["admits_no_docs"] = admits_no_docs
+    # 正确文档引用 (从 gate 的 expected_doc_hit 获取)
+    ev["quality"]["correct_doc"] = gate["checks"].get("expected_doc_hit", None)
 
-    # 判断通过条件
-    if tc.get("source") == "qdrant" and not USE_MCP:
-        # Qdrant 用例在无 MCP 模式下：必须严格判断
-        # 如果 Claude 明确说"未找到"，说明 Grep 无法触达 Qdrant 内容 → 预期失败
-        if admits_no_docs:
-            ev["passed"] = False
-            ev["reasons"].append("Qdrant 内容无法通过 Grep 检索（预期行为，需 USE_MCP=1）")
-        elif len(answer) >= 100 and len(matched) >= 2 and ev["quality"].get("correct_doc"):
-            # 严格：需要 2+ 关键词 + 正确文档引用才算通过
-            ev["passed"] = True
-            ev["quality"]["source_note"] = "通用知识回答（非文档检索）"
-        else:
-            ev["passed"] = False
-            if not ev["quality"].get("correct_doc"):
-                ev["reasons"].append("未引用正确文档（Qdrant 内容不在本地 docs/）")
-            if len(matched) < 2:
-                ev["reasons"].append(f"关键词不足 ({len(matched)}<2)")
-    elif len(answer) >= 100 and len(matched) >= 1:
+    # Gate 通过 + 答案足够长 → 通过
+    if len(answer) >= 50:
         ev["passed"] = True
     else:
-        if len(answer) < 100:
-            ev["reasons"].append(f"内容不足 ({len(answer)})")
-        if not matched:
-            ev["reasons"].append(f"缺关键词 ({expected})")
+        ev["reasons"].append(f"答案过短 ({len(answer)})")
+
     return ev
 
 
@@ -547,11 +530,14 @@ async def main():
          open(detail_path, "w", encoding="utf-8") as df:
 
         mode = "MCP + Grep/Glob/Read" if USE_MCP else "Grep/Glob/Read (无 MCP)"
+        kb_commit_header = get_kb_commit()
         log("=" * 80, lf)
         log(f"🤖 Agentic RAG 测试 (Agent SDK)", lf)
         log("=" * 80, lf)
         log(f"用例: {len(TEST_CASES)} | 时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", lf)
         log(f"模式: {mode}", lf)
+        log(f"KB commit: {kb_commit_header}", lf)
+        log(f"评估: eval_module (Gate 门禁 + 质量检查)", lf)
         log(f"策略: Claude 自主选择检索策略 (Grep/Glob/Read{' + MCP hybrid_search' if USE_MCP else ''})", lf)
         log(f"日志: {log_path}", lf)
         log(f"详细: {detail_path}", lf)
@@ -593,14 +579,18 @@ async def main():
                 status = "error"
             elif ev["passed"]:
                 ans_len = len(result.get("answer", ""))
-                tools = set(result.get("tools_used", []))
-                cite = "引用✅" if ev["quality"].get("has_citation") else "引用❌"
-                correct_doc = ev["quality"].get("correct_doc")
+                quality = ev.get("quality", {})
+                tools = quality.get("tools_used", [])
+                cite = "引用✅" if quality.get("has_citation") else "引用❌"
+                correct_doc = quality.get("correct_doc")
                 doc_tag = "文档✅" if correct_doc else ("文档❌" if correct_doc is False else "")
-                kw = ev.get("quality", {}).get("keywords", [])
-                log(f"  ✅ 通过 | {ans_len}字符 | {elapsed:.1f}s | ${result.get('cost_usd', 0):.4f} | {cite} {doc_tag}", lf)
+                ctx_count = quality.get("contexts_count", 0)
+                kw = quality.get("keywords", [])
+                log(f"  ✅ 通过 | {ans_len}字符 | {elapsed:.1f}s | ${result.get('cost_usd', 0):.4f} | {cite} {doc_tag} | ctx:{ctx_count}", lf)
                 if tools:
                     log(f"  🔧 工具: {', '.join(tools)}", lf)
+                if quality.get("retrieved_paths"):
+                    log(f"  📄 检索: {', '.join(quality['retrieved_paths'][:5])}", lf)
                 if kw:
                     log(f"  🔑 关键词: {', '.join(kw)}", lf)
                 passed += 1
@@ -618,6 +608,8 @@ async def main():
             log(f"  结束: {datetime.now().strftime('%H:%M:%S')} | 耗时: {elapsed:.1f}s", lf)
 
             # 写入详细 JSONL（每个 query 一行，包含完整消息日志）
+            gate = ev.get("gate", {})
+            quality = ev.get("quality", {})
             detail_record = {
                 "test_id": tc["id"],
                 "category": tc["category"],
@@ -630,9 +622,14 @@ async def main():
                 "num_turns": result.get("num_turns", 0),
                 "answer_length": len(result.get("answer", "")),
                 "answer": result.get("answer", ""),
-                "tools_used": list(set(result.get("tools_used", []))),
-                "has_citation": ev.get("quality", {}).get("has_citation", False),
-                "matched_keywords": ev.get("quality", {}).get("keywords", []),
+                "tools_used": quality.get("tools_used", []),
+                "retrieved_paths": quality.get("retrieved_paths", []),
+                "contexts_count": quality.get("contexts_count", 0),
+                "has_citation": quality.get("has_citation", False),
+                "correct_doc": quality.get("correct_doc"),
+                "matched_keywords": quality.get("keywords", []),
+                "gate_passed": gate.get("passed"),
+                "gate_checks": gate.get("checks", {}),
                 "failure_reasons": ev.get("reasons", []),
                 "messages": result.get("messages_log", []),
             }
@@ -648,9 +645,13 @@ async def main():
                 "cost_usd": result.get("cost_usd", 0),
                 "num_turns": result.get("num_turns", 0),
                 "answer_length": len(result.get("answer", "")),
-                "tools_used": list(set(result.get("tools_used", []))),
-                "has_citation": ev.get("quality", {}).get("has_citation", False),
-                "matched_keywords": ev.get("quality", {}).get("keywords", []),
+                "tools_used": quality.get("tools_used", []),
+                "retrieved_paths": quality.get("retrieved_paths", []),
+                "contexts_count": quality.get("contexts_count", 0),
+                "has_citation": quality.get("has_citation", False),
+                "correct_doc": quality.get("correct_doc"),
+                "matched_keywords": quality.get("keywords", []),
+                "gate_passed": gate.get("passed"),
                 "failure_reasons": ev.get("reasons", []),
                 "answer_preview": result.get("answer", "")[:300],
             })
@@ -727,6 +728,7 @@ async def main():
             log(f"     设置 USE_MCP=1 启用 hybrid_search 以测试真正的向量检索", lf)
 
         # 保存汇总 JSON
+        kb_commit = get_kb_commit()
         out_dir = PROJECT_ROOT / "eval"
         out_file = out_dir / f"agentic_rag_test_{timestamp}.json"
         with open(out_file, "w", encoding="utf-8") as f:
@@ -735,6 +737,8 @@ async def main():
                 "method": "claude_agent_sdk_session_reuse", "total": total,
                 "passed": passed, "failed": failed, "errors": errors,
                 "total_time": total_time, "total_cost": total_cost,
+                "kb_commit": kb_commit,
+                "eval_module": "eval_module.py (gate + quality)",
                 "type_stats": {t: {"total": s["t"], "passed": s["p"]} for t, s in type_stats.items()},
                 "source_stats": {s: {"total": v["t"], "passed": v["p"]} for s, v in source_stats.items()},
                 "use_mcp": USE_MCP,
