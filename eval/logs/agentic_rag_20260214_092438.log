@@ -1,0 +1,76 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 25 | 时间: 2026-02-14 09:24:38
+模式: Grep/Glob/Read (无 MCP)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_092438.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_092438_detail.jsonl
+
+
+============================================================
+[1/25] exact-001 (redis-failover) [exact]
+  Q: READONLY You can't write against a read only replica 这个报错怎么解决
+  💡 SO风格：贴错误信息求解
+  ⏳ 首次查询，加载 MCP server (BGE-M3)...
+  开始: 09:24:38
+    [INIT] session=8f27c0e3-16fa-4250-a2e1-d89b4d9201a6 model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索这个 Redis 只读副本报错的解决方案。
+    [TOOL] Glob({"pattern": "docs/**/*.md"})
+    [TOOL] Grep({"-i": true, "path": "docs", "pattern": "READONLY|read only replica|只读副本"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [TOOL_OUT] /home/shenzt/ws/knowledge-base-search/docs/design.md
+/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md
+/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md
+    ... (18 lines total)
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/redis-failover.md"})
+    [TOOL_OUT] 1→---
+     2→id: redis-failover-001
+     3→title: Redis 主从切换故障恢复手册
+    ... (87 lines total)
+    [THINK] 找到了！根据文档 `docs/runbook/redis-failover.md`，这个报错的解决方案如下： (+41 lines)
+    [RESULT] 883 chars | 4 turns | 24525ms
+  📌 Session: 8f27c0e3-16fa-4250-a2e1-d89b4d9201a6
+  ✅ 通过 | 883字符 | 26.1s | $0.0412 | 引用✅ 文档✅
+  🔧 工具: Read, Grep, Glob
+  🔑 关键词: redis, sentinel, failover, 主从, 切换, master, readonly, read only, 连接, 恢复
+  结束: 09:25:04 | 耗时: 26.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[2/25] exact-002 (k8s-crashloop) [exact]
+  Q: kubectl describe pod 显示 OOMKilled 怎么办
+  💡 SO风格：贴命令输出求解
+  开始: 09:25:04
+    [INIT] session=8f27c0e3-16fa-4250-a2e1-d89b4d9201a6 model=claude-sonnet-4-5-20250929
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "OOMKilled"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/kubernetes-pod-crashloop.md
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md"})
+    [TOOL_OUT] 1→---
+     2→id: k8s-crashloop-001
+     3→title: Kubernetes Pod CrashLoopBackOff Troubleshooting Guide
+    ... (96 lines total)
+    [THINK] 找到了！根据文档 `docs/runbook/kubernetes-pod-crashloop.md`，OOMKilled 的解决方案如下： (+56 lines)
+    [RESULT] 982 chars | 3 turns | 21480ms
+  ✅ 通过 | 982字符 | 23.1s | $0.0484 | 引用✅ 文档✅
+  🔧 工具: Grep, Read
+  🔑 关键词: pod, crash, oom, log, kubectl, memory, container
+  结束: 09:25:27 | 耗时: 23.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[3/25] exact-003 (api-auth) [exact]
+  Q: API 返回 401 TOKEN_EXPIRED，前端该怎么处理
+  💡 SO风格：具体错误码
+  开始: 09:25:27
+    [INIT] session=8f27c0e3-16fa-4250-a2e1-d89b4d9201a6 model=claude-sonnet-4-5-20250929
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "TOKEN_EXPIRED|401"})
+    [TOOL_OUT] Found 1 file
+docs/api/authentication.md
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md"})
+    [TOOL_OUT] 1→---
+     2→id: api-auth-001
+     3→title: API 认证与授权设计文档
+    ... (88 lines total)

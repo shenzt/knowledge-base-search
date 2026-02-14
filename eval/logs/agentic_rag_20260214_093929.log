@@ -1,0 +1,1320 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 32 | 时间: 2026-02-14 09:39:29
+模式: Grep/Glob/Read (无 MCP)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_093929.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_093929_detail.jsonl
+
+
+============================================================
+[1/32] local-exact-001 (redis-failover) [exact]
+  Q: READONLY You can't write against a read only replica 这个报错怎么解决
+  💡 SO风格：贴错误信息求解
+  ⏳ 首次查询，加载 MCP server (BGE-M3)...
+  开始: 09:39:29
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索这个 Redis 只读副本报错的解决方案。
+    [TOOL] Glob({"pattern": "docs/**/*.md"})
+    [TOOL] Grep({"-i": true, "path": "docs", "pattern": "READONLY|read only replica|只读副本"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [TOOL_OUT] /home/shenzt/ws/knowledge-base-search/docs/design.md
+/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md
+/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md
+    ... (18 lines total)
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/redis-failover.md"})
+    [TOOL_OUT] 1→---
+     2→id: redis-failover-001
+     3→title: Redis 主从切换故障恢复手册
+    ... (87 lines total)
+    [THINK] 找到了！这个报错的解决方案在 `docs/runbook/redis-failover.md` 文档中。 (+45 lines)
+    [RESULT] 884 chars | 4 turns | 18887ms
+  📌 Session: 8d8844f2-99a5-4a62-adee-8de802a5c7c4
+  ✅ 通过 | 884字符 | 20.5s | $0.0410 | 引用✅ 文档✅
+  🔧 工具: Grep, Glob, Read
+  🔑 关键词: redis, sentinel, failover, 主从, 切换, master, readonly, read only, 连接, 恢复
+  📝 答案: 找到了！这个报错的解决方案在 `docs/runbook/redis-failover.md` 文档中。
+
+## 问题原因
+
+`READONLY You can't write against a read only replica` 错误发生在 Redis 主从切换（failover）后，应用仍然连接到旧的 master（现在变成了只读副本），导致写操作失败。
+
+## 解决方案
+
+### 自动恢复（推荐）
+
+如果应用使用 Sentinel 客户端（如 Jedis Sentinel、redis-py Sentinel）：
+
+1. 确认客户端配置了 Sentinel 地址而非直连 master
+2. 确认连接池的 `testOnBorrow` 或等效配置已开启
+3. 等待 30 秒，观察错误率是否下降
+
+### 手动恢复
+
+如果应用直连 master IP：
+
+1. 获取新 master 地址：
+```bash
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+```
+
+2. 更新应用配置中的 Redis 地址
+
+3...
+  结束: 09:39:49 | 耗时: 20.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[2/32] local-exact-002 (k8s-crashloop) [exact]
+  Q: kubectl describe pod 显示 OOMKilled 怎么办
+  💡 SO风格：贴命令输出求解
+  开始: 09:39:49
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "OOMKilled"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/kubernetes-pod-crashloop.md
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md"})
+    [TOOL_OUT] 1→---
+     2→id: k8s-crashloop-001
+     3→title: Kubernetes Pod CrashLoopBackOff Troubleshooting Guide
+    ... (96 lines total)
+    [THINK] 找到了！这个问题的解决方案在 `docs/runbook/kubernetes-pod-crashloop.md` 文档中。 (+61 lines)
+    [RESULT] 1049 chars | 3 turns | 24257ms
+  ✅ 通过 | 1049字符 | 25.8s | $0.0491 | 引用✅ 文档✅
+  🔧 工具: Read, Grep
+  🔑 关键词: pod, crash, oom, log, kubectl, liveness, memory, container
+  📝 答案: 找到了！这个问题的解决方案在 `docs/runbook/kubernetes-pod-crashloop.md` 文档中。
+
+## 问题原因
+
+`OOMKilled` 表示容器超出了内存限制（Out Of Memory），被 Kubernetes 强制终止。
+
+## 解决方案
+
+### 1. 确认是 OOM 问题
+
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+```
+
+查看 Events 部分是否显示 `OOMKilled`。
+
+### 2. 检查当前资源限制
+
+```bash
+kubectl get pod <pod-name> -n <namespace> -o jsonpath='{.spec.containers[*].resources}'
+```
+
+### 3. 增加内存限制
+
+修改 Deployment/Pod 配置，增加内存限制：
+
+```yaml
+resources:
+  requests:
+    memory: "256Mi"
+  limits:
+    memory: "512Mi"
+```
+
+...
+  结束: 09:40:15 | 耗时: 25.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[3/32] local-exact-003 (api-auth) [exact]
+  Q: API 返回 401 TOKEN_EXPIRED，前端该怎么处理
+  💡 SO风格：具体错误码
+  开始: 09:40:15
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "TOKEN_EXPIRED|401"})
+    [TOOL_OUT] Found 1 file
+docs/api/authentication.md
+    [THINK] .
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md"})
+    [TOOL_OUT] 1→---
+     2→id: api-auth-001
+     3→title: API 认证与授权设计文档
+    ... (88 lines total)
+    [THINK] 找到了！这个问题的解决方案在 `docs/api/authentication.md` 文档中。 (+83 lines)
+    [RESULT] 1837 chars | 3 turns | 19426ms
+  ✅ 通过 | 1837字符 | 21.0s | $0.0574 | 引用✅ 文档✅
+  🔧 工具: Read, Grep
+  🔑 关键词: token, refresh, 权限, 401, login, 登录
+  📝 答案: 找到了！这个问题的解决方案在 `docs/api/authentication.md` 文档中。
+
+## 问题说明
+
+当 API 返回 `401 TOKEN_EXPIRED` 时，表示 access_token 已过期（有效期 15 分钟），需要使用 refresh_token 刷新。
+
+## 前端处理方案
+
+### 1. Token 刷新流程
+
+```
+access_token 过期 → 使用 refresh_token 请求 /api/v1/auth/refresh → 获取新的 access_token 和 refresh_token → 重试原请求
+```
+
+### 2. 实现建议
+
+**拦截器处理：**
+
+```javascript
+// 响应拦截器
+axios.interceptors.response.use(
+  response => response,
+  async error => {
+    const originalRequest = error.config;
+    
+    // 检测到 TOKEN_EXPIRED
+    if (error.res...
+  结束: 09:40:36 | 耗时: 21.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[4/32] local-exact-004 (redis-failover) [exact]
+  Q: redis-cli SENTINEL get-master-addr-by-name 命令返回什么
+  开始: 09:40:36
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [TOOL] Grep({"path": "docs/", "pattern": "SENTINEL get-master-addr-by-name"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [THINK] 这个命令在之前已经读取过的 `docs/runbook/redis-failover.md` 文档中有说明。 (+33 lines)
+    [RESULT] 693 chars | 2 turns | 14955ms
+  ✅ 通过 | 693字符 | 16.6s | $0.0403 | 引用✅ 文档✅
+  🔧 工具: Grep
+  🔑 关键词: redis, sentinel, failover, 主从, 切换, master, 连接, 恢复
+  📝 答案: 这个命令在之前已经读取过的 `docs/runbook/redis-failover.md` 文档中有说明。
+
+## 命令说明
+
+```bash
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+```
+
+## 返回内容
+
+该命令返回当前 Redis master 的 **IP 地址和端口号**。
+
+## 使用场景
+
+在 Redis 主从切换（failover）后，用于：
+
+1. **确认新 master 地址** — Sentinel 触发 failover 后，master 节点会发生变化
+2. **手动恢复应用连接** — 如果应用直连 master IP 而非使用 Sentinel 客户端，需要获取新地址并更新配置
+3. **排查故障** — 验证 Sentinel 是否正确识别了新的 master 节点
+
+## 完整排查流程
+
+```bash
+# 1. 查看所有 master 信息
+redis-cli -p 26379 SENTINEL masters
+
+# 2. 获取指定 master 的地址（返回 I...
+  结束: 09:40:53 | 耗时: 16.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[5/32] local-exact-005 (api-auth) [exact]
+  Q: JWT RS256 签名验证流程是什么
+  开始: 09:40:53
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"path": "docs/", "pattern": "RS256|JWT|签名验证"})
+    [TOOL_OUT] Found 2 files
+docs/api/authentication.md
+docs/design.md
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/design.md"})
+    [TOOL_OUT] 1→# knowledge-base-search — 设计文档
+     2→
+     3→> 版本: v0.5 | 日期: 2025-02
+    ... (243 lines total)
+    [THINK] 这个文档没有详细的 JWT RS256 签名验证流程，让我查看之前读取的 authentication.md 文档。 (+48 lines)
+    [RESULT] 934 chars | 3 turns | 26703ms
+  ✅ 通过 | 934字符 | 28.3s | $0.0671 | 引用✅ 文档✅
+  🔧 工具: Read, Grep
+  🔑 关键词: token, jwt, 认证, refresh, role, 权限
+  📝 答案: 这个文档没有详细的 JWT RS256 签名验证流程，让我查看之前读取的 authentication.md 文档。
+
+根据 `docs/api/authentication.md` 文档，JWT RS256 签名验证流程如下：
+
+## JWT RS256 签名验证流程
+
+### 验证步骤
+
+每个微服务独立验证 JWT，包括以下步骤：
+
+1. **验证签名（RS256）**
+   - 从 JWKS endpoint 获取公钥
+   - 使用公钥验证 JWT 签名的有效性
+
+2. **验证过期时间（exp）**
+   - 检查 token 的 `exp` 字段是否未过期
+   - access_token 有效期为 15 分钟
+
+3. **验证签发者（iss）**
+   - 验证 `iss` 字段是否匹配预期的签发者（如 "api-gateway"）
+
+4. **提取权限信息**
+   - 从 `roles` 字段提取用户角色权限
+
+### JWT Token 结构
+
+```json
+{
+  "sub": "user-uuid",           // 用户 ID
+  "iss": ...
+  结束: 09:41:21 | 耗时: 28.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[6/32] local-so-001 (redis-failover) [scenario]
+  Q: 线上 Redis 突然大量写入失败，错误日志一直刷屏，应用都快挂了，急！
+  💡 SO紧急求助，不含 READONLY/Sentinel/failover
+  开始: 09:41:21
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "写入失败|write.*fail|READONLY"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [THINK] 根据 `docs/runbook/redis-failover.md` 文档，这是典型的 Redis 主从切换故障！ (+60 lines)
+    [RESULT] 1048 chars | 2 turns | 27778ms
+  ✅ 通过 | 1048字符 | 29.4s | $0.0580 | 引用✅ 文档✅
+  🔧 工具: Grep
+  🔑 关键词: redis, sentinel, failover, 主从, 切换, master, readonly, read only, 连接, 恢复
+  📝 答案: 根据 `docs/runbook/redis-failover.md` 文档，这是典型的 Redis 主从切换故障！
+
+## 快速诊断
+
+大量写入失败通常是 `READONLY You can't write against a read only replica` 错误，说明应用连接到了只读副本（原 master 已降级）。
+
+## 立即执行
+
+### 1. 确认新 master 地址（10 秒）
+
+```bash
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+```
+
+### 2. 检查应用是否使用 Sentinel 客户端
+
+**如果用了 Sentinel 客户端（推荐）：**
+- 等待 30 秒，连接会自动切换
+- 观察错误率是否下降
+
+**如果直连 master IP（需要手动处理）：**
+
+```bash
+# 立即滚动重启应用
+kubectl rollout restart deployment/<app-name> -n <namespace>
+```
+
+### 3. 验证恢复
+
+```bash
+...
+  结束: 09:41:50 | 耗时: 29.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[7/32] local-so-002 (k8s-crashloop) [scenario]
+  Q: 我的 pod 一直在 restart，已经重启了 50 多次了，describe 看了也没啥有用信息
+  💡 SO口语化，不含 CrashLoopBackOff
+  开始: 09:41:50
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "restart|CrashLoopBackOff|pod.*crash"})
+    [TOOL_OUT] Found 4 files
+docs/e2e-testing.md
+docs/runbook/redis-failover.md
+docs/design.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档，这是 `CrashLoopBackOff` 问题。重启 50 多次说明问题很严重，按以下步骤排查： (+80 lines)
+    [RESULT] 1390 chars | 2 turns | 19776ms
+  ✅ 通过 | 1390字符 | 21.4s | $0.0647 | 引用✅ 文档✅
+  🔧 工具: Grep
+  🔑 关键词: pod, crash, 重启, oom, log, kubectl, liveness, memory, container
+  📝 答案: 根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档，这是 `CrashLoopBackOff` 问题。重启 50 多次说明问题很严重，按以下步骤排查：
+
+## 立即排查
+
+### 1. 查看容器日志（最重要）
+
+```bash
+# 当前崩溃的日志
+kubectl logs <pod-name> -n <namespace>
+
+# 上一次崩溃的日志（往往更有用）
+kubectl logs <pod-name> -n <namespace> --previous
+```
+
+### 2. 检查具体崩溃原因
+
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+```
+
+重点看 Events 部分的关键词：
+
+- **OOMKilled** — 内存超限
+- **Error** — 应用启动失败
+- **ContainerCannotRun** — 镜像或启动命令问题
+
+### 3. 检查资源限制
+
+```bash
+kubectl get pod <pod-name> -n <namespa...
+  结束: 09:42:12 | 耗时: 21.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[8/32] local-so-003 (api-auth) [scenario]
+  Q: 用户反馈说登录之后过一会儿就被踢出来了，要重新登录，是 token 的问题吗
+  💡 SO用户反馈，不含 JWT/refresh_token
+  开始: 09:42:12
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "token.*过期|access_token|refresh_token|登录|有效期"})
+    [TOOL_OUT] Found 1 file
+docs/api/authentication.md
+    [THINK] 根据 `docs/api/authentication.md` 文档，很可能是 token 刷新机制的问题。 (+62 lines)
+    [RESULT] 1350 chars | 2 turns | 22427ms
+  ✅ 通过 | 1350字符 | 24.0s | $0.0655 | 引用✅ 文档✅
+  🔧 工具: Grep
+  🔑 关键词: token, jwt, oauth, 认证, refresh, 权限, 401, 登录
+  📝 答案: 根据 `docs/api/authentication.md` 文档，很可能是 token 刷新机制的问题。
+
+## 问题分析
+
+系统使用 OAuth 2.0 + JWT 认证方案：
+- **access_token 有效期：15 分钟**
+- **refresh_token 有效期：7 天**
+
+如果用户"过一会儿就被踢出来"，可能是以下原因：
+
+### 1. 前端没有实现 token 刷新机制
+
+**症状：** 15 分钟后就需要重新登录
+
+**原因：** access_token 过期后，前端没有用 refresh_token 自动刷新
+
+**解决方案：** 前端需要实现响应拦截器，捕获 `401 TOKEN_EXPIRED` 错误并自动刷新：
+
+```javascript
+// 检测到 TOKEN_EXPIRED 时
+if (error.response?.status === 401 && 
+    error.response?.data?.code === 'TOKEN_EXPIRED') {
+  
+  // 使用 refresh_token 刷新
+  const { d...
+  结束: 09:42:36 | 耗时: 24.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[9/32] local-so-004 (k8s-crashloop) [scenario]
+  Q: 容器跑着跑着就被 kill 了，感觉是内存的问题但不确定怎么查
+  💡 模糊描述→OOMKilled
+  开始: 09:42:36
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "OOM|内存|memory|kill"})
+    [TOOL_OUT] Found 15 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    ... (16 lines total)
+    [THINK] 根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档，容器被 kill 很可能是 OOM（内存超限）问题。 (+81 lines)
+    [RESULT] 1256 chars | 2 turns | 18340ms
+  ✅ 通过 | 1256字符 | 19.8s | $0.0669 | 引用✅ 文档✅
+  🔧 工具: Grep
+  🔑 关键词: pod, crash, oom, log, kubectl, memory, container
+  📝 答案: 根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档，容器被 kill 很可能是 OOM（内存超限）问题。
+
+## 确认是否 OOM
+
+### 1. 查看 Pod 事件（最直接）
+
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+```
+
+看 Events 部分，如果显示 **`OOMKilled`**，就确认是内存问题。
+
+### 2. 查看容器退出状态
+
+```bash
+kubectl get pod <pod-name> -n <namespace> -o jsonpath='{.status.containerStatuses[*].lastState}'
+```
+
+如果看到 `reason: OOMKilled`，就是内存超限被系统强制终止。
+
+## 排查步骤
+
+### 3. 检查当前内存限制
+
+```bash
+kubectl get pod <pod-name> -n <namespace> -o jsonpath='{.spec.containers[*].resou...
+  结束: 09:42:55 | 耗时: 19.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[10/32] local-so-005 (redis-failover) [scenario]
+  Q: Redis 主库挂了之后从库顶上去了，但是应用还是连的旧地址，怎么让应用自动切换
+  💡 口语化描述 failover + Sentinel 客户端
+  开始: 09:42:55
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] 根据 `docs/runbook/redis-failover.md` 文档，这个问题的核心是要让应用使用 Sentinel 客户端实现自动切换。 (+86 lines)
+    [RESULT] 1602 chars | 1 turns | 14814ms
+  ✅ 通过 | 1602字符 | 16.3s | $0.0466 | 引用✅ 文档✅
+  🔑 关键词: redis, sentinel, failover, 切换, master, 连接, 恢复
+  📝 答案: 根据 `docs/runbook/redis-failover.md` 文档，这个问题的核心是要让应用使用 Sentinel 客户端实现自动切换。
+
+## 问题根源
+
+应用直连 master IP，而不是通过 Sentinel 客户端连接，所以 failover 后无法自动切换到新 master。
+
+## 解决方案
+
+### 自动切换（推荐方案）
+
+**必须使用 Sentinel 客户端**，而不是直连 Redis master IP。
+
+#### 配置示例
+
+**错误做法（直连 master）：**
+```python
+redis_client = Redis(host='10.0.1.100', port=6379)  # ❌ 硬编码 IP
+```
+
+**正确做法（使用 Sentinel）：**
+```python
+from redis.sentinel import Sentinel
+
+sentinel = Sentinel([
+    ('sentinel-1', 26379),
+    ('sentinel-2', 26379),
+    ('sentinel-3', 263...
+  结束: 09:43:12 | 耗时: 16.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[11/32] local-so-006 (api-auth) [scenario]
+  Q: 我们有个多租户系统，不同租户的用户不能互相访问数据，这个权限怎么设计的
+  💡 指向 tenant_id + RBAC
+  开始: 09:43:12
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "租户|tenant|多租户|权限|RBAC|授权"})
+    [TOOL_OUT] Found 4 files
+docs/archive/SUMMARY.md
+docs/dual-repo-architecture.md
+docs/api/authentication.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 `docs/api/authentication.md` 文档，多租户权限设计如下： (+92 lines)
+    [RESULT] 1535 chars | 2 turns | 21943ms
+  ✅ 通过 | 1535字符 | 23.5s | $0.0749 | 引用✅ 文档✅
+  🔧 工具: Grep
+  🔑 关键词: token, jwt, rbac, role, 权限
+  📝 答案: 根据 `docs/api/authentication.md` 文档，多租户权限设计如下：
+
+## 多租户隔离机制
+
+### JWT Token 中的租户信息
+
+每个用户的 JWT token 包含 `tenant_id` 字段：
+
+```json
+{
+  "sub": "user-uuid",
+  "iss": "api-gateway",
+  "iat": 1707820800,
+  "exp": 1707821700,
+  "roles": ["admin", "editor"],
+  "tenant_id": "tenant-001"        // 租户 ID
+}
+```
+
+### 权限模型：RBAC + 租户隔离
+
+系统采用 **RBAC（基于角色的访问控制）+ 租户隔离** 的双层权限模型：
+
+#### 1. 角色权限（租户内）
+
+| 角色 | 权限 |
+|------|------|
+| viewer | 只读访问 |
+| editor | 读写访问 |
+| admin | 全部权限 + 用户管理 |
+| super_admin | 跨租户管理 |
+
+#### 2....
+  结束: 09:43:35 | 耗时: 23.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[12/32] local-cross-001 (redis-failover) [cross-lang]
+  Q: How to recover when Redis sentinel triggers a failover?
+  💡 英文问→中文文档
+  开始: 09:43:35
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] 根据 `docs/runbook/redis-failover.md` 文档，Redis Sentinel 触发 failover 后的恢复流程如下： (+65 lines)
+    [RESULT] 1674 chars | 1 turns | 20522ms
+  ✅ 通过 | 1674字符 | 22.0s | $0.0395 | 引用✅ 文档✅
+  🔑 关键词: redis, sentinel, failover, master, readonly, read only, 恢复
+  📝 答案: 根据 `docs/runbook/redis-failover.md` 文档，Redis Sentinel 触发 failover 后的恢复流程如下：
+
+## Quick Recovery Steps
+
+### 1. Confirm Sentinel Status
+
+```bash
+redis-cli -p 26379 SENTINEL masters
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+```
+
+Get the new master IP and port.
+
+### 2. Check New Master Status
+
+```bash
+redis-cli -h <new-master-ip> -p 6379 INFO replication
+```
+
+Confirm `role:master` and check `connected_slaves` count.
+
+### 3. Verify Application Connections
+
+```bash
+redis-cli -h <new-...
+  结束: 09:43:57 | 耗时: 22.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[13/32] local-cross-002 (k8s-crashloop) [cross-lang]
+  Q: K8s 容器因为 liveness probe 失败一直重启怎么排查
+  💡 中文问→英文文档
+  开始: 09:43:57
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "liveness.*probe|livenessProbe|健康检查|health.*check"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档，liveness probe 失败导致容器重启的排查方法如下： (+107 lines)
+    [RESULT] 1720 chars | 2 turns | 22821ms
+  ✅ 通过 | 1720字符 | 24.5s | $0.0831 | 引用✅ 文档✅
+  🔧 工具: Grep
+  🔑 关键词: pod, crash, 重启, log, kubectl, liveness, container
+  📝 答案: 根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档，liveness probe 失败导致容器重启的排查方法如下：
+
+## 排查步骤
+
+### 1. 确认是 Liveness Probe 问题
+
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+```
+
+查看 Events 部分，如果看到 `Liveness probe failed` 或 `Unhealthy`，就是探针问题。
+
+### 2. 查看当前探针配置
+
+```bash
+kubectl get pod <pod-name> -n <namespace> -o jsonpath='{.spec.containers[*].livenessProbe}'
+```
+
+### 3. 检查容器日志
+
+```bash
+# 当前日志
+kubectl logs <pod-name> -n <namespace>
+
+# 上次重启前的日志
+kubectl logs <pod-name> -n <namespace> --previous
+`...
+  结束: 09:44:22 | 耗时: 24.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[14/32] local-howto-001 (redis-failover) [howto]
+  Q: 怎么确认 Redis Sentinel 当前的 master 是哪个节点
+  开始: 09:44:22
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] 根据 `docs/runbook/redis-failover.md` 文档，确认 Redis Sentinel 当前 master 节点的方法如下： (+57 lines)
+    [RESULT] 985 chars | 1 turns | 12260ms
+  ✅ 通过 | 985字符 | 13.8s | $0.0425 | 引用✅ 文档✅
+  🔑 关键词: redis, sentinel, failover, 切换, master, 连接
+  📝 答案: 根据 `docs/runbook/redis-failover.md` 文档，确认 Redis Sentinel 当前 master 节点的方法如下：
+
+## 查询命令
+
+### 方法 1: 获取 Master 地址（最直接）
+
+```bash
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+```
+
+**返回：** 当前 master 的 IP 地址和端口号
+
+### 方法 2: 查看所有 Master 信息
+
+```bash
+redis-cli -p 26379 SENTINEL masters
+```
+
+**返回：** 所有 master 的详细信息，包括：
+- IP 和端口
+- 状态
+- 从节点数量
+- Sentinel 数量等
+
+## 验证 Master 状态
+
+获取地址后，验证该节点确实是 master：
+
+```bash
+redis-cli -h <master-ip> -p 6379 INFO replication
+```
+
+**确认：**
+- `role:master` — 角色是 maste...
+  结束: 09:44:36 | 耗时: 13.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[15/32] local-howto-002 (k8s-crashloop) [howto]
+  Q: 怎么看上一次容器崩溃的日志
+  💡 文档中有 kubectl logs --previous
+  开始: 09:44:36
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] 根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档，查看上一次容器崩溃日志的方法如下： (+45 lines)
+    [RESULT] 785 chars | 1 turns | 13715ms
+  ✅ 通过 | 785字符 | 15.2s | $0.0423 | 引用✅ 文档✅
+  🔑 关键词: pod, crash, 重启, oom, log, kubectl
+  📝 答案: 根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档，查看上一次容器崩溃日志的方法如下：
+
+## 查看上次崩溃日志
+
+```bash
+kubectl logs <pod-name> -n <namespace> --previous
+```
+
+使用 `--previous` 参数可以查看容器上一次运行（崩溃前）的日志。
+
+## 对比当前日志
+
+```bash
+# 当前崩溃的日志
+kubectl logs <pod-name> -n <namespace>
+
+# 上一次崩溃的日志
+kubectl logs <pod-name> -n <namespace> --previous
+```
+
+## 为什么要看 --previous 日志
+
+文档特别强调：**一定要看 `--previous` 日志，那里通常有真正的错误信息！**
+
+因为：
+- 容器崩溃后立即重启，当前日志可能只有启动信息
+- 真正导致崩溃的错误在上一次运行的日志中
+- 特别是 OOM、panic、未捕获异常等致命错误
+
+## 完整排查流程
+
+```bash
+# 1. 查看 Pod ...
+  结束: 09:44:51 | 耗时: 15.2s
+--------------------------------------------------------------------------------
+
+============================================================
+[16/32] local-howto-003 (api-auth) [howto]
+  Q: access_token 过期了怎么续期，调哪个接口
+  💡 文档中有 /api/v1/auth/refresh
+  开始: 09:44:51
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] 根据 `docs/api/authentication.md` 文档，access_token 过期后的续期方法如下： (+67 lines)
+    [RESULT] 1100 chars | 1 turns | 12948ms
+  ✅ 通过 | 1100字符 | 14.6s | $0.0431 | 引用✅ 文档✅
+  🔑 关键词: token, refresh, 登录
+  📝 答案: 根据 `docs/api/authentication.md` 文档，access_token 过期后的续期方法如下：
+
+## 续期接口
+
+```
+POST /api/v1/auth/refresh
+```
+
+## 请求参数
+
+```json
+{
+  "refresh_token": "<your-refresh-token>"
+}
+```
+
+## 响应
+
+```json
+{
+  "access_token": "<new-access-token>",
+  "refresh_token": "<new-refresh-token>"
+}
+```
+
+## 重要说明
+
+### Token 有效期
+- **access_token**: 15 分钟
+- **refresh_token**: 7 天
+
+### Refresh Token 单次使用
+
+**关键：** refresh_token 是**单次使用**的，使用后会立即轮换。
+
+刷新时会同时返回：
+- 新的 access_token
+- 新的 refresh_token
+
+**必须同时更新两个 token！**
+
+## 前端实现建议
+...
+  结束: 09:45:05 | 耗时: 14.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[17/32] local-multi-001 (multi-doc) [multi-doc]
+  Q: Pod 重启后 Redis 连接断了，从排查 Pod 到恢复 Redis 连接的完整流程是什么
+  💡 需要综合两个 runbook
+  开始: 09:45:05
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "Pod.*重启|Redis.*连接|连接断|connection"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [THINK] 根据 `docs/runbook/redis-failover.md` 和 `docs/runbook/kubernetes-pod-crashloop.md` 文档，完整的排查和恢复流程如下： (+148 lines)
+    [RESULT] 2519 chars | 2 turns | 28732ms
+  ✅ 通过 | 2519字符 | 30.3s | $0.0979 | 引用✅ 文档✅
+  🔧 工具: Grep
+  🔑 关键词: redis, pod, 连接, 重启, sentinel, crash
+  📝 答案: 根据 `docs/runbook/redis-failover.md` 和 `docs/runbook/kubernetes-pod-crashloop.md` 文档，完整的排查和恢复流程如下：
+
+## 完整排查恢复流程
+
+### 第一步：排查 Pod 状态
+
+```bash
+# 1. 查看 Pod 状态和重启次数
+kubectl get pods -n <namespace>
+
+# 2. 查看 Pod 详细信息
+kubectl describe pod <pod-name> -n <namespace>
+```
+
+查看 Events 部分，确认重启原因：
+- `OOMKilled` — 内存超限
+- `Error` — 应用崩溃
+- `Liveness probe failed` — 健康检查失败
+
+### 第二步：查看容器日志
+
+```bash
+# 查看上次崩溃的日志（关键）
+kubectl logs <pod-name> -n <namespace> --previous
+
+# 查看当前日志
+kubectl logs <pod-name> -n <namespace>
+```
+
+...
+  结束: 09:45:36 | 耗时: 30.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[18/32] qdrant-basic-001 (k8s-pod) [concept]
+  Q: What is a Pod in Kubernetes?
+  💡 Qdrant 有完整 Pod 文档
+  开始: 09:45:36
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "Pod.*definition|What.*Pod|Pod.*concept|Kubernetes.*Pod"})
+    [TOOL_OUT] Found 8 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    ... (9 lines total)
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "Pod is|Pod are|smallest.*unit|container.*group"})
+    [TOOL_OUT] No files found
+    [THINK] 根据 `docs/` 目录的检索结果，文档中没有关于 "What is a Pod in Kubernetes" 的基础概念说明。 (+14 lines)
+    [RESULT] 365 chars | 3 turns | 22188ms
+  ✅ 通过 | 365字符 | 23.8s | $0.1066 | 引用✅ 文档✅
+  🔧 工具: Grep
+  🔑 关键词: pod, kubernetes
+  📝 答案: 根据 `docs/` 目录的检索结果，文档中没有关于 "What is a Pod in Kubernetes" 的基础概念说明。
+
+文档主要关注实际运维场景，比如：
+- `docs/runbook/kubernetes-pod-crashloop.md` — Pod CrashLoopBackOff 故障排查
+- 其他文档涉及 Pod 的操作命令和故障处理
+
+但没有 Pod 的基础定义和概念介绍。
+
+## 建议
+
+如果需要了解 Kubernetes Pod 的基础概念，可以：
+1. 查阅 Kubernetes 官方文档
+2. 或者让我基于通用知识为你解释（但这不是从你的知识库中检索的）
+
+你的知识库目前更侧重于**实战运维手册**而非基础概念文档。如果需要补充基础概念文档，可以考虑添加相关内容到 `docs/` 目录。
+  结束: 09:45:59 | 耗时: 23.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[19/32] qdrant-basic-002 (k8s-service) [concept]
+  Q: Kubernetes Service 是什么？有哪些类型？
+  💡 Qdrant 有完整 Service 文档
+  开始: 09:45:59
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "Service|ClusterIP|NodePort|LoadBalancer|服务发现"})
+    [TOOL_OUT] Found 7 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    ... (8 lines total)
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "Service.*type|Service.*概念|什么是.*Service"})
+    [TOOL_OUT] Found 1 file
+docs/e2e-testing.md
+    [THINK] .
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/e2e-testing.md"})
+    [TOOL_OUT] 1→# E2E 测试和评测系统
+     2→
+     3→**版本**: v1.0
+    ... (326 lines total)
+    [THINK] 根据 `docs/e2e-testing.md` 文档，关于 Kubernetes Service 的信息如下： (+39 lines)
+    [RESULT] 750 chars | 4 turns | 27947ms
+  ✅ 通过 | 750字符 | 29.5s | $0.1502 | 引用✅ 文档❌
+  🔧 工具: Read, Grep
+  🔑 关键词: service
+  📝 答案: 根据 `docs/e2e-testing.md` 文档，关于 Kubernetes Service 的信息如下：
+
+## 测试用例中提到的内容
+
+文档中有关于 Kubernetes Service 的测试用例：
+
+### 基础检索测试
+- ✅ K8s Service 概念
+
+### 技术细节测试
+- ✅ Service 类型
+
+## 说明
+
+这份文档是 E2E 测试系统的配置文档，提到了关于 "Kubernetes Service 概念" 和 "Service 类型" 的测试用例，但**没有包含 Service 的具体定义和类型说明**。
+
+测试用例配置在 `eval/test_cases.json` 中，示例格式：
+
+```json
+{
+  "id": "basic-001",
+  "query": "What is a Pod in Kubernetes?",
+  "language": "en",
+  "category": "k8s-basic",
+  "expected_keywords": ["pod", "container", "smallest"],
+  "min_s...
+  结束: 09:46:29 | 耗时: 29.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[20/32] qdrant-basic-003 (k8s-init) [concept]
+  Q: What are Init Containers and when should I use them?
+  💡 Qdrant 有 Init Containers 文档
+  开始: 09:46:29
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "Init Container|initContainer|初始化容器"})
+    [TOOL_OUT] Found 2 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "Init.*Sidecar|容器类型|container.*type"})
+    [TOOL_OUT] Found 1 file
+docs/e2e-testing.md
+    [THINK] 根据 `docs/e2e-testing.md` 文档，关于 Init Containers 的信息如下： (+11 lines)
+    [TOOL] Glob({"pattern": "docs/**/*.md"})
+    [TOOL_OUT] /home/shenzt/ws/knowledge-base-search/docs/design.md
+/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md
+/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md
+    ... (18 lines total)
+    [THINK] ## 结论 (+23 lines)
+    [RESULT] 508 chars | 4 turns | 26854ms
+  ✅ 通过 | 508字符 | 28.4s | $0.1698 | 引用✅ 文档✅
+  🔧 工具: Glob, Grep
+  🔑 关键词: init, container
+  📝 答案: ## 结论
+
+你的知识库 `docs/` 目录中**没有关于 Init Containers 定义和使用场景的详细文档**。
+
+### 检索结果
+
+- `docs/e2e-testing.md` 提到了 "容器类型对比 (Init vs Sidecar)" 的测试用例
+- 但实际的技术文档内容不存在
+
+### 当前文档覆盖
+
+你的知识库主要包含：
+- **运维手册**: Redis failover、Kubernetes Pod 故障排查
+- **API 文档**: 认证与授权设计
+- **系统设计**: 知识库检索系统架构
+- **测试配置**: E2E 测试系统
+
+### 建议
+
+如果需要 Kubernetes 容器相关的基础概念文档（如 Init Containers、Sidecar Containers 等），建议添加相关技术文档到 `docs/` 目录中，例如：
+- `docs/k8s/containers.md` — 容器类型说明
+- `docs/k8s/init-containers.md` — Init Containers 详细文档
+
+目前知识库侧重实战运维场景，缺少...
+  结束: 09:46:57 | 耗时: 28.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[21/32] qdrant-basic-004 (redis-pipeline) [concept]
+  Q: Redis 管道技术如何工作？为什么能提升性能？
+  💡 Qdrant 有 Redis pipelining 中文文档
+  开始: 09:46:57
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "管道|pipeline|pipelining|批量"})
+    [TOOL_OUT] Found 10 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    ... (11 lines total)
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "Redis.*性能|Redis.*优化|Redis.*pipeline"})
+    [TOOL_OUT] Found 2 files
+docs/archive/FINAL_SUMMARY.md
+docs/e2e-testing.md
+    [THINK] 根据检索结果，`docs/e2e-testing.md` 文档中提到了 Redis 管道技术的测试用例。 (+14 lines)
+    [TOOL] Grep({"-i": true, "output_mode": "files_with_matches", "path": "docs/", "pattern": "Redis"})
+    [TOOL_OUT] Found 14 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    ... (15 lines total)
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 3, "path": "docs/runbook/", "pattern": "pipeline|管道|性能优化|批量操作"})
+    [TOOL_OUT] No files found
+    [THINK] ## 结论 (+23 lines)
+    [RESULT] 570 chars | 5 turns | 40340ms
+  ✅ 通过 | 570字符 | 41.9s | $0.2205 | 引用✅ 文档❌
+  🔧 工具: Grep
+  🔑 关键词: pipeline, 管道
+  📝 答案: ## 结论
+
+你的知识库 `docs/` 目录中**没有关于 Redis 管道技术工作原理和性能优化的详细文档**。
+
+### 检索结果
+
+- `docs/e2e-testing.md` 提到了 "Redis 管道技术" 和 "Redis 性能优化" 的测试用例
+- `docs/runbook/redis-failover.md` 只包含 Redis 主从切换故障恢复的运维手册
+- 其他文档主要是项目进度、架构设计等，不涉及 Redis 管道技术
+
+### 当前 Redis 相关文档
+
+你的知识库中只有：
+- **Redis Failover 运维手册** — 主从切换故障恢复流程
+- **测试用例配置** — 提到了 Redis 管道技术的测试项
+
+### 建议
+
+如果需要 Redis 技术细节文档（如管道技术、性能优化、持久化机制等），建议添加相关技术文档到 `docs/` 目录中，例如：
+- `docs/redis/pipeline.md` — Redis 管道技术详解
+- `docs/redis/performance.md` — Redis 性能优化最佳实践
+- `docs/...
+  结束: 09:47:39 | 耗时: 41.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[22/32] qdrant-so-001 (k8s-deployment) [scenario]
+  Q: Deployment 滚动更新卡住了，新旧 Pod 并存，怎么回滚
+  💡 Qdrant 有 Deployment 文档含 rollout/rollback
+  开始: 09:47:39
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "rollout|滚动更新|回滚|deployment.*update"})
+    [TOOL_OUT] Found 4 files
+docs/progress-2025-02-13.md
+docs/runbook/redis-failover.md
+docs/design.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 5, "path": "docs/runbook/", "pattern": "rollout|回滚"})
+    [TOOL_OUT] Found 2 files
+docs/runbook/redis-failover.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 `docs/runbook/kubernetes-pod-crashloop.md` 和 `docs/runbook/redis-failover.md` 文档，关于 Deployment 回滚的信息如下： (+59 lines)
+    [RESULT] 1175 chars | 3 turns | 24972ms
+  ✅ 通过 | 1175字符 | 26.6s | $0.1424 | 引用✅ 文档✅
+  🔧 工具: Grep
+  🔑 关键词: deployment, rollout
+  📝 答案: 根据 `docs/runbook/kubernetes-pod-crashloop.md` 和 `docs/runbook/redis-failover.md` 文档，关于 Deployment 回滚的信息如下：
+
+## 回滚操作
+
+### 1. 查看部署历史
+
+```bash
+kubectl rollout history deployment/<deployment-name> -n <namespace>
+```
+
+查看所有历史版本，确认要回滚到哪个版本。
+
+### 2. 执行回滚
+
+```bash
+# 回滚到上一个版本
+kubectl rollout undo deployment/<deployment-name> -n <namespace>
+
+# 回滚到指定版本
+kubectl rollout undo deployment/<deployment-name> --to-revision=<revision-number> -n <namespace>
+```
+
+### 3. 检查回滚状态
+
+```bash
+# 查看回滚进度
+kubectl rollout status ...
+  结束: 09:48:06 | 耗时: 26.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[23/32] qdrant-so-002 (k8s-deploy-vs-rc) [scenario]
+  Q: What's the difference between a Deployment and a ReplicationController?
+  💡 Qdrant 有两个文档可对比
+  开始: 09:48:06
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "Deployment.*ReplicationController|ReplicationController.*Deployment|Deployment.*vs|对比|difference"})
+    [TOOL_OUT] Found 12 files
+docs/archive/CURRENT_STATUS.md
+docs/archive/PROJECT_STATUS.md
+    ... (13 lines total)
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "Deployment.*StatefulSet|StatefulSet.*Deployment"})
+    [TOOL_OUT] Found 1 file
+docs/e2e-testing.md
+    [THINK] 根据检索结果，你的知识库中**没有关于 Deployment 和 ReplicationController 区别的详细文档**。 (+25 lines)
+    [RESULT] 595 chars | 3 turns | 21999ms
+  ✅ 通过 | 595字符 | 23.6s | $0.1385 | 引用✅ 文档✅
+  🔧 工具: Grep
+  🔑 关键词: deployment, replicationcontroller, replicaset, replica
+  📝 答案: 根据检索结果，你的知识库中**没有关于 Deployment 和 ReplicationController 区别的详细文档**。
+
+## 检索结果
+
+`docs/e2e-testing.md` 测试文档中提到了：
+- ✅ 对比分析 (Deployment vs StatefulSet)
+
+但这是关于 Deployment 和 StatefulSet 的对比，不是 ReplicationController。
+
+## 当前文档覆盖
+
+你的知识库主要包含：
+- **运维手册**: Redis failover、Pod 故障排查
+- **API 文档**: 认证与授权
+- **系统设计**: 知识库检索架构
+- **测试配置**: E2E 测试用例
+
+没有 Kubernetes 控制器类型对比的基础文档。
+
+## 建议
+
+如果需要 Kubernetes 控制器相关的技术文档，建议添加：
+- `docs/k8s/controllers.md` — 控制器类型对比（Deployment、ReplicaSet、ReplicationController、StatefulSet、DaemonSet...
+  结束: 09:48:29 | 耗时: 23.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[24/32] qdrant-so-003 (k8s-volumes) [scenario]
+  Q: Kubernetes 里怎么给 Pod 挂载持久化存储
+  💡 Qdrant 有 Volumes 文档
+  开始: 09:48:29
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "path": "docs/", "pattern": "Volume|PersistentVolume|PVC|持久化存储|挂载|mount"})
+    [TOOL_OUT] Found 2 files
+docs/e2e-testing.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] API Error: 429 已达到费用限制 ($35)，将在 114 分钟后重置
+    [RESULT] 41 chars | 2 turns | 187704ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 09:51:39 | 耗时: 189.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[25/32] qdrant-so-004 (k8s-sidecar) [scenario]
+  Q: What is a sidecar container and how is it different from init container?
+  💡 Qdrant 有两个文档
+  开始: 09:51:39
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到费用限制 ($35)，将在 111 分钟后重置
+    [RESULT] 41 chars | 1 turns | 193851ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 09:54:54 | 耗时: 195.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[26/32] qdrant-so-005 (redis-benchmark) [scenario]
+  Q: Redis benchmark 测试结果怎么样？单机能跑多少 QPS
+  💡 Qdrant 有 Redis benchmarks 中文文档
+  开始: 09:54:54
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到费用限制 ($35)，将在 108 分钟后重置
+    [RESULT] 41 chars | 1 turns | 184834ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 09:58:01 | 耗时: 186.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[27/32] qdrant-so-006 (k8s-ingress) [scenario]
+  Q: Ingress 和 Service 有什么区别？什么时候用 Ingress
+  💡 Qdrant 有两个文档
+  开始: 09:58:01
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到费用限制 ($35)，将在 105 分钟后重置
+    [RESULT] 41 chars | 1 turns | 188239ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 10:01:10 | 耗时: 189.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[28/32] qdrant-cross-001 (redis-pipeline) [cross-lang]
+  Q: Redis pipelining 的原理是什么？和普通请求有什么区别
+  💡 中文问→中文 Redis 文档
+  开始: 10:01:10
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到费用限制 ($35)，将在 101 分钟后重置
+    [RESULT] 41 chars | 1 turns | 184188ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 10:04:16 | 耗时: 185.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[29/32] qdrant-cross-002 (k8s-lifecycle) [cross-lang]
+  Q: Pod 的生命周期有哪些阶段？各阶段的含义是什么
+  💡 中文问→英文 K8s 文档
+  开始: 10:04:16
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到费用限制 ($35)，将在 98 分钟后重置
+    [RESULT] 40 chars | 1 turns | 189858ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 10:07:28 | 耗时: 191.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[30/32] notfound-001 (not-in-kb) [notfound]
+  Q: Redis 集群模式下 slot 迁移怎么做
+  💡 KB 没有 Redis Cluster 内容
+  开始: 10:07:28
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到费用限制 ($35)，将在 95 分钟后重置
+    [RESULT] 40 chars | 1 turns | 188000ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 10:10:37 | 耗时: 189.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[31/32] notfound-002 (not-in-kb) [notfound]
+  Q: Kubernetes HPA 自动扩缩容怎么配置
+  💡 KB 没有 HPA 内容
+  开始: 10:10:37
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到费用限制 ($35)，将在 92 分钟后重置
+    [RESULT] 40 chars | 1 turns | 184089ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 10:13:43 | 耗时: 185.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[32/32] notfound-003 (not-in-kb) [notfound]
+  Q: MongoDB 分片集群如何配置
+  💡 KB 完全没有 MongoDB
+  开始: 10:13:43
+    [INIT] session=8d8844f2-99a5-4a62-adee-8de802a5c7c4 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到费用限制 ($35)，将在 89 分钟后重置
+    [RESULT] 40 chars | 1 turns | 180369ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 10:16:45 | 耗时: 181.9s
+--------------------------------------------------------------------------------
+
+================================================================================
+📊 总结: ✅23 ❌0 ⚠️9 / 32 (71.9%)
+⏱️  总耗时: 2236.1s | 平均: 97.2s
+💰 总费用: $1.9080
+
+📈 按查询类型:
+  ✅ 概念型(需Qdrant): 4/4 (100%)
+  ⚠️ 跨语言: 2/4 (50%)
+  ✅ 精确匹配(Grep擅长): 5/5 (100%)
+  ✅ 实操问答: 3/3 (100%)
+  ✅ 多文档综合: 1/1 (100%)
+  ❌ 未收录: 0/3 (0%)
+  ⚠️ SO场景/症状描述: 8/12 (67%)
+
+📋 按 category:
+  ✅ api-auth: 5/5 (100%)
+  ✅ k8s-crashloop: 5/5 (100%)
+  ✅ k8s-deploy-vs-rc: 1/1 (100%)
+  ✅ k8s-deployment: 1/1 (100%)
+  ❌ k8s-ingress: 0/1 (0%)
+  ✅ k8s-init: 1/1 (100%)
+  ❌ k8s-lifecycle: 0/1 (0%)
+  ✅ k8s-pod: 1/1 (100%)
+  ✅ k8s-service: 1/1 (100%)
+  ❌ k8s-sidecar: 0/1 (0%)
+  ❌ k8s-volumes: 0/1 (0%)
+  ✅ multi-doc: 1/1 (100%)
+  ❌ not-in-kb: 0/3 (0%)
+  ❌ redis-benchmark: 0/1 (0%)
+  ✅ redis-failover: 6/6 (100%)
+  ⚠️ redis-pipeline: 1/2 (50%)
+
+🗄️ 按数据源:
+  ✅ 本地 docs/ (Grep/Glob/Read): 17/17 (100%)
+  ⚠️ Qdrant 索引 (需 MCP hybrid_search): 6/12 (50%)
+  ❌ unknown: 0/3 (0%)
+
+  ⚠️  注意: 12 个 Qdrant 用例在无 MCP 模式下运行
+     通过 6/12 — 可能是 Claude 用通用知识回答（非检索）
+     设置 USE_MCP=1 启用 hybrid_search 以测试真正的向量检索
+
+📁 汇总: /home/shenzt/ws/knowledge-base-search/eval/agentic_rag_test_20260214_093929.json
+📋 日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_093929.log
+📝 详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_093929_detail.jsonl

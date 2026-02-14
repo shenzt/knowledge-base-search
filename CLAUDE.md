@@ -75,6 +75,22 @@ make clean           # 清理缓存
 - 回答知识库问题必须先检索，不要凭记忆回答
 - 文档语言：中英文均支持，回答跟随文档语言
 - **代码变更后必须运行测试验证**
+- **编写测试用例前，必须先确认知识库中实际有哪些文档**（见 .claude/rules/testing-lessons.md）
+- **区分数据源**：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 21 个文档（K8s + Redis）
+
+## 知识库数据源
+
+### Qdrant 索引（SSOT，152 chunks）
+- K8s 英文文档 (11 个): Pod, Service, Ingress, Deployment, ReplicationController, Init Containers, Sidecar Containers, Ephemeral Containers, Pod Lifecycle, Pod QoS, Volumes
+- Redis 中文文档 (10 个): pipelining, benchmarks, clients, commands, community, documentation, download, index, support, buzz
+- 来源: `~/ws/kb-test-k8s-en/` + `~/ws/kb-test-redis-cn/`
+- 查看: `.venv/bin/python scripts/index.py --status`
+
+### 本地 docs/（项目文档 + 示例 runbook）
+- `runbook/redis-failover.md` — Redis Sentinel 主从切换故障恢复
+- `runbook/kubernetes-pod-crashloop.md` — K8s CrashLoopBackOff 排查
+- `api/authentication.md` — OAuth 2.0 + JWT API 认证设计
+- 其余为项目自身的设计/进展文档，不是知识库内容
 
 ## 项目结构
 
