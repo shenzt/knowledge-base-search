@@ -1,15 +1,21 @@
 #!/usr/bin/env python3
 """知识库索引构建工具。
 
-接收 chunks JSON（由 Claude Code agent 生成），编码为向量后写入 Qdrant。
-也支持直接索引单个 Markdown 文件（简单按段落切分）。
+按 Markdown 标题语义分块，注入 section_path 到 Qdrant payload。
+支持单文件、全量重建、增量更新。
 
 用法:
-  # 从 stdin 接收 Claude Code 生成的 chunks JSON
-  echo '[{"doc_id":"abc","chunk_id":"abc-000","text":"...","metadata":{}}]' | python scripts/index.py
-
-  # 索引单个文件（简单切分）
+  # 索引单个文件
   python scripts/index.py --file docs/runbook/redis.md
+
+  # 全量重建（遍历指定目录下所有 .md）
+  python scripts/index.py --full docs/
+
+  # 增量更新（基于 git diff）
+  python scripts/index.py --incremental
+
+  # 从 stdin 接收 chunks JSON
+  echo '[{"doc_id":"abc","chunk_id":"abc-000","text":"...","metadata":{}}]' | python scripts/index.py
 
   # 删除某个文档的所有 chunks
   python scripts/index.py --delete --doc-id abc12345
@@ -23,8 +29,12 @@ import hashlib
 import json
 import logging
 import os
+import re
+import subprocess
 import sys
 from datetime import datetime, timezone
+from pathlib import Path
+from typing import Optional
 
 import frontmatter
 import numpy as np
@@ -37,12 +47,13 @@ log = logging.getLogger(__name__)
 QDRANT_URL = os.environ.get("QDRANT_URL", "http://localhost:6333")
 COLLECTION = os.environ.get("COLLECTION_NAME", "knowledge-base")
 MODEL_NAME = os.environ.get("BGE_M3_MODEL", "BAAI/bge-m3")
+MAX_CHUNK_CHARS = 3200
 
-# 延迟加载模型（只在需要编码时加载）
 _model = None
 
 
-def get_model():
+def get_model() -> BGEM3FlagModel:
+    """延迟加载 BGE-M3 模型。"""
     global _model
     if _model is None:
         log.info(f"加载模型 {MODEL_NAME}...")
@@ -50,11 +61,11 @@ def get_model():
     return _model
 
 
-def get_qdrant():
+def get_qdrant() -> QdrantClient:
     return QdrantClient(url=QDRANT_URL)
 
 
-def ensure_collection(client: QdrantClient):
+def ensure_collection(client: QdrantClient) -> None:
     """确保 collection 存在。"""
     collections = [c.name for c in client.get_collections().collections]
     if COLLECTION not in collections:
@@ -70,11 +81,103 @@ def ensure_collection(client: QdrantClient):
         )
 
 
-def index_chunks(chunks: list[dict]):
-    """将 chunks 编码为向量并写入 Qdrant。
+# ── 标题分块 ──────────────────────────────────────────────────────
 
-    chunks 格式: [{"doc_id", "chunk_id", "text", "metadata": {...}}]
+def _find_code_fence_ranges(content: str) -> list[tuple[int, int]]:
+    """找出所有代码围栏 (```) 的范围，返回 [(start, end), ...]。"""
+    fence_re = re.compile(r'^```', re.MULTILINE)
+    ranges = []
+    matches = list(fence_re.finditer(content))
+    for i in range(0, len(matches) - 1, 2):
+        ranges.append((matches[i].start(), matches[i + 1].end()))
+    return ranges
+
+
+def _in_code_fence(pos: int, ranges: list[tuple[int, int]]) -> bool:
+    """判断某个位置是否在代码围栏内。"""
+    return any(start <= pos <= end for start, end in ranges)
+
+
+def split_by_headings(content: str) -> list[dict]:
+    """按 Markdown 标题切分，保留 section_path 层级。跳过代码块中的 #。
+
+    返回: [{"text": "...", "section_path": "故障恢复 > 手动恢复 > 确认新 Master"}]
     """
+    heading_re = re.compile(r'^(#{1,6})\s+(.+)$', re.MULTILINE)
+    code_ranges = _find_code_fence_ranges(content)
+    sections = []
+    headings_stack: list[tuple[int, str]] = []  # [(level, title), ...]
+    last_pos = 0
+
+    for match in heading_re.finditer(content):
+        # 跳过代码块中的 #
+        if _in_code_fence(match.start(), code_ranges):
+            continue
+
+        # 保存上一段
+        if last_pos < match.start():
+            text = content[last_pos:match.start()].strip()
+            if text:
+                path = " > ".join(h[1] for h in headings_stack)
+                sections.append({"text": text, "section_path": path})
+
+        # 更新标题栈
+        level = len(match.group(1))
+        title = match.group(2).strip()
+        # 弹出同级或更低级的标题
+        while headings_stack and headings_stack[-1][0] >= level:
+            headings_stack.pop()
+        headings_stack.append((level, title))
+        last_pos = match.end()
+
+    # 最后一段
+    if last_pos < len(content):
+        text = content[last_pos:].strip()
+        if text:
+            path = " > ".join(h[1] for h in headings_stack)
+            sections.append({"text": text, "section_path": path})
+
+    return sections if sections else [{"text": content.strip(), "section_path": ""}]
+
+
+def merge_small_sections(sections: list[dict], max_chars: int = MAX_CHUNK_CHARS) -> list[dict]:
+    """合并过短的相邻 section（同一 section_path 前缀下）。"""
+    if not sections:
+        return sections
+
+    merged = []
+    buf_text = ""
+    buf_path = ""
+
+    for sec in sections:
+        if not buf_text:
+            buf_text = sec["text"]
+            buf_path = sec["section_path"]
+        elif len(buf_text) + len(sec["text"]) < max_chars and _same_parent(buf_path, sec["section_path"]):
+            buf_text = buf_text + "\n\n" + sec["text"]
+            buf_path = sec["section_path"]  # 用最新的 path
+        else:
+            merged.append({"text": buf_text, "section_path": buf_path})
+            buf_text = sec["text"]
+            buf_path = sec["section_path"]
+
+    if buf_text:
+        merged.append({"text": buf_text, "section_path": buf_path})
+
+    return merged
+
+
+def _same_parent(path_a: str, path_b: str) -> bool:
+    """判断两个 section_path 是否有相同的父级。"""
+    parts_a = path_a.split(" > ")[:-1]
+    parts_b = path_b.split(" > ")[:-1]
+    return parts_a == parts_b
+
+
+# ── 索引核心 ──────────────────────────────────────────────────────
+
+def index_chunks(chunks: list[dict]) -> None:
+    """将 chunks 编码为向量并写入 Qdrant。"""
     if not chunks:
         log.info("没有 chunks 需要索引")
         return
@@ -115,7 +218,7 @@ def index_chunks(chunks: list[dict]):
     log.info(f"✅ 已索引 {len(points)} 个 chunks")
 
 
-def delete_doc(doc_id: str):
+def delete_doc(doc_id: str) -> None:
     """删除某个文档的所有 chunks。"""
     client = get_qdrant()
     client.delete(
@@ -129,8 +232,8 @@ def delete_doc(doc_id: str):
     log.info(f"✅ 已删除 doc_id={doc_id} 的所有 chunks")
 
 
-def index_file(filepath: str):
-    """索引单个 Markdown 文件（简单按双换行切分）。"""
+def index_file(filepath: str) -> int:
+    """索引单个 Markdown 文件（按标题语义分块）。返回 chunk 数。"""
     post = frontmatter.load(filepath)
     doc_id = post.metadata.get("id", hashlib.md5(filepath.encode()).hexdigest()[:8])
     title = post.metadata.get("title", os.path.basename(filepath))
@@ -141,31 +244,20 @@ def index_file(filepath: str):
     except Exception:
         pass
 
-    # 简单按双换行切分
-    paragraphs = [p.strip() for p in post.content.split("\n\n") if p.strip()]
-
-    # 合并过短的段落
-    chunks = []
-    buf = ""
-    for p in paragraphs:
-        if len(buf) + len(p) < 3200:
-            buf = buf + "\n\n" + p if buf else p
-        else:
-            if buf:
-                chunks.append(buf)
-            buf = p
-    if buf:
-        chunks.append(buf)
+    # 按标题分块 + 合并过短段落
+    sections = split_by_headings(post.content)
+    sections = merge_small_sections(sections)
 
     chunk_data = []
-    for i, text in enumerate(chunks):
+    for i, sec in enumerate(sections):
         chunk_data.append({
             "doc_id": doc_id,
             "chunk_id": f"{doc_id}-{i:03d}",
-            "text": text,
+            "text": sec["text"],
             "metadata": {
                 "path": filepath,
                 "title": title,
+                "section_path": sec["section_path"],
                 "chunk_index": i,
                 "confidence": post.metadata.get("confidence", "unknown"),
                 "tags": post.metadata.get("tags", []),
@@ -173,9 +265,82 @@ def index_file(filepath: str):
         })
 
     index_chunks(chunk_data)
+    return len(chunk_data)
 
 
-def show_status():
+# ── 全量 / 增量 ──────────────────────────────────────────────────
+
+def index_full(docs_dir: str) -> None:
+    """全量重建：遍历目录下所有 .md 文件。"""
+    md_files = sorted(Path(docs_dir).rglob("*.md"))
+    if not md_files:
+        log.info(f"目录 {docs_dir} 下没有 .md 文件")
+        return
+
+    log.info(f"全量索引: {len(md_files)} 个文件 ({docs_dir})")
+    total_chunks = 0
+    for f in md_files:
+        try:
+            n = index_file(str(f))
+            total_chunks += n
+            log.info(f"  {f} → {n} chunks")
+        except Exception as e:
+            log.error(f"  ❌ {f}: {e}")
+
+    log.info(f"✅ 全量索引完成: {len(md_files)} 文件, {total_chunks} chunks")
+
+
+def index_incremental() -> None:
+    """增量更新：基于 git diff 找出变更的 .md 文件。"""
+    try:
+        # 找出最近一次 commit 到工作区的变更
+        result = subprocess.run(
+            ["git", "diff", "--name-only", "HEAD", "--", "*.md"],
+            capture_output=True, text=True, check=True,
+        )
+        changed = [f.strip() for f in result.stdout.strip().split("\n") if f.strip()]
+
+        # 也包括未跟踪的新文件
+        result2 = subprocess.run(
+            ["git", "ls-files", "--others", "--exclude-standard", "--", "*.md"],
+            capture_output=True, text=True, check=True,
+        )
+        new_files = [f.strip() for f in result2.stdout.strip().split("\n") if f.strip()]
+
+        all_changed = list(set(changed + new_files))
+    except subprocess.CalledProcessError:
+        log.error("git 命令失败，请确认在 git 仓库中运行")
+        return
+
+    if not all_changed:
+        log.info("没有变更的 .md 文件")
+        return
+
+    log.info(f"增量索引: {len(all_changed)} 个变更文件")
+    total_chunks = 0
+    for f in all_changed:
+        if not os.path.exists(f):
+            # 文件被删除，尝试删除索引
+            doc_id = hashlib.md5(f.encode()).hexdigest()[:8]
+            try:
+                delete_doc(doc_id)
+                log.info(f"  🗑️ {f} (已删除)")
+            except Exception:
+                pass
+            continue
+        try:
+            n = index_file(f)
+            total_chunks += n
+            log.info(f"  {f} → {n} chunks")
+        except Exception as e:
+            log.error(f"  ❌ {f}: {e}")
+
+    log.info(f"✅ 增量索引完成: {len(all_changed)} 文件, {total_chunks} chunks")
+
+
+# ── 状态 ──────────────────────────────────────────────────────────
+
+def show_status() -> None:
     """显示索引状态。"""
     client = get_qdrant()
     try:
@@ -183,13 +348,42 @@ def show_status():
         log.info(f"Collection: {COLLECTION}")
         log.info(f"  向量数: {info.points_count}")
         log.info(f"  状态: {info.status}")
+
+        # 按 doc_id 统计
+        scroll_result = client.scroll(
+            collection_name=COLLECTION,
+            limit=1000,
+            with_payload=["doc_id", "path", "title", "section_path"],
+        )
+        docs: dict[str, dict] = {}
+        for point in scroll_result[0]:
+            doc_id = point.payload.get("doc_id", "unknown")
+            if doc_id not in docs:
+                docs[doc_id] = {
+                    "path": point.payload.get("path", ""),
+                    "title": point.payload.get("title", ""),
+                    "chunks": 0,
+                    "has_section_path": False,
+                }
+            docs[doc_id]["chunks"] += 1
+            if point.payload.get("section_path"):
+                docs[doc_id]["has_section_path"] = True
+
+        log.info(f"  文档数: {len(docs)}")
+        for doc_id, info_d in sorted(docs.items(), key=lambda x: x[1]["path"]):
+            sp_tag = "📑" if info_d["has_section_path"] else "📄"
+            log.info(f"    {sp_tag} {info_d['path']} ({info_d['chunks']} chunks) [{doc_id}]")
     except Exception:
         log.info(f"Collection '{COLLECTION}' 不存在，运行索引命令创建")
 
 
-def main():
+# ── CLI ───────────────────────────────────────────────────────────
+
+def main() -> None:
     parser = argparse.ArgumentParser(description="知识库索引工具")
     parser.add_argument("--file", help="索引单个 Markdown 文件")
+    parser.add_argument("--full", metavar="DIR", help="全量重建指定目录")
+    parser.add_argument("--incremental", action="store_true", help="增量更新（基于 git diff）")
     parser.add_argument("--delete", action="store_true", help="删除文档")
     parser.add_argument("--doc-id", help="要删除的 doc_id")
     parser.add_argument("--status", action="store_true", help="查看索引状态")
@@ -201,6 +395,10 @@ def main():
         delete_doc(args.doc_id)
     elif args.file:
         index_file(args.file)
+    elif args.full:
+        index_full(args.full)
+    elif args.incremental:
+        index_incremental()
     else:
         # 从 stdin 读取 chunks JSON
         data = sys.stdin.read().strip()
