@@ -71,11 +71,10 @@ async def run_enhanced_rag_test():
         print(f"查询: {test_case['query']}")
 
         try:
-            # 使用增强参数
+            # 使用增强参数（只能调整 top_k，min_score 在 mcp_server 中固定）
             result = await search_with_rag(
                 test_case['query'],
-                top_k=10,  # 增加到 10
-                min_score=0.2  # 降低到 0.2
+                top_k=10  # 增加到 10，给 reranker 更多候选
             )
 
             if result['status'] == 'success':
