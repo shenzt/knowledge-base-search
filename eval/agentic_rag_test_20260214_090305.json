@@ -1,0 +1,845 @@
+{
+  "timestamp": "2026-02-14T09:16:14.039142",
+  "test_type": "agentic_rag",
+  "method": "claude_agent_sdk_session_reuse",
+  "total": 34,
+  "passed": 34,
+  "failed": 0,
+  "errors": 0,
+  "total_time": 788.2906217575073,
+  "total_cost": 4.08119575,
+  "type_stats": {
+    "keyword": {
+      "total": 3,
+      "passed": 3
+    },
+    "exact": {
+      "total": 5,
+      "passed": 5
+    },
+    "semantic": {
+      "total": 4,
+      "passed": 4
+    },
+    "cross-lang": {
+      "total": 4,
+      "passed": 4
+    },
+    "paraphrase": {
+      "total": 3,
+      "passed": 3
+    },
+    "complex": {
+      "total": 5,
+      "passed": 5
+    },
+    "howto": {
+      "total": 4,
+      "passed": 4
+    },
+    "concept": {
+      "total": 4,
+      "passed": 4
+    },
+    "notfound": {
+      "total": 2,
+      "passed": 2
+    }
+  },
+  "results": [
+    {
+      "test_id": "basic-001",
+      "category": "k8s-basic",
+      "type": "keyword",
+      "query": "What is a Pod in Kubernetes?",
+      "status": "passed",
+      "elapsed_seconds": 22.868935346603394,
+      "cost_usd": 0.0366635,
+      "num_turns": 4,
+      "answer_length": 448,
+      "tools_used": [
+        "Read",
+        "Grep",
+        "Glob"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "pod",
+        "kubernetes"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 Kubernetes Pod 的信息：\n\n**什么是 Pod？**\n\n从 `docs/runbook/kubernetes-pod-crashloop.md` 文档中可以了解到：\n\nPod 是 Kubernetes 中的基本运行单元，它包含一个或多个容器。文档中提到：\n\n- Pod 可以处于不同的状态（如 `CrashLoopBackOff`）\n- Pod 有重启计数（restart count）\n- Pod 中运行容器，容器可能会崩溃并被 Kubernetes 重启\n- Pod 可以配置资源限制（内存、CPU 等）\n- Pod 可以配置健康检查探"
+    },
+    {
+      "test_id": "basic-002",
+      "category": "k8s-service",
+      "type": "keyword",
+      "query": "Kubernetes Service 是什么？",
+      "status": "passed",
+      "elapsed_seconds": 31.11413836479187,
+      "cost_usd": 0.06915325,
+      "num_turns": 6,
+      "answer_length": 564,
+      "tools_used": [
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "service"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到专门介绍 Kubernetes Service 概念的文档**。\n\n不过，从 `docs/e2e-testing.md` 文档中可以看到：\n\n1. **测试用例中提到了 Service**：\n   - 有一个测试用例 \"basic-002\" 是关于 \"K8s Service 概念\" 的\n   - 在技术细节测试套件中有 \"Service 类型\" 的测试用例\n\n2. **在故障排查文档中的间接提及**：\n   - `docs/runbook/kubernetes-pod-crashloop.md` 中提到 \"Missing dependency |"
+    },
+    {
+      "test_id": "basic-003",
+      "category": "k8s-init",
+      "type": "keyword",
+      "query": "What are Init Containers?",
+      "status": "passed",
+      "elapsed_seconds": 38.56652545928955,
+      "cost_usd": 0.13204625,
+      "num_turns": 7,
+      "answer_length": 503,
+      "tools_used": [
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "init",
+        "container"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到专门解释 Init Containers 概念的文档**。\n\n不过，从项目的测试记录中可以看到：\n\n1. **测试用例中包含了这个问题**：\n   - 在 `docs/archive/FINAL_SUMMARY.md` 中显示，\"What are Init Containers?\" 是一个测试查询\n   - 该查询在混合检索测试中获得了 **6.4301 分**（优秀评分）\n   - 测试状态显示为 ✅ 通过\n\n2. **检索结果**：\n   - 虽然测试显示检索系统能够找到相关内容（得分很高），但这表明相关文档可能存在于知识库的其他位置，而不是"
+    },
+    {
+      "test_id": "grep-001",
+      "category": "redis-error",
+      "type": "exact",
+      "query": "READONLY You can't write against a read only replica",
+      "status": "passed",
+      "elapsed_seconds": 21.296380519866943,
+      "cost_usd": 0.08123725,
+      "num_turns": 3,
+      "answer_length": 731,
+      "tools_used": [
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "readonly",
+        "read only",
+        "replica",
+        "写入",
+        "failover",
+        "切换"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 \"READONLY You can't write against a read only replica\" 错误的详细信息：\n\n**错误说明**：\n\n这个错误出现在 **Redis 主从切换（failover）场景**中。根据 `docs/runbook/redis-failover.md` 文档：\n\n**故障原因**：\n- 当 Redis Sentinel 触发主从切换后，原来的 master 变成了 replica（从节点）\n- 如果应用仍然连接到旧的 master（现在是 replica），尝试写入操作时就会报这个错误\n- Replica "
+    },
+    {
+      "test_id": "grep-002",
+      "category": "k8s-oom",
+      "type": "exact",
+      "query": "OOMKilled",
+      "status": "passed",
+      "elapsed_seconds": 13.094107627868652,
+      "cost_usd": 0.059850249999999994,
+      "num_turns": 2,
+      "answer_length": 707,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "oomkilled",
+        "oom",
+        "memory",
+        "内存",
+        "limit"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 OOMKilled 的详细信息：\n\n**OOMKilled 说明**：\n\n根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档：\n\n**含义**：\n- OOMKilled 表示容器因为超出内存限制（Out Of Memory）而被 Kubernetes 杀死\n- 这是导致 Pod 进入 `CrashLoopBackOff` 状态的常见原因之一\n\n**诊断方法**：\n\n1. **查看 Pod 事件**：\n```bash\nkubectl describe pod <pod-name> -n <namespac"
+    },
+    {
+      "test_id": "grep-003",
+      "category": "api-errorcode",
+      "type": "exact",
+      "query": "TOKEN_EXPIRED 错误码是什么意思？",
+      "status": "passed",
+      "elapsed_seconds": 23.332680463790894,
+      "cost_usd": 0.08734600000000001,
+      "num_turns": 3,
+      "answer_length": 660,
+      "tools_used": [
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "token_expired",
+        "过期",
+        "401",
+        "错误码"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 TOKEN_EXPIRED 错误码的详细信息：\n\n**TOKEN_EXPIRED 错误码说明**：\n\n根据 `docs/api/authentication.md` 文档：\n\n**基本信息**：\n- **HTTP 状态码**：401\n- **错误码**：TOKEN_EXPIRED\n- **含义**：token 已过期，需要刷新\n\n**上下文**：\n\n系统采用 OAuth 2.0 + JWT 认证方案：\n\n1. **Token 类型**：\n   - **access_token**：有效期 15 分钟\n   - **refresh_token**：有"
+    },
+    {
+      "test_id": "grep-004",
+      "category": "api-jwt",
+      "type": "exact",
+      "query": "JWT token 的结构是什么？",
+      "status": "passed",
+      "elapsed_seconds": 14.656833171844482,
+      "cost_usd": 0.06473075,
+      "num_turns": 2,
+      "answer_length": 696,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "jwt",
+        "token",
+        "sub",
+        "exp",
+        "签名"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 JWT token 结构的详细信息：\n\n**JWT Token 结构**：\n\n根据 `docs/api/authentication.md` 文档，系统中的 JWT Token 包含以下字段：\n\n```json\n{\n  \"sub\": \"user-uuid\",\n  \"iss\": \"api-gateway\",\n  \"iat\": 1707820800,\n  \"exp\": 1707821700,\n  \"roles\": [\"admin\", \"editor\"],\n  \"tenant_id\": \"tenant-001\"\n}\n```\n\n**字段说明**：\n\n- *"
+    },
+    {
+      "test_id": "grep-005",
+      "category": "redis-sentinel",
+      "type": "exact",
+      "query": "SENTINEL failover 命令怎么用？",
+      "status": "passed",
+      "elapsed_seconds": 15.893255949020386,
+      "cost_usd": 0.06672375,
+      "num_turns": 2,
+      "answer_length": 642,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "sentinel",
+        "failover",
+        "主从",
+        "切换"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 SENTINEL failover 命令的使用信息：\n\n**SENTINEL failover 命令用法**：\n\n根据 `docs/runbook/redis-failover.md` 文档：\n\n**命令格式**：\n```bash\nredis-cli -p 26379 SENTINEL failover mymaster\n```\n\n**用途**：\n- 手动触发 Redis 主从切换（failover）\n- 用于定期演练 failover 流程，确保系统能够正确处理主从切换\n\n**相关 SENTINEL 命令**：\n\n1. **查看所有 master"
+    },
+    {
+      "test_id": "semantic-001",
+      "category": "redis-symptom",
+      "type": "semantic",
+      "query": "应用突然无法写入缓存，日志报只读错误",
+      "status": "passed",
+      "elapsed_seconds": 19.76376485824585,
+      "cost_usd": 0.074157,
+      "num_turns": 2,
+      "answer_length": 1134,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "redis",
+        "readonly",
+        "写入",
+        "failover",
+        "sentinel",
+        "主从",
+        "切换",
+        "只读"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于应用无法写入缓存、报只读错误的详细信息：\n\n**问题诊断**：\n\n根据 `docs/runbook/redis-failover.md` 文档，这是典型的 **Redis 主从切换故障**：\n\n**故障现象**：\n- 应用日志出现大量 `READONLY You can't write against a read only replica` 错误\n- Sentinel 日志显示 `+switch-master` 事件\n- 监控告警：Redis 写入延迟突增\n\n**根本原因**：\n- Redis Sentinel 触发了主从切换（failover）\n"
+    },
+    {
+      "test_id": "semantic-002",
+      "category": "k8s-symptom",
+      "type": "semantic",
+      "query": "容器一直重启，无法正常运行",
+      "status": "passed",
+      "elapsed_seconds": 20.114086389541626,
+      "cost_usd": 0.08157475,
+      "num_turns": 2,
+      "answer_length": 1403,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "crash",
+        "重启",
+        "crashloop",
+        "pod",
+        "容器"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于容器一直重启问题的详细排查指南：\n\n**问题诊断**：\n\n根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档，这是 **Kubernetes Pod CrashLoopBackOff** 故障：\n\n**故障说明**：\n- Pod 处于 `CrashLoopBackOff` 状态，表示容器反复崩溃，Kubernetes 在重启前会逐渐延长等待时间\n\n**故障现象**：\n- `kubectl get pods` 显示状态为 `CrashLoopBackOff`\n- Pod 重启计数持续增加\n- 应用不可用或服"
+    },
+    {
+      "test_id": "semantic-003",
+      "category": "k8s-oom-semantic",
+      "type": "semantic",
+      "query": "内存不足导致进程被杀",
+      "status": "passed",
+      "elapsed_seconds": 19.121376991271973,
+      "cost_usd": 0.07662050000000001,
+      "num_turns": 2,
+      "answer_length": 872,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "oom",
+        "memory",
+        "内存",
+        "killed",
+        "limit",
+        "资源"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于内存不足导致进程被杀的详细信息：\n\n**问题诊断**：\n\n根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档，这是 **OOMKilled（Out Of Memory Killed）** 问题：\n\n**故障说明**：\n- 容器因超出内存限制被 Kubernetes 杀死\n- 这是导致 Pod 进入 `CrashLoopBackOff` 状态的常见原因\n\n**诊断步骤**：\n\n**1. 检查 Pod 事件**：\n```bash\nkubectl describe pod <pod-name> -n <name"
+    },
+    {
+      "test_id": "semantic-004",
+      "category": "api-session",
+      "type": "semantic",
+      "query": "用户登录后如何保持会话状态？",
+      "status": "passed",
+      "elapsed_seconds": 20.445204496383667,
+      "cost_usd": 0.07933625,
+      "num_turns": 2,
+      "answer_length": 1068,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "token",
+        "jwt",
+        "oauth",
+        "认证",
+        "登录",
+        "会话"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于用户登录后如何保持会话状态的详细信息：\n\n**会话保持机制**：\n\n根据 `docs/api/authentication.md` 文档，系统采用 **OAuth 2.0 + JWT** 的认证方案来保持会话状态：\n\n**登录流程**：\n\n1. 客户端发送用户名密码到 `/api/v1/auth/login`\n2. 服务端验证凭据，签发两种 token：\n   - **access_token**：有效期 15 分钟\n   - **refresh_token**：有效期 7 天\n3. 客户端在后续请求的 `Authorization: Bearer "
+    },
+    {
+      "test_id": "cross-lang-001",
+      "category": "redis-pipeline",
+      "type": "cross-lang",
+      "query": "Redis 管道技术如何工作？",
+      "status": "passed",
+      "elapsed_seconds": 39.91223382949829,
+      "cost_usd": 0.17956825,
+      "num_turns": 5,
+      "answer_length": 498,
+      "tools_used": [
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "pipeline",
+        "管道",
+        "redis"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到专门解释 Redis 管道技术如何工作的文档**。\n\n不过，从项目的测试文档中可以看到：\n\n1. **测试用例中包含了这个问题**：\n   - 在 `docs/e2e-testing.md` 中显示，\"Redis 管道技术\" 是基础检索测试套件中的一个测试用例\n   - 测试 ID 可能是 \"basic-004\"\n\n2. **测试记录显示**：\n   - 在 `docs/archive/FINAL_SUMMARY.md` 中，\"Redis 管道技术如何工作？\" 这个查询获得了 **0.5593 分**（通过评分）\n   - 但得分相对较低，文档中"
+    },
+    {
+      "test_id": "cross-lang-002",
+      "category": "redis-pipeline",
+      "type": "cross-lang",
+      "query": "How does Redis pipelining improve performance?",
+      "status": "passed",
+      "elapsed_seconds": 20.789976835250854,
+      "cost_usd": 0.12479675000000001,
+      "num_turns": 3,
+      "answer_length": 528,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "pipeline",
+        "管道",
+        "批量",
+        "redis"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的全面检索，**没有找到关于 Redis pipelining 如何提升性能的文档**。\n\n**检索结果**：\n\n1. **Redis 相关文档**：\n   - `docs/runbook/redis-failover.md` - 仅涉及 Redis 主从切换故障恢复\n   - 其他文档中的 Redis 提及都是项目测试记录，不是技术文档\n\n2. **测试记录显示**：\n   - 在测试用例中包含了 \"Redis 管道技术\" 和 \"How does Redis pipelining improve performance?\" 相关的查询\n   - 但测试分析明确指出"
+    },
+    {
+      "test_id": "cross-lang-003",
+      "category": "redis-cross",
+      "type": "cross-lang",
+      "query": "How to recover from Redis master-slave failover?",
+      "status": "passed",
+      "elapsed_seconds": 20.469980001449585,
+      "cost_usd": 0.0967945,
+      "num_turns": 2,
+      "answer_length": 1317,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "failover",
+        "sentinel",
+        "master",
+        "slave",
+        "切换",
+        "恢复",
+        "redis"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 Redis 主从切换故障恢复的完整指南：\n\n**Redis Master-Slave Failover 恢复方法**：\n\n根据 `docs/runbook/redis-failover.md` 文档：\n\n**故障概述**：\n- 当 Redis Sentinel 触发主从切换（failover）后，应用层需要正确处理连接重建\n\n**故障现象**：\n- 应用日志出现大量 `READONLY You can't write against a read only replica` 错误\n- Sentinel 日志显示 `+switch-master` 事"
+    },
+    {
+      "test_id": "cross-lang-004",
+      "category": "k8s-cross",
+      "type": "cross-lang",
+      "query": "Kubernetes pod keeps crashing, how to debug?",
+      "status": "passed",
+      "elapsed_seconds": 22.37810754776001,
+      "cost_usd": 0.1038445,
+      "num_turns": 2,
+      "answer_length": 1480,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "crash",
+        "log",
+        "pod"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 Kubernetes Pod 持续崩溃的完整调试指南：\n\n**Kubernetes Pod Crashing 调试方法**：\n\n根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档：\n\n**故障说明**：\n- Pod 处于 `CrashLoopBackOff` 状态，表示容器反复崩溃，Kubernetes 在重启前会逐渐延长等待时间\n\n**故障现象**：\n- `kubectl get pods` 显示状态为 `CrashLoopBackOff`\n- Pod 重启计数持续增加\n- 应用不可用或服务降级\n\n*"
+    },
+    {
+      "test_id": "paraphrase-001",
+      "category": "redis-ha",
+      "type": "paraphrase",
+      "query": "如何检查 Redis 高可用集群的健康状态？",
+      "status": "passed",
+      "elapsed_seconds": 18.076596975326538,
+      "cost_usd": 0.09668299999999999,
+      "num_turns": 2,
+      "answer_length": 865,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "sentinel",
+        "redis",
+        "高可用",
+        "状态",
+        "master"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于检查 Redis 高可用集群健康状态的方法：\n\n**Redis 高可用集群健康检查**：\n\n根据 `docs/runbook/redis-failover.md` 文档，提供了以下检查方法：\n\n**1. 检查 Sentinel 状态**：\n\n查看所有 master 信息：\n```bash\nredis-cli -p 26379 SENTINEL masters\n```\n\n获取指定 master 的地址：\n```bash\nredis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster\n```\n\n*"
+    },
+    {
+      "test_id": "paraphrase-002",
+      "category": "api-rbac",
+      "type": "paraphrase",
+      "query": "API 接口的权限控制是怎么设计的？",
+      "status": "passed",
+      "elapsed_seconds": 21.902828693389893,
+      "cost_usd": 0.1021815,
+      "num_turns": 2,
+      "answer_length": 1238,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "rbac",
+        "role",
+        "权限",
+        "admin",
+        "viewer",
+        "editor",
+        "授权"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 API 接口权限控制设计的详细信息：\n\n**API 权限控制设计**：\n\n根据 `docs/api/authentication.md` 文档：\n\n**授权模型**：\n\n系统采用 **RBAC（基于角色的访问控制）**：\n\n| 角色 | 权限 |\n|------|------|\n| viewer | 只读访问 |\n| editor | 读写访问 |\n| admin | 全部权限 + 用户管理 |\n| super_admin | 跨租户管理 |\n\n**JWT Token 中的权限信息**：\n\nToken 包含角色信息：\n```json\n{\n  \"su"
+    },
+    {
+      "test_id": "paraphrase-003",
+      "category": "redis-connpool",
+      "type": "paraphrase",
+      "query": "应用连接数据库缓存的最佳实践",
+      "status": "passed",
+      "elapsed_seconds": 18.58692169189453,
+      "cost_usd": 0.10220375000000001,
+      "num_turns": 2,
+      "answer_length": 841,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "连接池",
+        "sentinel",
+        "redis",
+        "配置",
+        "testOnBorrow"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于应用连接数据库缓存的最佳实践：\n\n**应用连接 Redis 缓存的最佳实践**：\n\n根据 `docs/runbook/redis-failover.md` 文档：\n\n**1. 使用 Sentinel 客户端（强制要求）**：\n\n- **必须使用** Sentinel 客户端（如 Jedis Sentinel、redis-py Sentinel）\n- **禁止直连** master IP\n- 原因：Sentinel 客户端能够自动发现新 master，在主从切换时自动重连\n\n**2. 连接池配置**：\n\n**testOnBorrow 配置**：\n- 确"
+    },
+    {
+      "test_id": "complex-001",
+      "category": "k8s-comparison",
+      "type": "complex",
+      "query": "What's the difference between Deployment and StatefulSet?",
+      "status": "passed",
+      "elapsed_seconds": 25.304053783416748,
+      "cost_usd": 0.14350925,
+      "num_turns": 3,
+      "answer_length": 584,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "deployment",
+        "statefulset",
+        "区别"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到专门解释 Deployment 和 StatefulSet 区别的文档**。\n\n**检索结果**：\n\n1. **测试用例中包含了这个问题**：\n   - 在 `docs/e2e-testing.md` 中显示，\"对比分析 (Deployment vs StatefulSet)\" 是复杂推理测试套件中的一个测试用例\n   - 这表明系统预期应该能够回答这个问题\n\n2. **文档提及**：\n   - `docs/runbook/kubernetes-pod-crashloop.md` 中提到了 `deployment` 命令（用于回滚操作）\n   -"
+    },
+    {
+      "test_id": "complex-002",
+      "category": "k8s-troubleshooting",
+      "type": "complex",
+      "query": "How to troubleshoot CrashLoopBackOff in Kubernetes?",
+      "status": "passed",
+      "elapsed_seconds": 22.03042244911194,
+      "cost_usd": 0.11417750000000002,
+      "num_turns": 2,
+      "answer_length": 1473,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "crashloopbackoff",
+        "排查",
+        "log"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 CrashLoopBackOff 故障排查的完整指南：\n\n**CrashLoopBackOff 故障排查方法**：\n\n根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档：\n\n**故障概述**：\n- Pod 处于 `CrashLoopBackOff` 状态，表示容器反复崩溃，Kubernetes 在重启前会逐渐延长等待时间\n\n**故障现象**：\n- `kubectl get pods` 显示状态为 `CrashLoopBackOff`\n- Pod 重启计数持续增加\n- 应用不可用或服务降级\n\n**诊断步骤"
+    },
+    {
+      "test_id": "complex-003",
+      "category": "k8s-service-discovery",
+      "type": "complex",
+      "query": "Kubernetes 中如何实现服务发现？",
+      "status": "passed",
+      "elapsed_seconds": 21.37976360321045,
+      "cost_usd": 0.15036149999999998,
+      "num_turns": 3,
+      "answer_length": 670,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "service",
+        "发现",
+        "dns"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到关于 Kubernetes 服务发现实现的详细文档**。\n\n**检索结果**：\n\n1. **测试用例中包含相关问题**：\n   - 在 `docs/e2e-testing.md` 中显示，测试套件包含了 \"Kubernetes Service 是什么？\" 和 \"Service 类型\" 等相关测试用例\n   - 这表明知识库应该包含 Service 相关的文档\n\n2. **间接提及**：\n   - `docs/runbook/kubernetes-pod-crashloop.md` 中提到 \"确保依赖服务正在运行\"\n   - `docs/api/a"
+    },
+    {
+      "test_id": "complex-004",
+      "category": "multi-doc",
+      "type": "complex",
+      "query": "Pod 崩溃后 Redis 连接会怎样？需要怎么处理？",
+      "status": "passed",
+      "elapsed_seconds": 29.30232310295105,
+      "cost_usd": 0.16005225,
+      "num_turns": 3,
+      "answer_length": 1089,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "pod",
+        "redis",
+        "crash",
+        "连接",
+        "重启",
+        "failover"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 Pod 崩溃后 Redis 连接处理的相关信息：\n\n**Pod 崩溃后 Redis 连接的处理**：\n\n根据 `docs/runbook/redis-failover.md` 和 `docs/runbook/kubernetes-pod-crashloop.md` 文档：\n\n**场景 1：Redis 主从切换导致的连接问题**\n\n**问题**：\n- 当 Redis Sentinel 触发主从切换后，应用层需要正确处理连接重建\n- 如果应用仍连接到旧的 master（现已变成 replica），会出现 `READONLY` 错误\n\n**处理方法**："
+    },
+    {
+      "test_id": "complex-005",
+      "category": "multi-doc-security",
+      "type": "complex",
+      "query": "系统的安全机制有哪些？从认证到部署都说说",
+      "status": "passed",
+      "elapsed_seconds": 36.286147117614746,
+      "cost_usd": 0.22548225,
+      "num_turns": 4,
+      "answer_length": 1437,
+      "tools_used": [
+        "Read",
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "认证",
+        "oauth",
+        "jwt",
+        "token",
+        "安全",
+        "https",
+        "权限"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了系统从认证到部署的安全机制：\n\n**系统安全机制全景**：\n\n## 1. 认证层安全\n\n根据 `docs/api/authentication.md` 文档：\n\n**认证方案**：\n- 采用 **OAuth 2.0 + JWT** 认证\n- 双 token 机制：\n  - **access_token**：有效期 15 分钟（短期，降低被盗用风险）\n  - **refresh_token**：有效期 7 天（长期会话）\n\n**Token 安全**：\n- 签名算法：RS256（非对称加密）\n- 公钥分发：通过 JWKS endpoint 获取\n- Toke"
+    },
+    {
+      "test_id": "howto-001",
+      "category": "k8s-howto",
+      "type": "howto",
+      "query": "How to create a Pod with multiple containers?",
+      "status": "passed",
+      "elapsed_seconds": 43.96691370010376,
+      "cost_usd": 0.2198005,
+      "num_turns": 4,
+      "answer_length": 773,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "pod",
+        "container",
+        "多容器",
+        "sidecar"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到关于如何创建多容器 Pod 的详细文档**。\n\n**检索结果**：\n\n1. **测试用例中包含相关问题**：\n   - 在 `docs/e2e-testing.md` 中显示，复杂推理测试套件包含 \"容器类型对比 (Init vs Sidecar)\" 的测试用例\n   - 这表明知识库应该包含多容器 Pod 的相关内容\n\n2. **间接提及**：\n   - `docs/runbook/kubernetes-pod-crashloop.md` 中提到了 Pod 的 `spec.containers` 配置\n   - 但没有详细说明如何创建多容器 P"
+    },
+    {
+      "test_id": "howto-002",
+      "category": "k8s-resources",
+      "type": "howto",
+      "query": "如何配置 Kubernetes 资源限制？",
+      "status": "passed",
+      "elapsed_seconds": 17.77441382408142,
+      "cost_usd": 0.12034475,
+      "num_turns": 2,
+      "answer_length": 902,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "resource",
+        "limit",
+        "request",
+        "资源",
+        "cpu",
+        "memory"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于配置 Kubernetes 资源限制的信息：\n\n**Kubernetes 资源限制配置**：\n\n根据 `docs/runbook/kubernetes-pod-crashloop.md` 文档：\n\n**检查当前资源限制**：\n\n```bash\nkubectl get pod <pod-name> -n <namespace> -o jsonpath='{.spec.containers[*].resources}'\n```\n\n**配置资源限制**：\n\n在 Pod 或 Deployment 的 YAML 配置中设置：\n\n```yaml\nresource"
+    },
+    {
+      "test_id": "howto-003",
+      "category": "api-refresh",
+      "type": "howto",
+      "query": "refresh_token 过期了怎么办？",
+      "status": "passed",
+      "elapsed_seconds": 21.33187985420227,
+      "cost_usd": 0.12005225,
+      "num_turns": 2,
+      "answer_length": 886,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "refresh",
+        "token",
+        "过期",
+        "刷新",
+        "access_token"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 refresh_token 的相关信息：\n\n**refresh_token 过期处理**：\n\n根据 `docs/api/authentication.md` 文档：\n\n**refresh_token 有效期**：\n- refresh_token 的有效期为 **7 天**\n\n**登录流程**：\n1. 客户端发送用户名密码到 `/api/v1/auth/login`\n2. 服务端验证凭据，签发 access_token（15分钟）和 refresh_token（7天）\n3. 客户端在后续请求中携带 access_token\n4. access_tok"
+    },
+    {
+      "test_id": "howto-004",
+      "category": "redis-config",
+      "type": "howto",
+      "query": "怎么配置 Redis 连接池的空闲超时？",
+      "status": "passed",
+      "elapsed_seconds": 18.986891269683838,
+      "cost_usd": 0.12250425,
+      "num_turns": 2,
+      "answer_length": 712,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "连接池",
+        "idle",
+        "minEvictable",
+        "配置",
+        "超时"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据 docs/ 目录中的文档，我找到了关于 Redis 连接池空闲超时配置的信息：\n\n**Redis 连接池空闲超时配置**：\n\n根据 `docs/runbook/redis-failover.md` 文档：\n\n**配置参数**：\n\n```\nminEvictableIdleTimeMillis=60000\n```\n\n**参数说明**：\n- **参数名**：`minEvictableIdleTimeMillis`\n- **推荐值**：60000（毫秒）= 60 秒\n- **作用**：设置连接在连接池中空闲多长时间后会被回收\n\n**配置目的**：\n\n这是 Redis 连接池的**预防措施**之一"
+    },
+    {
+      "test_id": "concept-001",
+      "category": "k8s-concept",
+      "type": "concept",
+      "query": "What is the purpose of a ReplicaSet?",
+      "status": "passed",
+      "elapsed_seconds": 21.79502010345459,
+      "cost_usd": 0.177509,
+      "num_turns": 3,
+      "answer_length": 701,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "replicaset",
+        "replica",
+        "副本"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到关于 ReplicaSet 的详细文档**。\n\n**检索结果**：\n\n1. **相关概念提及**：\n   - `docs/runbook/kubernetes-pod-crashloop.md` 中提到了 Deployment 的回滚操作\n   - `docs/runbook/redis-failover.md` 中提到了应用 Deployment 的滚动重启\n   - 但都没有详细解释 ReplicaSet 的概念和用途\n\n2. **测试用例**：\n   - `docs/e2e-testing.md` 中包含 \"Deployment 工作原理\""
+    },
+    {
+      "test_id": "concept-002",
+      "category": "k8s-namespace",
+      "type": "concept",
+      "query": "Kubernetes 命名空间的作用是什么？",
+      "status": "passed",
+      "elapsed_seconds": 24.720425605773926,
+      "cost_usd": 0.18238375,
+      "num_turns": 3,
+      "answer_length": 816,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "namespace",
+        "命名空间",
+        "隔离"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到专门解释 Kubernetes 命名空间作用的文档**。\n\n**检索结果**：\n\n1. **命令中的使用**：\n   - `docs/runbook/kubernetes-pod-crashloop.md` 和 `docs/runbook/redis-failover.md` 中多次使用了 `-n <namespace>` 参数\n   - 例如：\n     ```bash\n     kubectl describe pod <pod-name> -n <namespace>\n     kubectl logs <pod-name> -n <nam"
+    },
+    {
+      "test_id": "edge-001",
+      "category": "k8s-pattern",
+      "type": "concept",
+      "query": "What is a sidecar container?",
+      "status": "passed",
+      "elapsed_seconds": 25.896862506866455,
+      "cost_usd": 0.18567275,
+      "num_turns": 3,
+      "answer_length": 698,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "sidecar",
+        "container"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到关于 sidecar container 的详细文档**。\n\n**检索结果**：\n\n1. **测试用例中包含相关问题**：\n   - 在 `docs/e2e-testing.md` 中显示，复杂推理测试套件包含 \"容器类型对比 (Init vs Sidecar)\" 的测试用例\n   - 这表明知识库应该包含 sidecar container 的相关内容\n\n2. **测试覆盖**：\n   - 文档提到了 \"容器类型对比 (Init vs Sidecar)\" 作为复杂推理测试的一部分\n   - 但 docs/ 目录中没有对应的技术文档\n\n**结论*"
+    },
+    {
+      "test_id": "edge-002",
+      "category": "k8s-daemonset",
+      "type": "concept",
+      "query": "Kubernetes 中的 DaemonSet 是什么？",
+      "status": "passed",
+      "elapsed_seconds": 18.136232614517212,
+      "cost_usd": 0.12610375000000001,
+      "num_turns": 2,
+      "answer_length": 522,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": true,
+      "matched_keywords": [
+        "daemonset",
+        "节点"
+      ],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到关于 DaemonSet 的任何文档**。\n\n**检索结果**：\n- 在 docs/ 目录中没有找到任何包含 \"DaemonSet\"、\"daemon set\" 或 \"守护进程\" 相关内容的文档\n\n**结论**：docs/ 目录中**没有关于 Kubernetes DaemonSet 的技术文档**。\n\n如果需要了解 DaemonSet 的概念，建议：\n- 检查项目的其他目录（如 `kubernetes/`、`k8s/` 等）\n- 或者添加 Kubernetes 工作负载类型的文档到知识库中\n- 文档应该包含：\n  - DaemonSet 的定义（"
+    },
+    {
+      "test_id": "notfound-001",
+      "category": "not-in-kb",
+      "type": "notfound",
+      "query": "How to configure Kubernetes with blockchain?",
+      "status": "passed",
+      "elapsed_seconds": 19.09321665763855,
+      "cost_usd": 0.12836124999999998,
+      "num_turns": 2,
+      "answer_length": 530,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": false,
+      "matched_keywords": [],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到关于 Kubernetes 与区块链配置的任何文档**。\n\n**检索结果**：\n- 在 docs/ 目录中没有找到任何包含 \"blockchain\"、\"区块链\"、\"bitcoin\"、\"ethereum\" 或其他加密货币相关内容的文档\n\n**结论**：docs/ 目录中**没有关于 Kubernetes 与区块链配置的文档**。\n\n**知识库范围**：\n\n根据对 docs/ 目录的全面检索，当前知识库主要涵盖：\n\n1. **运维手册**：\n   - Kubernetes Pod 故障排查（CrashLoopBackOff）\n   - Redis 主"
+    },
+    {
+      "test_id": "notfound-002",
+      "category": "not-in-kb",
+      "type": "notfound",
+      "query": "MongoDB 分片集群如何配置？",
+      "status": "passed",
+      "elapsed_seconds": 19.902120351791382,
+      "cost_usd": 0.189369,
+      "num_turns": 3,
+      "answer_length": 511,
+      "tools_used": [
+        "Grep"
+      ],
+      "has_citation": false,
+      "matched_keywords": [],
+      "failure_reasons": [],
+      "answer_preview": "根据我在 docs/ 目录中的检索，**没有找到关于 MongoDB 分片集群配置的文档**。\n\n**检索结果**：\n- 虽然在一些项目状态和测试报告文档中检测到 \"数据库\" 关键词，但都是项目管理相关的内容\n- 没有找到任何关于 MongoDB、分片（sharding）或数据库配置的技术文档\n\n**结论**：docs/ 目录中**没有关于 MongoDB 分片集群配置的文档**。\n\n**知识库范围**：\n\n当前知识库主要涵盖：\n\n1. **Kubernetes 运维**：\n   - Pod 故障排查\n   - 资源限制配置\n   - 部署和回滚操作\n\n2. **Redis 缓存**：\n   "
+    }
+  ]
+}

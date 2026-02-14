@@ -1,0 +1,829 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 34 | 时间: 2026-02-14 09:03:05
+模式: Grep/Glob/Read (无 MCP)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_090305.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_090305_detail.jsonl
+
+
+============================================================
+[1/34] basic-001 (k8s-basic) [keyword]
+  Q: What is a Pod in Kubernetes?
+  ⏳ 首次查询，加载 MCP server (BGE-M3)...
+  开始: 09:03:05
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] I'll search the docs/ directory for information about Pods in Kubernetes.
+    [TOOL] Glob({"pattern": "docs/**/*.md"})
+    [TOOL] Grep({"-i": true, "path": "docs", "pattern": "Pod"})
+    [TOOL_OUT] Found 12 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    ... (13 lines total)
+    [TOOL_OUT] /home/shenzt/ws/knowledge-base-search/docs/design.md
+/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md
+/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md
+    ... (18 lines total)
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md"})
+    [TOOL_OUT] 1→---
+     2→id: k8s-crashloop-001
+     3→title: Kubernetes Pod CrashLoopBackOff Troubleshooting Guide
+    ... (96 lines total)
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 Kubernetes Pod 的信息： (+16 lines)
+    [RESULT] 448 chars | 4 turns | 21278ms
+  📌 Session: 165464c8-018c-4d24-93ac-dc800fb2a2b8
+  ✅ 通过 | 448字符 | 22.9s | $0.0367 | 引用✅
+  🔧 工具: Read, Grep, Glob
+  🔑 关键词: pod, kubernetes
+  结束: 09:03:28 | 耗时: 22.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[2/34] basic-002 (k8s-service) [keyword]
+  Q: Kubernetes Service 是什么？
+  开始: 09:03:28
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Service|service"})
+    [TOOL_OUT] Found 7 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    ... (8 lines total)
+    [TOOL] Grep({"-i": true, "context": 3, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "kubernetes.*service|k8s.*service"})
+    [TOOL_OUT] Found 3 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+docs/e2e-testing.md
+    [TOOL] Grep({"context": 5, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "^#.*[Ss]ervice"})
+    [TOOL_OUT] No files found
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/e2e-testing.md"})
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md"})
+    [TOOL_OUT] 1→# E2E 测试和评测系统
+     2→
+     3→**版本**: v1.0
+    ... (326 lines total)
+    [TOOL_OUT] 1→---
+     2→id: k8s-crashloop-001
+     3→title: Kubernetes Pod CrashLoopBackOff Troubleshooting Guide
+    ... (96 lines total)
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到专门介绍 Kubernetes Service 概念的文档**。 (+15 lines)
+    [RESULT] 564 chars | 6 turns | 29608ms
+  ✅ 通过 | 564字符 | 31.1s | $0.0692 | 引用✅
+  🔧 工具: Read, Grep
+  🔑 关键词: service
+  结束: 09:03:59 | 耗时: 31.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[3/34] basic-003 (k8s-init) [keyword]
+  Q: What are Init Containers?
+  开始: 09:03:59
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [TOOL] Grep({"-i": true, "context": 5, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "init.*container|initcontainer"})
+    [TOOL_OUT] Found 2 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/archive/CURRENT_STATUS.md"})
+    [TOOL_OUT] 1→# 项目当前状态总结
+     2→
+     3→**更新时间**: 2025-02-13 16:10
+    ... (286 lines total)
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "^#.*init|init.*container"})
+    [TOOL_OUT] Found 2 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    [THINK] .
+    [TOOL] Glob({"path": "/home/shenzt/ws/knowledge-base-search", "pattern": "**/*.md"})
+    [TOOL_OUT] /home/shenzt/ws/knowledge-base-search/.claude/rules/doc-frontmatter.md
+/home/shenzt/ws/knowledge-base-search/.claude/rules/retrieval-strategy.md
+/home/shenzt/ws/knowledge-base-search/.claude/rules/python-style.md
+    ... (87 lines total)
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "init container"})
+    [TOOL_OUT] Found 2 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    [THINK] .
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/archive/FINAL_SUMMARY.md"})
+    [TOOL_OUT] 1→# 🎉 项目验证完成总结
+     2→
+     3→**日期**: 2025-02-13 17:05
+    ... (86 lines total)
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到专门解释 Init Containers 概念的文档**。 (+16 lines)
+    [RESULT] 503 chars | 7 turns | 37023ms
+  ✅ 通过 | 503字符 | 38.6s | $0.1320 | 引用✅
+  🔧 工具: Read, Glob, Grep
+  🔑 关键词: init, container
+  结束: 09:04:38 | 耗时: 38.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[4/34] grep-001 (redis-error) [exact]
+  Q: READONLY You can't write against a read only replica
+  💡 精确错误信息，Grep 直接命中 redis-failover.md
+  开始: 09:04:38
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "readonly|read only|replica"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [THINK] .
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/redis-failover.md"})
+    [TOOL_OUT] 1→---
+     2→id: redis-failover-001
+     3→title: Redis 主从切换故障恢复手册
+    ... (87 lines total)
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 "READONLY You can't write against a read only replica" 错误的详细信息： (+31 lines)
+    [RESULT] 731 chars | 3 turns | 19795ms
+  ✅ 通过 | 731字符 | 21.3s | $0.0812 | 引用✅
+  🔧 工具: Read, Grep
+  🔑 关键词: readonly, read only, replica, 写入, failover, 切换
+  结束: 09:04:59 | 耗时: 21.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[5/34] grep-002 (k8s-oom) [exact]
+  Q: OOMKilled
+  💡 精确错误码，Grep 直接命中 k8s-crashloop.md
+  开始: 09:04:59
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "OOMKilled|OOM"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 OOMKilled 的详细信息： (+42 lines)
+    [RESULT] 707 chars | 2 turns | 11557ms
+  ✅ 通过 | 707字符 | 13.1s | $0.0599 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: oomkilled, oom, memory, 内存, limit
+  结束: 09:05:12 | 耗时: 13.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[6/34] grep-003 (api-errorcode) [exact]
+  Q: TOKEN_EXPIRED 错误码是什么意思？
+  💡 精确错误码，Grep 命中 authentication.md
+  开始: 09:05:12
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "TOKEN_EXPIRED|token.*expired|expired.*token"})
+    [TOOL_OUT] Found 1 file
+docs/api/authentication.md
+    [THINK] .
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md"})
+    [TOOL_OUT] 1→---
+     2→id: api-auth-001
+     3→title: API 认证与授权设计文档
+    ... (88 lines total)
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 TOKEN_EXPIRED 错误码的详细信息： (+29 lines)
+    [RESULT] 660 chars | 3 turns | 21736ms
+  ✅ 通过 | 660字符 | 23.3s | $0.0873 | 引用✅
+  🔧 工具: Read, Grep
+  🔑 关键词: token_expired, 过期, 401, 错误码
+  结束: 09:05:35 | 耗时: 23.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[7/34] grep-004 (api-jwt) [exact]
+  Q: JWT token 的结构是什么？
+  💡 精确关键词 JWT，Grep 命中 authentication.md
+  开始: 09:05:35
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "JWT.*结构|JWT.*structure|token.*结构"})
+    [TOOL_OUT] Found 1 file
+docs/api/authentication.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 JWT token 结构的详细信息： (+36 lines)
+    [RESULT] 696 chars | 2 turns | 13173ms
+  ✅ 通过 | 696字符 | 14.7s | $0.0647 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: jwt, token, sub, exp, 签名
+  结束: 09:05:50 | 耗时: 14.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[8/34] grep-005 (redis-sentinel) [exact]
+  Q: SENTINEL failover 命令怎么用？
+  💡 精确命令名，Grep 命中 redis-failover.md
+  开始: 09:05:50
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "SENTINEL.*failover|sentinel.*failover"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 SENTINEL failover 命令的使用信息： (+34 lines)
+    [RESULT] 642 chars | 2 turns | 14369ms
+  ✅ 通过 | 642字符 | 15.9s | $0.0667 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: sentinel, failover, 主从, 切换
+  结束: 09:06:06 | 耗时: 15.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[9/34] semantic-001 (redis-symptom) [semantic]
+  Q: 应用突然无法写入缓存，日志报只读错误
+  💡 症状描述→redis-failover.md，无直接关键词匹配
+  开始: 09:06:06
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "只读|read.*only|无法写入|写入.*错误|缓存"})
+    [TOOL_OUT] Found 4 files
+docs/dual-repo-architecture.md
+docs/progress-2025-02-13.md
+docs/runbook/redis-failover.md
+docs/api/authentication.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于应用无法写入缓存、报只读错误的详细信息： (+55 lines)
+    [RESULT] 1134 chars | 2 turns | 18122ms
+  ✅ 通过 | 1134字符 | 19.8s | $0.0742 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: redis, readonly, 写入, failover, sentinel, 主从, 切换, 只读
+  结束: 09:06:26 | 耗时: 19.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[10/34] semantic-002 (k8s-symptom) [semantic]
+  Q: 容器一直重启，无法正常运行
+  💡 症状描述→k8s-crashloop.md，不含 CrashLoopBackOff 关键词
+  开始: 09:06:26
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "重启|restart|crashloop|容器.*崩溃|container.*crash"})
+    [TOOL_OUT] Found 4 files
+docs/e2e-testing.md
+docs/runbook/redis-failover.md
+docs/design.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于容器一直重启问题的详细排查指南： (+72 lines)
+    [RESULT] 1403 chars | 2 turns | 18571ms
+  ✅ 通过 | 1403字符 | 20.1s | $0.0816 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: crash, 重启, crashloop, pod, 容器
+  结束: 09:06:46 | 耗时: 20.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[11/34] semantic-003 (k8s-oom-semantic) [semantic]
+  Q: 内存不足导致进程被杀
+  💡 语义描述 OOMKilled，不含英文关键词
+  开始: 09:06:46
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "内存不足|内存.*杀|OOM|out of memory|memory.*kill"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于内存不足导致进程被杀的详细信息： (+52 lines)
+    [RESULT] 872 chars | 2 turns | 17584ms
+  ✅ 通过 | 872字符 | 19.1s | $0.0766 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: oom, memory, 内存, killed, limit, 资源
+  结束: 09:07:05 | 耗时: 19.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[12/34] semantic-004 (api-session) [semantic]
+  Q: 用户登录后如何保持会话状态？
+  💡 语义→authentication.md 的 token 机制，不含 JWT/OAuth 关键词
+  开始: 09:07:05
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "会话|session|登录|login|保持.*状态|token.*refresh"})
+    [TOOL_OUT] Found 5 files
+docs/archive/COMPLETE_SUMMARY.md
+docs/archive/DUAL_LAYER_SUMMARY.md
+    ... (6 lines total)
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于用户登录后如何保持会话状态的详细信息： (+45 lines)
+    [RESULT] 1068 chars | 2 turns | 18829ms
+  ✅ 通过 | 1068字符 | 20.4s | $0.0793 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: token, jwt, oauth, 认证, 登录, 会话
+  结束: 09:07:25 | 耗时: 20.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[13/34] cross-lang-001 (redis-pipeline) [cross-lang]
+  Q: Redis 管道技术如何工作？
+  开始: 09:07:25
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "管道|pipeline|批量|batch"})
+    [TOOL_OUT] Found 10 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    ... (11 lines total)
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Redis.*管道|Redis.*pipeline"})
+    [TOOL_OUT] Found 7 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    ... (8 lines total)
+    [THINK] .
+    [TOOL] Glob({"path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "**/*redis*.md"})
+    [TOOL_OUT] /home/shenzt/ws/knowledge-base-search/docs/runbook/redis-failover.md
+    [THINK] .
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/e2e-testing.md"})
+    [TOOL_OUT] 1→# E2E 测试和评测系统
+     2→
+     3→**版本**: v1.0
+    ... (326 lines total)
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到专门解释 Redis 管道技术如何工作的文档**。 (+16 lines)
+    [RESULT] 498 chars | 5 turns | 38353ms
+  ✅ 通过 | 498字符 | 39.9s | $0.1796 | 引用✅
+  🔧 工具: Read, Glob, Grep
+  🔑 关键词: pipeline, 管道, redis
+  结束: 09:08:05 | 耗时: 39.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[14/34] cross-lang-002 (redis-pipeline) [cross-lang]
+  Q: How does Redis pipelining improve performance?
+  开始: 09:08:05
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "pipelining|pipeline.*performance|redis.*performance"})
+    [TOOL_OUT] No files found
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 10, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "redis"})
+    [TOOL_OUT] Found 14 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    ... (15 lines total)
+    [THINK] 根据我在 docs/ 目录中的全面检索，**没有找到关于 Redis pipelining 如何提升性能的文档**。 (+17 lines)
+    [RESULT] 528 chars | 3 turns | 19281ms
+  ✅ 通过 | 528字符 | 20.8s | $0.1248 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: pipeline, 管道, 批量, redis
+  结束: 09:08:26 | 耗时: 20.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[15/34] cross-lang-003 (redis-cross) [cross-lang]
+  Q: How to recover from Redis master-slave failover?
+  💡 英文查询→中文文档 redis-failover.md
+  开始: 09:08:26
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "failover|master.*slave|主从.*切换|recover"})
+    [TOOL_OUT] Found 2 files
+docs/runbook/redis-failover.md
+docs/design.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 Redis 主从切换故障恢复的完整指南： (+64 lines)
+    [RESULT] 1317 chars | 2 turns | 18949ms
+  ✅ 通过 | 1317字符 | 20.5s | $0.0968 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: failover, sentinel, master, slave, 切换, 恢复, redis
+  结束: 09:08:47 | 耗时: 20.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[16/34] cross-lang-004 (k8s-cross) [cross-lang]
+  Q: Kubernetes pod keeps crashing, how to debug?
+  💡 英文口语化查询→英文文档，但不含精确关键词 CrashLoopBackOff
+  开始: 09:08:47
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "crash|debug|troubleshoot|排查"})
+    [TOOL_OUT] Found 4 files
+docs/e2e-testing.md
+docs/runbook/redis-failover.md
+docs/design.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 Kubernetes Pod 持续崩溃的完整调试指南： (+80 lines)
+    [RESULT] 1480 chars | 2 turns | 20810ms
+  ✅ 通过 | 1480字符 | 22.4s | $0.1038 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: crash, log, pod
+  结束: 09:09:09 | 耗时: 22.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[17/34] paraphrase-001 (redis-ha) [paraphrase]
+  Q: 如何检查 Redis 高可用集群的健康状态？
+  💡 高可用→Sentinel，健康状态→排查步骤，改写后无直接关键词
+  开始: 09:09:09
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "健康|health|状态|status|sentinel.*master|高可用"})
+    [TOOL_OUT] Found 14 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+    ... (15 lines total)
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于检查 Redis 高可用集群健康状态的方法： (+51 lines)
+    [RESULT] 865 chars | 2 turns | 16515ms
+  ✅ 通过 | 865字符 | 18.1s | $0.0967 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: sentinel, redis, 高可用, 状态, master
+  结束: 09:09:27 | 耗时: 18.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[18/34] paraphrase-002 (api-rbac) [paraphrase]
+  Q: API 接口的权限控制是怎么设计的？
+  💡 权限控制→RBAC，改写后需语义理解
+  开始: 09:09:27
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "权限|permission|授权|authorization|RBAC|access control"})
+    [TOOL_OUT] Found 4 files
+docs/archive/SUMMARY.md
+docs/dual-repo-architecture.md
+docs/api/authentication.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 API 接口权限控制设计的详细信息： (+70 lines)
+    [RESULT] 1238 chars | 2 turns | 20368ms
+  ✅ 通过 | 1238字符 | 21.9s | $0.1022 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: rbac, role, 权限, admin, viewer, editor, 授权
+  结束: 09:09:49 | 耗时: 21.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[19/34] paraphrase-003 (redis-connpool) [paraphrase]
+  Q: 应用连接数据库缓存的最佳实践
+  💡 数据库缓存→Redis，连接→连接池，需语义关联
+  开始: 09:09:49
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "最佳实践|best practice|连接池|connection pool|客户端配置"})
+    [TOOL_OUT] Found 4 files
+docs/e2e-testing.md
+docs/dual-repo-architecture.md
+docs/progress-2025-02-13.md
+docs/runbook/redis-failover.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于应用连接数据库缓存的最佳实践： (+48 lines)
+    [RESULT] 841 chars | 2 turns | 17088ms
+  ✅ 通过 | 841字符 | 18.6s | $0.1022 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: 连接池, sentinel, redis, 配置, testOnBorrow
+  结束: 09:10:08 | 耗时: 18.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[20/34] complex-001 (k8s-comparison) [complex]
+  Q: What's the difference between Deployment and StatefulSet?
+  开始: 09:10:08
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Deployment|StatefulSet|difference|区别|对比"})
+    [TOOL_OUT] Found 14 files
+docs/archive/CURRENT_STATUS.md
+docs/archive/PROJECT_STATUS.md
+    ... (15 lines total)
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 20, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Deployment.*StatefulSet|StatefulSet.*Deployment"})
+    [TOOL_OUT] Found 1 file
+docs/e2e-testing.md
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到专门解释 Deployment 和 StatefulSet 区别的文档**。 (+17 lines)
+    [RESULT] 584 chars | 3 turns | 23721ms
+  ✅ 通过 | 584字符 | 25.3s | $0.1435 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: deployment, statefulset, 区别
+  结束: 09:10:33 | 耗时: 25.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[21/34] complex-002 (k8s-troubleshooting) [complex]
+  Q: How to troubleshoot CrashLoopBackOff in Kubernetes?
+  开始: 09:10:33
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 20, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "CrashLoopBackOff|troubleshoot.*crash"})
+    [TOOL_OUT] Found 3 files
+docs/e2e-testing.md
+docs/design.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 CrashLoopBackOff 故障排查的完整指南： (+80 lines)
+    [RESULT] 1473 chars | 2 turns | 20489ms
+  ✅ 通过 | 1473字符 | 22.0s | $0.1142 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: crashloopbackoff, 排查, log
+  结束: 09:10:55 | 耗时: 22.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[22/34] complex-003 (k8s-service-discovery) [complex]
+  Q: Kubernetes 中如何实现服务发现？
+  开始: 09:10:55
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "服务发现|service discovery|DNS|endpoint"})
+    [TOOL_OUT] Found 2 files
+docs/api/authentication.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Service.*kubernetes|k8s.*service|ClusterIP|NodePort"})
+    [TOOL_OUT] Found 1 file
+docs/e2e-testing.md
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到关于 Kubernetes 服务发现实现的详细文档**。 (+18 lines)
+    [RESULT] 670 chars | 3 turns | 19855ms
+  ✅ 通过 | 670字符 | 21.4s | $0.1504 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: service, 发现, dns
+  结束: 09:11:16 | 耗时: 21.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[23/34] complex-004 (multi-doc) [complex]
+  Q: Pod 崩溃后 Redis 连接会怎样？需要怎么处理？
+  💡 需要综合 k8s-crashloop + redis-failover 两个文档
+  开始: 09:11:16
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Pod.*崩溃|Pod.*重启|连接.*重建|connection.*rebuild|应用.*重启"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 20, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "重启.*应用|rollout.*restart|pod.*restart"})
+    [TOOL_OUT] Found 2 files
+docs/runbook/redis-failover.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 Pod 崩溃后 Redis 连接处理的相关信息： (+53 lines)
+    [RESULT] 1089 chars | 3 turns | 27732ms
+  ✅ 通过 | 1089字符 | 29.3s | $0.1601 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: pod, redis, crash, 连接, 重启, failover
+  结束: 09:11:46 | 耗时: 29.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[24/34] complex-005 (multi-doc-security) [complex]
+  Q: 系统的安全机制有哪些？从认证到部署都说说
+  💡 需要综合 authentication.md + configuration.md
+  开始: 09:11:46
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "安全|security|认证|authentication|HTTPS|加密"})
+    [TOOL_OUT] Found 12 files
+docs/guides/configuration.md
+docs/archive/FINAL_SUMMARY.md
+    ... (13 lines total)
+    [THINK] .
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md"})
+    [TOOL_OUT] 1→---
+     2→id: api-auth-001
+     3→title: API 认证与授权设计文档
+    ... (88 lines total)
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "SecurityContext|RBAC|权限.*拒绝|permission.*denied"})
+    [TOOL_OUT] Found 2 files
+docs/api/authentication.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了系统从认证到部署的安全机制： (+85 lines)
+    [RESULT] 1437 chars | 4 turns | 34774ms
+  ✅ 通过 | 1437字符 | 36.3s | $0.2255 | 引用✅
+  🔧 工具: Read, Grep
+  🔑 关键词: 认证, oauth, jwt, token, 安全, https, 权限
+  结束: 09:12:22 | 耗时: 36.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[25/34] howto-001 (k8s-howto) [howto]
+  Q: How to create a Pod with multiple containers?
+  开始: 09:12:22
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "multiple.*container|多个.*容器|sidecar|init.*container"})
+    [TOOL_OUT] Found 3 files
+docs/archive/FINAL_SUMMARY.md
+docs/archive/CURRENT_STATUS.md
+docs/e2e-testing.md
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 20, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Init.*Sidecar|容器.*类型|container.*type"})
+    [TOOL_OUT] Found 1 file
+docs/e2e-testing.md
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Pod.*yaml|Pod.*spec|containers:\\[|创建.*Pod"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到关于如何创建多容器 Pod 的详细文档**。 (+25 lines)
+    [RESULT] 773 chars | 4 turns | 42491ms
+  ✅ 通过 | 773字符 | 44.0s | $0.2198 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: pod, container, 多容器, sidecar
+  结束: 09:13:06 | 耗时: 44.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[26/34] howto-002 (k8s-resources) [howto]
+  Q: 如何配置 Kubernetes 资源限制？
+  开始: 09:13:06
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "资源限制|resource.*limit|requests.*limits|memory.*limit|cpu.*limit"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于配置 Kubernetes 资源限制的信息： (+50 lines)
+    [RESULT] 902 chars | 2 turns | 16126ms
+  ✅ 通过 | 902字符 | 17.8s | $0.1203 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: resource, limit, request, 资源, cpu, memory
+  结束: 09:13:24 | 耗时: 17.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[27/34] howto-003 (api-refresh) [howto]
+  Q: refresh_token 过期了怎么办？
+  💡 实操问题→authentication.md 的 token 刷新流程
+  开始: 09:13:24
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "refresh_token.*过期|refresh_token.*expire|token.*7.*天|重新登录"})
+    [TOOL_OUT] Found 1 file
+docs/api/authentication.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 refresh_token 的相关信息： (+35 lines)
+    [RESULT] 886 chars | 2 turns | 19768ms
+  ✅ 通过 | 886字符 | 21.3s | $0.1201 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: refresh, token, 过期, 刷新, access_token
+  结束: 09:13:45 | 耗时: 21.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[28/34] howto-004 (redis-config) [howto]
+  Q: 怎么配置 Redis 连接池的空闲超时？
+  💡 实操→redis-failover.md 的 minEvictableIdleTimeMillis
+  开始: 09:13:45
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "空闲|idle|minEvictableIdleTimeMillis|连接池.*配置|pool.*config"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [THINK] 根据 docs/ 目录中的文档，我找到了关于 Redis 连接池空闲超时配置的信息： (+46 lines)
+    [RESULT] 712 chars | 2 turns | 17390ms
+  ✅ 通过 | 712字符 | 19.0s | $0.1225 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: 连接池, idle, minEvictable, 配置, 超时
+  结束: 09:14:04 | 耗时: 19.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[29/34] concept-001 (k8s-concept) [concept]
+  Q: What is the purpose of a ReplicaSet?
+  开始: 09:14:04
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "ReplicaSet|replica.*set|副本集"})
+    [TOOL_OUT] No files found
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Deployment|副本|replica|扩缩容|scale"})
+    [TOOL_OUT] Found 6 files
+docs/e2e-testing.md
+docs/archive/SUMMARY.md
+    ... (7 lines total)
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到关于 ReplicaSet 的详细文档**。 (+24 lines)
+    [RESULT] 701 chars | 3 turns | 20244ms
+  ✅ 通过 | 701字符 | 21.8s | $0.1775 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: replicaset, replica, 副本
+  结束: 09:14:26 | 耗时: 21.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[30/34] concept-002 (k8s-namespace) [concept]
+  Q: Kubernetes 命名空间的作用是什么？
+  开始: 09:14:26
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "命名空间|namespace|ns |隔离"})
+    [TOOL_OUT] Found 7 files
+docs/archive/PROJECT_STATUS.md
+docs/archive/COMPLETE_SUMMARY.md
+    ... (8 lines total)
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 20, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "-n <namespace>|namespace.*作用|namespace.*purpose"})
+    [TOOL_OUT] Found 2 files
+docs/runbook/redis-failover.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到专门解释 Kubernetes 命名空间作用的文档**。 (+29 lines)
+    [RESULT] 816 chars | 3 turns | 23178ms
+  ✅ 通过 | 816字符 | 24.7s | $0.1824 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: namespace, 命名空间, 隔离
+  结束: 09:14:51 | 耗时: 24.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[31/34] edge-001 (k8s-pattern) [concept]
+  Q: What is a sidecar container?
+  开始: 09:14:51
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "sidecar|边车|辅助容器"})
+    [TOOL_OUT] Found 1 file
+docs/e2e-testing.md
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 20, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Init.*vs.*Sidecar|Sidecar.*Init|容器.*类型.*对比"})
+    [TOOL_OUT] Found 1 file
+docs/e2e-testing.md
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到关于 sidecar container 的详细文档**。 (+23 lines)
+    [RESULT] 698 chars | 3 turns | 24301ms
+  ✅ 通过 | 698字符 | 25.9s | $0.1857 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: sidecar, container
+  结束: 09:15:16 | 耗时: 25.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[32/34] edge-002 (k8s-daemonset) [concept]
+  Q: Kubernetes 中的 DaemonSet 是什么？
+  开始: 09:15:16
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "DaemonSet|daemon.*set|守护进程"})
+    [TOOL_OUT] No files found
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到关于 DaemonSet 的任何文档**。 (+17 lines)
+    [RESULT] 522 chars | 2 turns | 16606ms
+  ✅ 通过 | 522字符 | 18.1s | $0.1261 | 引用✅
+  🔧 工具: Grep
+  🔑 关键词: daemonset, 节点
+  结束: 09:15:35 | 耗时: 18.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[33/34] notfound-001 (not-in-kb) [notfound]
+  Q: How to configure Kubernetes with blockchain?
+  开始: 09:15:35
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "blockchain|区块链|bitcoin|ethereum|crypto"})
+    [TOOL_OUT] No files found
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到关于 Kubernetes 与区块链配置的任何文档**。 (+27 lines)
+    [RESULT] 530 chars | 2 turns | 17544ms
+  ✅ 通过 | 530字符 | 19.1s | $0.1284 | 引用❌
+  🔧 工具: Grep
+  结束: 09:15:54 | 耗时: 19.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[34/34] notfound-002 (not-in-kb) [notfound]
+  Q: MongoDB 分片集群如何配置？
+  开始: 09:15:54
+    [INIT] session=165464c8-018c-4d24-93ac-dc800fb2a2b8 model=claude-sonnet-4-5-20250929
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 15, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "MongoDB|mongo|分片|sharding|数据库"})
+    [TOOL_OUT] Found 6 files
+docs/archive/CURRENT_STATUS.md
+docs/archive/PROJECT_STATUS.md
+    ... (7 lines total)
+    [THINK] .
+    [TOOL] Grep({"-i": true, "context": 20, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "MongoDB.*分片|MongoDB.*sharding|MongoDB.*配置"})
+    [TOOL_OUT] No files found
+    [THINK] 根据我在 docs/ 目录中的检索，**没有找到关于 MongoDB 分片集群配置的文档**。 (+30 lines)
+    [RESULT] 511 chars | 3 turns | 18347ms
+  ✅ 通过 | 511字符 | 19.9s | $0.1894 | 引用❌
+  🔧 工具: Grep
+  结束: 09:16:14 | 耗时: 19.9s
+--------------------------------------------------------------------------------
+
+================================================================================
+📊 总结: ✅34 ❌0 ⚠️0 / 34 (100.0%)
+⏱️  总耗时: 788.3s | 平均: 23.2s
+💰 总费用: $4.0812
+
+📈 按查询类型:
+  ✅ 复杂推理/多文档: 5/5 (100%)
+  ✅ 概念型: 4/4 (100%)
+  ✅ 跨语言: 4/4 (100%)
+  ✅ 精确匹配(Grep擅长): 5/5 (100%)
+  ✅ 实操问答: 4/4 (100%)
+  ✅ 关键词基础: 3/3 (100%)
+  ✅ 未收录: 2/2 (100%)
+  ✅ 同义改写(Hybrid擅长): 3/3 (100%)
+  ✅ 语义/症状(Hybrid擅长): 4/4 (100%)
+
+📋 按 category:
+  ✅ api-errorcode: 1/1 (100%)
+  ✅ api-jwt: 1/1 (100%)
+  ✅ api-rbac: 1/1 (100%)
+  ✅ api-refresh: 1/1 (100%)
+  ✅ api-session: 1/1 (100%)
+  ✅ k8s-basic: 1/1 (100%)
+  ✅ k8s-comparison: 1/1 (100%)
+  ✅ k8s-concept: 1/1 (100%)
+  ✅ k8s-cross: 1/1 (100%)
+  ✅ k8s-daemonset: 1/1 (100%)
+  ✅ k8s-howto: 1/1 (100%)
+  ✅ k8s-init: 1/1 (100%)
+  ✅ k8s-namespace: 1/1 (100%)
+  ✅ k8s-oom: 1/1 (100%)
+  ✅ k8s-oom-semantic: 1/1 (100%)
+  ✅ k8s-pattern: 1/1 (100%)
+  ✅ k8s-resources: 1/1 (100%)
+  ✅ k8s-service: 1/1 (100%)
+  ✅ k8s-service-discovery: 1/1 (100%)
+  ✅ k8s-symptom: 1/1 (100%)
+  ✅ k8s-troubleshooting: 1/1 (100%)
+  ✅ multi-doc: 1/1 (100%)
+  ✅ multi-doc-security: 1/1 (100%)
+  ✅ not-in-kb: 2/2 (100%)
+  ✅ redis-config: 1/1 (100%)
+  ✅ redis-connpool: 1/1 (100%)
+  ✅ redis-cross: 1/1 (100%)
+  ✅ redis-error: 1/1 (100%)
+  ✅ redis-ha: 1/1 (100%)
+  ✅ redis-pipeline: 2/2 (100%)
+  ✅ redis-sentinel: 1/1 (100%)
+  ✅ redis-symptom: 1/1 (100%)
+
+📁 汇总: /home/shenzt/ws/knowledge-base-search/eval/agentic_rag_test_20260214_090305.json
+📋 日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_090305.log
+📝 详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_090305_detail.jsonl

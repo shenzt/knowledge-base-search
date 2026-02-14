@@ -22,21 +22,77 @@ from claude_agent_sdk import query, ClaudeAgentOptions
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 TEST_CASES = [
-    {"id": "basic-001", "query": "What is a Pod in Kubernetes?", "category": "k8s-basic"},
-    {"id": "basic-002", "query": "Kubernetes Service 是什么？", "category": "k8s-service"},
-    {"id": "basic-003", "query": "What are Init Containers?", "category": "k8s-init"},
-    {"id": "cross-lang-001", "query": "Redis 管道技术如何工作？", "category": "redis-pipeline"},
-    {"id": "cross-lang-002", "query": "How does Redis pipelining improve performance?", "category": "redis-pipeline"},
-    {"id": "complex-001", "query": "What's the difference between Deployment and StatefulSet?", "category": "k8s-comparison"},
-    {"id": "complex-002", "query": "How to troubleshoot CrashLoopBackOff in Kubernetes?", "category": "k8s-troubleshooting"},
-    {"id": "complex-003", "query": "Kubernetes 中如何实现服务发现？", "category": "k8s-service-discovery"},
-    {"id": "howto-001", "query": "How to create a Pod with multiple containers?", "category": "k8s-howto"},
-    {"id": "howto-002", "query": "如何配置 Kubernetes 资源限制？", "category": "k8s-resources"},
-    {"id": "concept-001", "query": "What is the purpose of a ReplicaSet?", "category": "k8s-concept"},
-    {"id": "concept-002", "query": "Kubernetes 命名空间的作用是什么？", "category": "k8s-namespace"},
-    {"id": "edge-001", "query": "What is a sidecar container?", "category": "k8s-pattern"},
-    {"id": "edge-002", "query": "Kubernetes 中的 DaemonSet 是什么？", "category": "k8s-daemonset"},
-    {"id": "notfound-001", "query": "How to configure Kubernetes with blockchain?", "category": "not-in-kb", "expect_no_results": True},
+    # ── 基础关键词查询（Grep 擅长）── type: keyword
+    {"id": "basic-001", "query": "What is a Pod in Kubernetes?", "category": "k8s-basic", "type": "keyword"},
+    {"id": "basic-002", "query": "Kubernetes Service 是什么？", "category": "k8s-service", "type": "keyword"},
+    {"id": "basic-003", "query": "What are Init Containers?", "category": "k8s-init", "type": "keyword"},
+
+    # ── 精确关键词/错误码（Grep 最强）── type: exact
+    {"id": "grep-001", "query": "READONLY You can't write against a read only replica", "category": "redis-error",
+     "type": "exact", "note": "精确错误信息，Grep 直接命中 redis-failover.md"},
+    {"id": "grep-002", "query": "OOMKilled", "category": "k8s-oom",
+     "type": "exact", "note": "精确错误码，Grep 直接命中 k8s-crashloop.md"},
+    {"id": "grep-003", "query": "TOKEN_EXPIRED 错误码是什么意思？", "category": "api-errorcode",
+     "type": "exact", "note": "精确错误码，Grep 命中 authentication.md"},
+    {"id": "grep-004", "query": "JWT token 的结构是什么？", "category": "api-jwt",
+     "type": "exact", "note": "精确关键词 JWT，Grep 命中 authentication.md"},
+    {"id": "grep-005", "query": "SENTINEL failover 命令怎么用？", "category": "redis-sentinel",
+     "type": "exact", "note": "精确命令名，Grep 命中 redis-failover.md"},
+
+    # ── 症状描述型（Hybrid Search 擅长）── type: semantic
+    {"id": "semantic-001", "query": "应用突然无法写入缓存，日志报只读错误", "category": "redis-symptom",
+     "type": "semantic", "note": "症状描述→redis-failover.md，无直接关键词匹配"},
+    {"id": "semantic-002", "query": "容器一直重启，无法正常运行", "category": "k8s-symptom",
+     "type": "semantic", "note": "症状描述→k8s-crashloop.md，不含 CrashLoopBackOff 关键词"},
+    {"id": "semantic-003", "query": "内存不足导致进程被杀", "category": "k8s-oom-semantic",
+     "type": "semantic", "note": "语义描述 OOMKilled，不含英文关键词"},
+    {"id": "semantic-004", "query": "用户登录后如何保持会话状态？", "category": "api-session",
+     "type": "semantic", "note": "语义→authentication.md 的 token 机制，不含 JWT/OAuth 关键词"},
+
+    # ── 跨语言查询（Hybrid Search 擅长）── type: cross-lang
+    {"id": "cross-lang-001", "query": "Redis 管道技术如何工作？", "category": "redis-pipeline", "type": "cross-lang"},
+    {"id": "cross-lang-002", "query": "How does Redis pipelining improve performance?", "category": "redis-pipeline", "type": "cross-lang"},
+    {"id": "cross-lang-003", "query": "How to recover from Redis master-slave failover?", "category": "redis-cross",
+     "type": "cross-lang", "note": "英文查询→中文文档 redis-failover.md"},
+    {"id": "cross-lang-004", "query": "Kubernetes pod keeps crashing, how to debug?", "category": "k8s-cross",
+     "type": "cross-lang", "note": "英文口语化查询→英文文档，但不含精确关键词 CrashLoopBackOff"},
+
+    # ── 同义词改写型（Hybrid Search 擅长）── type: paraphrase
+    {"id": "paraphrase-001", "query": "如何检查 Redis 高可用集群的健康状态？", "category": "redis-ha",
+     "type": "paraphrase", "note": "高可用→Sentinel，健康状态→排查步骤，改写后无直接关键词"},
+    {"id": "paraphrase-002", "query": "API 接口的权限控制是怎么设计的？", "category": "api-rbac",
+     "type": "paraphrase", "note": "权限控制→RBAC，改写后需语义理解"},
+    {"id": "paraphrase-003", "query": "应用连接数据库缓存的最佳实践", "category": "redis-connpool",
+     "type": "paraphrase", "note": "数据库缓存→Redis，连接→连接池，需语义关联"},
+
+    # ── 复杂推理/多文档（Skills 第三层擅长）── type: complex
+    {"id": "complex-001", "query": "What's the difference between Deployment and StatefulSet?", "category": "k8s-comparison", "type": "complex"},
+    {"id": "complex-002", "query": "How to troubleshoot CrashLoopBackOff in Kubernetes?", "category": "k8s-troubleshooting", "type": "complex"},
+    {"id": "complex-003", "query": "Kubernetes 中如何实现服务发现？", "category": "k8s-service-discovery", "type": "complex"},
+    {"id": "complex-004", "query": "Pod 崩溃后 Redis 连接会怎样？需要怎么处理？", "category": "multi-doc",
+     "type": "complex", "note": "需要综合 k8s-crashloop + redis-failover 两个文档"},
+    {"id": "complex-005", "query": "系统的安全机制有哪些？从认证到部署都说说", "category": "multi-doc-security",
+     "type": "complex", "note": "需要综合 authentication.md + configuration.md"},
+
+    # ── How-to 实操型 ── type: howto
+    {"id": "howto-001", "query": "How to create a Pod with multiple containers?", "category": "k8s-howto", "type": "howto"},
+    {"id": "howto-002", "query": "如何配置 Kubernetes 资源限制？", "category": "k8s-resources", "type": "howto"},
+    {"id": "howto-003", "query": "refresh_token 过期了怎么办？", "category": "api-refresh",
+     "type": "howto", "note": "实操问题→authentication.md 的 token 刷新流程"},
+    {"id": "howto-004", "query": "怎么配置 Redis 连接池的空闲超时？", "category": "redis-config",
+     "type": "howto", "note": "实操→redis-failover.md 的 minEvictableIdleTimeMillis"},
+
+    # ── 概念型 ── type: concept
+    {"id": "concept-001", "query": "What is the purpose of a ReplicaSet?", "category": "k8s-concept", "type": "concept"},
+    {"id": "concept-002", "query": "Kubernetes 命名空间的作用是什么？", "category": "k8s-namespace", "type": "concept"},
+
+    # ── 边缘型 ── type: concept
+    {"id": "edge-001", "query": "What is a sidecar container?", "category": "k8s-pattern", "type": "concept"},
+    {"id": "edge-002", "query": "Kubernetes 中的 DaemonSet 是什么？", "category": "k8s-daemonset", "type": "concept"},
+
+    # ── 未收录（应返回"未找到"）── type: notfound
+    {"id": "notfound-001", "query": "How to configure Kubernetes with blockchain?", "category": "not-in-kb", "type": "notfound", "expect_no_results": True},
+    {"id": "notfound-002", "query": "MongoDB 分片集群如何配置？", "category": "not-in-kb", "type": "notfound", "expect_no_results": True},
 ]
 
 KEYWORD_CHECKS = {
@@ -53,6 +109,25 @@ KEYWORD_CHECKS = {
     "k8s-namespace": ["namespace", "命名空间", "隔离"],
     "k8s-pattern": ["sidecar", "container", "pattern"],
     "k8s-daemonset": ["daemonset", "node", "节点"],
+    # ── 新增 category 的关键词检查 ──
+    "redis-error": ["readonly", "read only", "replica", "写入", "failover", "切换"],
+    "k8s-oom": ["oomkilled", "oom", "memory", "内存", "limit"],
+    "api-errorcode": ["token_expired", "过期", "401", "错误码", "error"],
+    "api-jwt": ["jwt", "token", "sub", "exp", "签名", "signature"],
+    "redis-sentinel": ["sentinel", "failover", "主从", "切换"],
+    "redis-symptom": ["redis", "readonly", "写入", "failover", "sentinel", "主从", "切换", "只读"],
+    "k8s-symptom": ["crash", "restart", "重启", "crashloop", "pod", "容器"],
+    "k8s-oom-semantic": ["oom", "memory", "内存", "killed", "limit", "资源"],
+    "api-session": ["token", "jwt", "oauth", "认证", "登录", "session", "会话"],
+    "redis-cross": ["failover", "sentinel", "master", "slave", "切换", "恢复", "redis"],
+    "k8s-cross": ["crash", "debug", "log", "pod", "restart", "troubleshoot"],
+    "redis-ha": ["sentinel", "redis", "高可用", "health", "状态", "master"],
+    "api-rbac": ["rbac", "role", "权限", "admin", "viewer", "editor", "授权"],
+    "redis-connpool": ["连接池", "connection", "sentinel", "redis", "配置", "testOnBorrow"],
+    "multi-doc": ["pod", "redis", "crash", "连接", "重启", "failover"],
+    "multi-doc-security": ["认证", "oauth", "jwt", "token", "安全", "https", "权限"],
+    "api-refresh": ["refresh", "token", "过期", "刷新", "access_token"],
+    "redis-config": ["连接池", "idle", "timeout", "minEvictable", "配置", "超时"],
 }
 
 # 是否启用 MCP（模型加载需要 15-20 分钟，可选关闭）
@@ -328,8 +403,10 @@ async def main():
 
         for i, tc in enumerate(TEST_CASES, 1):
             log(f"\n{'='*60}", lf)
-            log(f"[{i}/{len(TEST_CASES)}] {tc['id']} ({tc['category']})", lf)
+            log(f"[{i}/{len(TEST_CASES)}] {tc['id']} ({tc['category']}) [{tc.get('type', '?')}]", lf)
             log(f"  Q: {tc['query']}", lf)
+            if tc.get("note"):
+                log(f"  💡 {tc['note']}", lf)
             if i == 1:
                 log(f"  ⏳ 首次查询，加载 MCP server (BGE-M3)...", lf)
             log(f"  开始: {datetime.now().strftime('%H:%M:%S')}", lf)
@@ -376,6 +453,7 @@ async def main():
             detail_record = {
                 "test_id": tc["id"],
                 "category": tc["category"],
+                "type": tc.get("type", "unknown"),
                 "query": tc["query"],
                 "status": status,
                 "elapsed_seconds": elapsed,
@@ -393,7 +471,8 @@ async def main():
             df.flush()
 
             results.append({
-                "test_id": tc["id"], "category": tc["category"], "query": tc["query"],
+                "test_id": tc["id"], "category": tc["category"],
+                "type": tc.get("type", "unknown"), "query": tc["query"],
                 "status": status, "elapsed_seconds": elapsed,
                 "cost_usd": result.get("cost_usd", 0),
                 "num_turns": result.get("num_turns", 0),
@@ -413,6 +492,29 @@ async def main():
         log(f"⏱️  总耗时: {total_time:.1f}s | 平均: {total_time/max(passed+failed,1):.1f}s", lf)
         log(f"💰 总费用: ${total_cost:.4f}", lf)
 
+        # 按查询类型统计
+        type_stats = {}
+        for i2, r in enumerate(results):
+            qtype = TEST_CASES[i2].get("type", "unknown")
+            type_stats.setdefault(qtype, {"t": 0, "p": 0})
+            type_stats[qtype]["t"] += 1
+            if r["status"] == "passed": type_stats[qtype]["p"] += 1
+
+        log("", lf)
+        log("📈 按查询类型:", lf)
+        type_labels = {
+            "keyword": "关键词基础", "exact": "精确匹配(Grep擅长)",
+            "semantic": "语义/症状(Hybrid擅长)", "cross-lang": "跨语言",
+            "paraphrase": "同义改写(Hybrid擅长)", "complex": "复杂推理/多文档",
+            "howto": "实操问答", "concept": "概念型", "notfound": "未收录",
+        }
+        for t, s in sorted(type_stats.items()):
+            r2 = s["p"]/s["t"]*100
+            label = type_labels.get(t, t)
+            log(f"  {'✅' if r2==100 else '⚠️' if r2>0 else '❌'} {label}: {s['p']}/{s['t']} ({r2:.0f}%)", lf)
+
+        log("", lf)
+        log("📋 按 category:", lf)
         cats = {}
         for r in results:
             c = r["category"]
@@ -420,8 +522,8 @@ async def main():
             cats[c]["t"] += 1
             if r["status"] == "passed": cats[c]["p"] += 1
         for c, s in sorted(cats.items()):
-            r = s["p"]/s["t"]*100
-            log(f"  {'✅' if r==100 else '⚠️' if r>0 else '❌'} {c}: {s['p']}/{s['t']} ({r:.0f}%)", lf)
+            r2 = s["p"]/s["t"]*100
+            log(f"  {'✅' if r2==100 else '⚠️' if r2>0 else '❌'} {c}: {s['p']}/{s['t']} ({r2:.0f}%)", lf)
 
         # 保存汇总 JSON
         out_dir = PROJECT_ROOT / "eval"
@@ -431,7 +533,9 @@ async def main():
                 "timestamp": datetime.now().isoformat(), "test_type": "agentic_rag",
                 "method": "claude_agent_sdk_session_reuse", "total": total,
                 "passed": passed, "failed": failed, "errors": errors,
-                "total_time": total_time, "total_cost": total_cost, "results": results,
+                "total_time": total_time, "total_cost": total_cost,
+                "type_stats": {t: {"total": s["t"], "passed": s["p"]} for t, s in type_stats.items()},
+                "results": results,
             }, f, indent=2, ensure_ascii=False)
 
         log(f"\n📁 汇总: {out_file}", lf)
