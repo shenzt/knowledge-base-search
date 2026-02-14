@@ -204,8 +204,8 @@ def _same_parent(path_a: str, path_b: str) -> bool:
 
 # ── 索引核心 ──────────────────────────────────────────────────────
 
-def index_chunks(chunks: list[dict]) -> None:
-    """将 chunks 编码为向量并写入 Qdrant。"""
+def index_chunks(chunks: list[dict], batch_size: int = 256) -> None:
+    """将 chunks 编码为向量并写入 Qdrant。支持大批量分批编码。"""
     if not chunks:
         log.info("没有 chunks 需要索引")
         return
@@ -215,8 +215,9 @@ def index_chunks(chunks: list[dict]) -> None:
     ensure_collection(client)
 
     texts = [c["text"] for c in chunks]
-    log.info(f"编码 {len(texts)} 个 chunks...")
-    output = model.encode(texts, return_dense=True, return_sparse=True)
+    log.info(f"编码 {len(texts)} 个 chunks（batch_size={batch_size}）...")
+    output = model.encode(texts, return_dense=True, return_sparse=True,
+                          batch_size=batch_size)
 
     points = []
     for i, chunk in enumerate(chunks):
@@ -242,7 +243,14 @@ def index_chunks(chunks: list[dict]) -> None:
             payload=payload,
         ))
 
-    client.upsert(collection_name=COLLECTION, points=points)
+    # 分批 upsert（Qdrant 单次上限约 1000 点）
+    UPSERT_BATCH = 500
+    for start in range(0, len(points), UPSERT_BATCH):
+        batch = points[start:start + UPSERT_BATCH]
+        client.upsert(collection_name=COLLECTION, points=batch)
+        if len(points) > UPSERT_BATCH:
+            log.info(f"  upsert {start + len(batch)}/{len(points)}")
+
     log.info(f"✅ 已索引 {len(points)} 个 chunks")
 
 
@@ -300,19 +308,12 @@ def _stable_doc_id(filepath: str) -> str:
     return hashlib.md5(p.encode()).hexdigest()[:8]
 
 
-def index_file(filepath: str) -> int:
-    """索引单个 Markdown 文件（按标题语义分块）。返回 chunk 数。"""
+def parse_file(filepath: str) -> list[dict]:
+    """解析单个 Markdown 文件为 chunks（不编码、不写入 Qdrant）。"""
     post = frontmatter.load(filepath)
     doc_id = post.metadata.get("id", _stable_doc_id(filepath))
     title = post.metadata.get("title", os.path.basename(filepath))
 
-    # 先删除旧 chunks
-    try:
-        delete_doc(doc_id)
-    except Exception:
-        pass
-
-    # 清理 Hugo shortcodes + 按标题分块 + 合并过短段落
     content = _clean_hugo_shortcodes(post.content)
     sections = split_by_headings(content)
     sections = merge_small_sections(sections)
@@ -335,7 +336,21 @@ def index_file(filepath: str) -> int:
                 "source_commit": post.metadata.get("source_commit", ""),
             },
         })
+    return chunk_data
 
+
+def index_file(filepath: str) -> int:
+    """索引单个 Markdown 文件（解析 + 编码 + 写入）。返回 chunk 数。"""
+    post = frontmatter.load(filepath)
+    doc_id = post.metadata.get("id", _stable_doc_id(filepath))
+
+    # 先删除旧 chunks
+    try:
+        delete_doc(doc_id)
+    except Exception:
+        pass
+
+    chunk_data = parse_file(filepath)
     index_chunks(chunk_data)
     return len(chunk_data)
 
@@ -343,23 +358,55 @@ def index_file(filepath: str) -> int:
 # ── 全量 / 增量 ──────────────────────────────────────────────────
 
 def index_full(docs_dir: str) -> None:
-    """全量重建：遍历目录下所有 .md 文件。"""
+    """全量重建：先收集所有 chunks，再一次性批量编码 + 写入。"""
     md_files = sorted(Path(docs_dir).rglob("*.md"))
     if not md_files:
         log.info(f"目录 {docs_dir} 下没有 .md 文件")
         return
 
     log.info(f"全量索引: {len(md_files)} 个文件 ({docs_dir})")
-    total_chunks = 0
+
+    # Phase 1: 收集所有 doc_id 用于批量删除
+    doc_ids: set[str] = set()
+    all_chunks: list[dict] = []
+    errors = 0
+
     for f in md_files:
         try:
-            n = index_file(str(f))
-            total_chunks += n
-            log.info(f"  {f} → {n} chunks")
+            chunks = parse_file(str(f))
+            if chunks:
+                doc_ids.add(chunks[0]["doc_id"])
+                all_chunks.extend(chunks)
+                log.info(f"  📄 {f} → {len(chunks)} chunks")
         except Exception as e:
             log.error(f"  ❌ {f}: {e}")
+            errors += 1
 
-    log.info(f"✅ 全量索引完成: {len(md_files)} 文件, {total_chunks} chunks")
+    log.info(f"解析完成: {len(md_files) - errors} 文件, {len(all_chunks)} chunks")
+
+    if not all_chunks:
+        return
+
+    # Phase 2: 批量删除旧 chunks
+    client = get_qdrant()
+    ensure_collection(client)
+    for doc_id in doc_ids:
+        try:
+            client.delete(
+                collection_name=COLLECTION,
+                points_selector=models.FilterSelector(
+                    filter=models.Filter(must=[
+                        models.FieldCondition(key="doc_id", match=models.MatchValue(value=doc_id))
+                    ])
+                ),
+            )
+        except Exception:
+            pass
+    log.info(f"已清理 {len(doc_ids)} 个旧文档的 chunks")
+
+    # Phase 3: 一次性批量编码 + 写入
+    index_chunks(all_chunks)
+    log.info(f"✅ 全量索引完成: {len(md_files) - errors} 文件, {len(all_chunks)} chunks")
 
 
 def index_incremental() -> None:
