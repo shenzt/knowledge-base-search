@@ -320,7 +320,7 @@ TEST_CASES = [
      "query": "Kafka consumer group rebalance 怎么优化？",
      "category": "not-in-kb", "type": "notfound", "source": "none",
      "expect_no_results": True,
-     "note": "KB 没有 Kafka ��容"},
+     "note": "KB 没有 Kafka 内容"},
     {"id": "notfound-004",
      "query": "How to set up Prometheus alerting rules?",
      "category": "not-in-kb", "type": "notfound", "source": "none",
