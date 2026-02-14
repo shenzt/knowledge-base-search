@@ -1,123 +1,198 @@
 ---
-id: "design-review-001"
-title: "RAG 系统设计 Review"
+id: "design-review-002"
+title: "RAG 系统设计 Review v2"
 created: 2025-02-14
 confidence: high
 ---
 
-# RAG 系统设计 Review
+# RAG 系统设计 Review v2
+
+## 核心理念
+
+Claude Code 就是 Agent。不写框架代码，不引入 LangChain/LlamaIndex。
+Skills 定义行为约束，MCP 提供工具，Agent 自主决策调用什么、怎么调用。
 
 ## 当前架构
 
 ```
-用户查询
-  ↓
-Claude Code (Agent)
-  ├─ Layer 1: Grep/Glob/Read → 本地 docs/ (零成本, 关键词)
-  ├─ Layer 2: MCP hybrid_search → Qdrant (语义, 跨语言)
-  │    ├─ BGE-M3 编码 (dense 1024d + sparse)
-  │    ├─ Qdrant prefetch (dense top20 + sparse top20)
-  │    ├─ RRF 融合
-  │    └─ BGE-Reranker-v2-M3 重排
-  └─ Layer 3: 多文档推理 (复杂查询)
-       ↓
-  生成答案 + 引用
+用户查询 → Claude Code (Agent)
+               │
+               ├─ Layer 1: Grep/Glob/Read  → 本地 docs/
+               ├─ Layer 2: MCP hybrid_search → Qdrant (BGE-M3 + RRF + Rerank)
+               └─ Layer 3: 多文档推理
+               │
+               ↓
+          生成答案 + 引用
 ```
 
-### 数据流: Ingest → Index → Search → Answer
+三层是串行 fallback：先试 Grep，不够再走 Qdrant，复杂查询才做多文档推理。
 
-| 阶段 | 实现 | 状态 |
-|------|------|------|
-| Ingest | `/ingest` skill → pandoc/docling → docs/ → git commit | ✅ 可用 |
-| Index | `index.py` → BGE-M3 编码 → Qdrant upsert | ⚠️ 基础可用 |
-| Search | `/search` skill → Grep + MCP hybrid_search | ✅ 核心功能 |
-| Answer | Claude 读取上下文 → 生成带引用的回答 | ✅ 可用 |
+### 实际代码现状
 
-### 数据源
+| 组件 | 文件 | 行数 | 状态 |
+|------|------|------|------|
+| MCP Server | `scripts/mcp_server.py` | 198 | ✅ hybrid_search + keyword_search + index_status |
+| 索引工具 | `scripts/index.py` | 216 | ⚠️ 基础可用，分块粗糙 |
+| 检索 Skill | `.claude/skills/search/` | 267 | ✅ 三层策略定义完整 |
+| Simple Worker | `scripts/workers/simple_rag_worker.py` | 195 | ✅ 直接调 Anthropic API |
+| Agentic Worker | `scripts/workers/rag_worker.py` | 321 | ❌ 未集成，引用不存在的目录 |
 
-| 数据源 | 内容 | 检索方式 | 文档数 |
-|--------|------|----------|--------|
-| 本地 docs/ | runbook + API 文档 | Grep/Glob/Read (Layer 1) | 3 |
-| Qdrant 索引 | K8s EN + Redis CN | MCP hybrid_search (Layer 2) | 21 (152 chunks) |
+### 已验证的数据
 
-## 已验证的能力
+| 指标 | 结果 |
+|------|------|
+| Hybrid vs Dense-only | +36% 准确率 |
+| Layer 1 本地文档 (Grep) | 17/17 (100%) |
+| Claude "语义 Grep" | 能将模糊症状分解为多关键词 OR 模式 |
+| 跨语言 | 英文问→中文文档 ✅，中文问→英文文档 ✅ |
+| Qdrant 用例 (无 MCP) | 6/12 通过，但全是通用知识非检索（假阳性）|
 
-- Hybrid search (dense + sparse + RRF + rerank): 比纯 dense 提升 36%
-- Layer 1 Grep 对本地文档: 100% 通过率 (17/17)
-- Claude "语义 Grep": 能将模糊描述分解为多关键词 OR 模式
-- 跨语言检索: 英文问→中文文档, 中文问→英文文档
-- Session 复用: Agent SDK session resume 避免重复加载模型
+## 架构问题分析
 
-## 关键问题
+### 问题 1: 串行 fallback 是低效的
 
-### P0: 分块策略过于简单
+当前 `/search` skill 指示 Agent 先 Grep，不够再 Qdrant。这是开发者硬编码的流程。
 
-当前: 按 `\n\n` 分割, 合并到 3200 字符。
+实际上 Claude 本身就能判断查询意图：
+- "READONLY You can't write against a read only replica" → 明显是精确关键词，Grep 最快
+- "容器跑着跑着就被 kill 了" → 模糊症状，需要语义检索
+- "对比 Deployment 和 ReplicationController" → 需要多文档
 
-问题:
-- 丢失文档结构 (标题层级、section_path)
-- 无法定位到具体章节
-- 影响检索精度和引用质量
+**应该做的**: 把决策权交给 Agent。Layer 1/2/3 不是上下游，是平级工具箱。Agent 根据查询特征自主选择，甚至并行调用。
 
-建议: 基于 Markdown 标题的语义分块, 保留 section_path 到 payload。
+这就是 Adaptive-RAG / Self-RAG 论文的核心思路：**Intent-driven Routing**，不是 Pipeline。
 
-### P0: 缺少增量索引
+### 问题 2: 分块丢失结构（P0）
 
-当前: 只能单文件索引 (`--file`), 无 `--full` 重建, 无变更检测。
+当前 `index.py` 的分块逻辑：
 
-建议:
-- payload 中记录 doc_hash
-- `git diff` 检测变更文件
-- `--full` 全量重建 + `--incremental` 增量更新
+```python
+# 实际代码
+paragraphs = post.content.split("\n\n")
+# 合并到 3200 字符
+```
 
-### P1: 评测体系不完善
+Qdrant payload 中存了 `path`, `title`, `doc_id`, `chunk_id`, `confidence`, `tags`。
+但没有 `section_path`。MCP server 返回时有这个字段，永远是空字符串。
 
-已发现的问题 (详见 `.claude/rules/testing-lessons.md`):
-- 测试用例与实际 KB 内容不匹配
-- 评估标准过于宽松 (100字符 + 1关键词 = 通过)
-- 未区分"基于文档回答" vs "基于通用知识回答"
-- Qdrant 用例在无 MCP 模式下的通过是假阳性
+Agent 拿到一个 chunk，不知道它属于文档的哪个章节。引用只能到文件级，不能到章节级。
 
-当前测试结果 (USE_MCP=0):
+**极简解法**: 按 Markdown 标题 (`##`, `###`) 切分，把标题路径注入 payload。不需要 NLP 模型，一个正则就够。
 
-| 数据源 | 通过率 | 说明 |
-|--------|--------|------|
-| 本地 docs/ | 17/17 (100%) | Grep 完全有效 |
-| Qdrant 索引 | 6/12 (50%) | 6个429限流, 通过的是通用知识非检索 |
+```python
+# 极简：按标题切分，保留层级路径
+chunk_payload = {
+    "text": "配置步骤...",
+    "path": "docs/runbook/redis-failover.md",
+    "section_path": "故障恢复 > 手动恢复 > 确认新 Master",  # 关键
+    "chunk_id": "redis-failover-003"
+}
+```
 
-需要 USE_MCP=1 测试才能验证 Layer 2 的真正检索能力。
+### 问题 3: 增量索引缺失（P0）
 
-### P1: MCP Server 缺少 `get_document` 工具
+当前只有 `--file` 单文件索引。Git 已经帮你算好了所有 hash 和 diff。
 
-设计文档提到但未实现。当前 hybrid_search 返回 chunk, 无法拉取完整文档上下文。
+**极简解法**: 不需要在 Python 里维护状态。
 
-### P2: rag_worker.py 未集成
+```bash
+# --full: 全量
+git ls-files '*.md' | xargs -I{} python index.py --file {}
 
-- 依赖 `claude_agent_sdk` 未在 requirements.txt
-- 引用不存在的 `kb_skills` 目录
-- 代码库中无实际调用
+# --incremental: 增量（上次索引到现在的变更）
+git diff --name-only HEAD@{1} HEAD -- '*.md' | xargs -I{} python index.py --file {}
+```
 
-### P2: 无单元测试
+删除旧 chunk：按 `doc_id` 在 Qdrant 中 delete，再 upsert 新的。`index.py` 已有 `delete_doc()` 函数。
 
-核心函数 (分块、编码、front-matter 解析) 无测试覆盖。
+### 问题 4: `get_document` 不需要新 MCP 工具
 
-## 架构优势
+Claude Code 本身就有 Read 工具。chunk payload 里有 `path` 字段。
+Agent 看到 chunk 觉得不够，直接 `Read(path)` 读全文即可。
 
-1. **"Claude Code 就是 agent"** — 最小化自建代码, Skills 定义行为
-2. **三层检索策略** — Grep(零成本) → Hybrid(语义) → 多文档推理
-3. **Hybrid Search** — dense + sparse + RRF + rerank, 效果显著
-4. **双语支持** — BGE-M3 原生支持中英文跨语言检索
-5. **Git 管理文档** — 版本可追溯, 索引可再生
+只需要在 `/search` skill 里加一句引导：
+> "如果 chunk 上下文不足，用 Read 工具读取 source_file 的完整内容。"
 
-## 建议优先级
+不需要写新代码。
 
-| 优先级 | 项目 | 预期收益 |
-|--------|------|----------|
-| P0 | 语义分块 (保留标题/section_path) | 检索精度 + 引用质量 |
-| P0 | 增量索引 (doc_hash + git diff) | 运维效率 |
-| P1 | USE_MCP=1 完整测试 | 验证 Layer 2 真实能力 |
-| P1 | 实现 get_document MCP 工具 | 完整上下文检索 |
-| P1 | 收紧评测标准 (correct_doc 必须匹配) | 评测可信度 |
-| P2 | 单元测试 (分块/编码/解析) | 代码质量 |
-| P2 | 清理 rag_worker.py | 代码整洁 |
-| P2 | scope 过滤修复 (MatchText → prefix) | 检索准确性 |
+### 问题 5: 评测假阳性
+
+Qdrant 用例在 USE_MCP=0 下"通过"，实际是 Claude 用通用知识回答。
+
+**极简解法**: 测试 prompt 加防幻觉约束：
+> "只能使用检索工具返回的内容回答。如果搜索结果不包含答案，回答'未找到相关文档'。"
+
+评估时检查答案是否包含正确的 `chunk_id` 或 `section_path`，没有就判 Failed。
+
+## 目标架构: Agentic Router
+
+```
+用户查询 → Claude Code (Agent / Router)
+               │
+               │  Agent 自主判断意图，选择工具（或并行）
+               │
+               ├─ Tool A: grep_search     → 精确关键词、报错代码、文件路径
+               ├─ Tool B: hybrid_search   → 模糊语义、跨语言、概念理解
+               ├─ Tool C: read_file       → 读取完整文档上下文
+               └─ Tool D: list_docs       → 小规模 KB 直接全量读取
+               │
+               ↓
+          融合多源结果 → 生成答案 + 引用 (chunk_id + section_path)
+```
+
+关键变化：
+1. **不是 Layer 1→2→3 串行**，是 Agent 自主路由到最合适的工具
+2. **可以并行**: Agent 同时调 grep + hybrid_search，Late Fusion 在 context window 里完成
+3. **规模感知**: 如果 KB 只有几个文件（< 50KB），Agent 应直接全量读取，跳过所有检索
+4. **控制流在 Agent 手里**，不在 Python 代码里
+
+### 实现方式: 改 Skill，不改代码
+
+这个架构变更的核心不是写新的 Python 代码，而是重写 `/search` skill 的指令。
+
+当前 skill 说："先 Grep，不够再 Qdrant"（硬编码流程）。
+新 skill 应该说："这里有 4 个工具，根据查询特征自己选"（Agent 决策）。
+
+工具本身（Grep、MCP hybrid_search、Read）已经全部就绪。
+唯一需要写代码的是 `index.py` 的分块改进（加 section_path）。
+
+## 改进计划（极简优先）
+
+### Phase 1: 数据质量（改 index.py，~50 行）
+
+- [ ] 按 Markdown 标题切分，注入 `section_path` 到 payload
+- [ ] `--full` 全量重建（遍历 git ls-files）
+- [ ] `--incremental` 增量更新（git diff + delete + upsert）
+- [ ] 重新索引现有 21 个文档
+
+### Phase 2: Agentic Router（改 skill，0 行代码）
+
+- [ ] 重写 `/search` skill：从串行 fallback 改为 Agent 自主路由
+- [ ] 加入规模感知：小 KB 直接全量读取
+- [ ] 加入并行提示：允许 Agent 同时调多个工具
+- [ ] 加入防幻觉约束：必须基于检索结果回答
+
+### Phase 3: 评测修正
+
+- [ ] USE_MCP=1 完整测试（等限流重置）
+- [ ] 评估标准：必须包含 chunk_id 或 section_path 才算通过
+- [ ] 对比 Phase 1/2 前后的检索质量
+
+### 不做的事情
+
+- ❌ 不引入 LangChain / LlamaIndex / Unstructured
+- ❌ 不写 Python 路由逻辑（Agent 自己路由）
+- ❌ 不写 `get_document` MCP 工具（Agent 用 Read 即可）
+- ❌ 不训练意图分类模型（Claude 本身就能判断）
+- ❌ 不在 Python 里维护索引状态（Git 已经有）
+
+## 代码量预估
+
+| 改动 | 文件 | 预估行数 |
+|------|------|----------|
+| 标题分块 + section_path | `scripts/index.py` | +40 行 |
+| --full / --incremental | `scripts/index.py` | +20 行 |
+| Agentic Router skill | `.claude/skills/search/` | 重写 ~200 行 |
+| 评测收紧 | `tests/e2e/test_agentic_rag_sdk.py` | +30 行 |
+
+总计: ~90 行新代码 + 1 个 skill 重写。符合极简原则。
