@@ -30,6 +30,12 @@ class TestExtractDocPaths:
         paths = _extract_doc_paths(text, "Read")
         assert paths == []  # Read result 没有 .md 路径
 
+    def test_mcp_hybrid_search_result(self):
+        """MCP hybrid_search 返回 JSON，提取 path 字段。"""
+        text = '{"result":"[{\"score\": 3.43, \"path\": \"tests/fixtures/kb-sources/redis-docs/content/operate/oss_and_stack/management/sentinel.md\", \"title\": \"High availability\"}]"}'
+        paths = _extract_doc_paths(text, "mcp__knowledge-base__hybrid_search")
+        assert any("sentinel.md" in p for p in paths)
+
 
 class TestExtractContexts:
     def test_tool_use_and_result(self):

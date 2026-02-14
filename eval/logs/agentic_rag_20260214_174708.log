@@ -1,0 +1,1029 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 64 | 时间: 2026-02-14 17:47:08
+模式: MCP + Grep/Glob/Read
+KB commit: 806d4b4
+评估: eval_module (Gate 门禁 + 质量检查)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read + MCP hybrid_search)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_174708.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_174708_detail.jsonl
+
+
+============================================================
+[1/64] local-exact-001 (redis-failover) [exact]
+  Q: READONLY You can't write against a read only replica 这个报错怎么解决
+  💡 SO风格：贴错误信息求解
+  ⏳ 首次查询，加载 MCP server (BGE-M3)...
+  开始: 17:47:08
+    [INIT] session=d16ce0e3-762f-48d3-b778-71992b1497ca model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索这个 Redis 报错的解决方案。
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "READONLY.*read only replica"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "READONLY You can't write against a read only replica Redis error solution", "top_k": 5})
+    [TOOL_OUT] Found 3 files
+docs/eval-review.md
+docs/design-review.md
+docs/runbook/redis-failover.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 2.7337,\n    \"doc_id\": \"87462e38\",\n    \"chunk_id\": \"87462e38-011\",\n    \"path\": \"tests/fixtures/kb-sources/redis-docs/content/develop/programmability/lua-api.md\",\n    \"title\": \"Redis Lua API reference\",\n    \"section_path\": \"_redis_ object {#redis_object} > `redis.register_function` {#redis.register_function} > Script flags {#script_flags}\",\
+    [THINK] 找到了！这个报错的解决方案在知识库中有详细说明。 (+31 lines)
+    [RESULT] 805 chars | 3 turns | 71361ms
+  ✅ 通过 | 805字符 | 85.1s | $0.0474 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: Grep
+  📄 检索: docs/eval-review.md, docs/design-review.md, docs/runbook/redis-failover.md
+  🔑 关键词: redis, sentinel, failover, 主从, 切换, master, readonly, read only, 连接
+  📝 答案: 找到了！这个报错的解决方案在知识库中有详细说明。
+
+## 问题原因
+
+`READONLY You can't write against a read only replica` 错误通常发生在 **Redis Sentinel 主从切换（failover）后**，应用程序仍然连接到旧的主节点（现在已变成从节点），并尝试执行写操作。
+
+## 解决方案
+
+### 1. 应用层处理（推荐）
+
+- **重建连接**：捕获 READONLY 错误后，强制重新连接 Redis（通过 Sentinel 获取新的主节点地址）
+- **使用 Sentinel 客户端**：确保应用使用支持 Sentinel 的 Redis 客户端，能自动感知主从切换
+- **重试机制**：实现指数退避重试，给 Sentinel 切换留出时间
+
+### 2. 临时应急措施
+
+如果是从节点配置问题导致的：
+- 检查 `replica-read-only` 配置（默认为 yes）
+- 确认是否误将写请求发送到从节点
+
+### 3. 预防措施
+
+- 监控 Sentinel 的 `+switch-master` 事件
+- 应用层...
+  结束: 17:48:33 | 耗时: 85.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[2/64] local-exact-002 (k8s-crashloop) [exact]
+  Q: kubectl describe pod 显示 OOMKilled 怎么办
+  💡 SO风格：贴命令输出求解
+  开始: 17:48:33
+    [INIT] session=f04fcb1f-d08c-47d1-bb51-54f53618c421 model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索关于 OOMKilled 问题的解决方案。
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "OOMKilled"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "kubectl describe pod OOMKilled memory limit 内存不足", "top_k": 5})
+    [TOOL_OUT] Found 1 file
+docs/runbook/kubernetes-pod-crashloop.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 2.6288,\n    \"doc_id\": \"k8s-crashloop-001\",\n    \"chunk_id\": \"k8s-crashloop-001-001\",\n    \"path\": \"docs/runbook/kubernetes-pod-crashloop.md\",\n    \"title\": \"Kubernetes Pod CrashLoopBackOff Troubleshooting Guide\",\n    \"section_path\": \"Kubernetes Pod CrashLoopBackOff Troubleshooting Guide > Diagnostic Steps > 4. Check Liveness Probe\",\n    \"co
+    [THINK] 当 `kubectl describe pod` 显示 `OOMKilled` 时，说明容器因超出内存限制被系统终止。解决方法： (+45 lines)
+    [RESULT] 979 chars | 3 turns | 70353ms
+  ✅ 通过 | 979字符 | 83.9s | $0.0457 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: Grep
+  📄 检索: docs/runbook/kubernetes-pod-crashloop.md
+  🔑 关键词: pod, crash, restart, 重启, oom, log, kubectl, liveness, memory, container
+  📝 答案: 当 `kubectl describe pod` 显示 `OOMKilled` 时，说明容器因超出内存限制被系统终止。解决方法：
+
+## 1. 确认问题
+
+检查 Pod 状态中的关键信息：
+- `Last State: Terminated, Reason: OOMKilled` — 确认是内存问题
+- `Exit Code: 137` — OOM 的退出码
+- `Restart Count` — 查看重启次数
+
+## 2. 检查当前资源配置
+
+```bash
+kubectl get pod <pod-name> -n <namespace> -o jsonpath='{.spec.containers[*].resources}'
+```
+
+## 3. 解决方案
+
+### 方案 A：增加内存限制（应用确实需要更多内存）
+
+修改 Deployment/Pod 配置：
+
+```yaml
+resources:
+  requests:
+    memory: "256Mi"
+  limits:
+    memory: "512Mi"  # 根据实际需求调整
+```
+
+### 方案 B：排查内...
+  结束: 17:49:57 | 耗时: 83.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[3/64] local-exact-003 (api-auth) [exact]
+  Q: API 返回 401 TOKEN_EXPIRED，前端该怎么处理
+  💡 SO风格：具体错误码
+  开始: 17:49:57
+    [INIT] session=ac496a46-3c5e-4022-85e6-297959325fcd model=claude-sonnet-4-5-20250929
+    [THINK] 我来检索关于 API 返回 401 TOKEN_EXPIRED 时前端处理方案的文档。
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "TOKEN_EXPIRED|401|token.*expired|refresh.*token"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "API 401 TOKEN_EXPIRED 前端处理 refresh token", "top_k": 5})
+    [TOOL_OUT] Found 1 file
+docs/api/authentication.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 1.4717,\n    \"doc_id\": \"api-auth-001\",\n    \"chunk_id\": \"api-auth-001-004\",\n    \"path\": \"docs/api/authentication.md\",\n    \"title\": \"API 认证与授权设计文档\",\n    \"section_path\": \"API 认证与授权设计文档 > API 错误码\",\n    \"confidence\": \"high\",\n    \"text\": \"- access_token 有效期不超过 15 分钟\\n- refresh_token 单次使用，使用后立即轮换\\n- 敏感操作（删除、权限变更）需要二次验证\\n- 所有 token 传输必须
+    [THINK] 找到了相关文档。让我读取完整内容以获取更详细的处理方案。
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md"})
+    [TOOL_OUT] 1→---
+     2→id: api-auth-001
+     3→title: API 认证与授权设计文档
+    ... (88 lines total)
+    [THINK] 根据文档，当 API 返回 **401 TOKEN_EXPIRED** 时，前端应该这样处理： (+54 lines)
+    [RESULT] 1197 chars | 4 turns | 71122ms
+  ✅ 通过 | 1197字符 | 84.8s | $0.0595 | 引用✅ 文档✅ | ctx:2
+  🔧 工具: Read, Grep
+  📄 检索: /home/shenzt/ws/knowledge-base-search/docs/api/authentication.md, docs/api/authentication.md
+  🔑 关键词: token, refresh, 401, 登录
+  📝 答案: 根据文档，当 API 返回 **401 TOKEN_EXPIRED** 时，前端应该这样处理：
+
+## 处理方案
+
+**使用 refresh_token 刷新令牌**
+
+1. 拦截 401 TOKEN_EXPIRED 响应
+2. 调用 `/api/v1/auth/refresh` 接口，携带 refresh_token
+3. 获取新的 access_token 和 refresh_token
+4. 重试原请求
+
+## 实现要点
+
+- **access_token 有效期 15 分钟**，过期后必须刷新
+- **refresh_token 有效期 7 天**，单次使用后会轮换（返回新的 refresh_token）
+- 刷新成功后，用新 token 重新发起原请求
+- 如果 refresh_token 也过期，需要重新登录
+
+## 典型实现（伪代码）
+
+```javascript
+async function apiRequest(url, options) {
+  let response = await fetch(url, {
+    ...options,
+    headers...
+  结束: 17:51:22 | 耗时: 84.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[4/64] local-exact-004 (redis-failover) [exact]
+  Q: redis-cli SENTINEL get-master-addr-by-name 命令返回什么
+  开始: 17:51:22
+    [INIT] session=facbfa98-53f4-472e-b4f3-3b930f9524ae model=claude-sonnet-4-5-20250929
+    [THINK] 我来检索这个 Redis Sentinel 命令的相关信息。
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "get-master-addr-by-name"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "redis-cli SENTINEL get-master-addr-by-name 命令返回", "top_k": 5})
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 4.1642,\n    \"doc_id\": \"dc98bff1\",\n    \"chunk_id\": \"dc98bff1-013\",\n    \"path\": \"tests/fixtures/kb-sources/redis-docs/content/operate/oss_and_stack/management/sentinel.md\",\n    \"title\": \"High availability with Redis Sentinel\",\n    \"section_path\": \"Sentinel API > Sentinel commands\",\n    \"confidence\": \"unknown\",\n    \"text\": \"The `SENT
+    [THINK] `redis-cli SENTINEL get-master-addr-by-name <master name>` 命令返回指定 master 的 **IP 地址和端口号**。 (+21 lines)
+    [RESULT] 554 chars | 3 turns | 67210ms
+  ✅ 通过 | 554字符 | 81.0s | $0.0404 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: Grep
+  📄 检索: docs/runbook/redis-failover.md
+  🔑 关键词: redis, sentinel, failover, master, 恢复
+  📝 答案: `redis-cli SENTINEL get-master-addr-by-name <master name>` 命令返回指定 master 的 **IP 地址和端口号**。
+
+具体返回格式：
+```
+1) "127.0.0.1"
+2) "6380"
+```
+
+返回的是一个包含两个元素的数组：
+1. 第一个元素是 master 的 IP 地址
+2. 第二个元素是 master 的端口号
+
+**特殊情况**：如果该 master 正在进行故障转移（failover）或已成功完成故障转移，该命令会返回**被提升的 replica（新 master）的地址和端口**。
+
+**使用示例**：
+```bash
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+```
+
+[来源: tests/fixtures/kb-sources/redis-docs/content/operate/oss_and_stack/management/sentinel.md > Sentinel API > Sentinel command...
+  结束: 17:52:43 | 耗时: 81.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[5/64] local-exact-005 (api-auth) [exact]
+  Q: JWT RS256 签名验证流程是什么
+  开始: 17:52:43
+    [INIT] session=1bf0b36a-52bf-4166-83e3-e8f9baec2d6a model=claude-sonnet-4-5-20250929
+    [THINK] 我来检索 JWT RS256 签名验证流程的相关文档。
+    [TOOL] Grep({"context": 3, "path": "docs", "pattern": "RS256|RSA|签名验证|signature verification"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "JWT RS256 签名验证流程", "top_k": 5})
+    [TOOL_OUT] Found 1 file
+docs/api/authentication.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 3.6241,\n    \"doc_id\": \"api-auth-001\",\n    \"chunk_id\": \"api-auth-001-001\",\n    \"path\": \"docs/api/authentication.md\",\n    \"title\": \"API 认证与授权设计文档\",\n    \"section_path\": \"API 认证与授权设计文档 > 认证方式 > Token 验证\",\n    \"confidence\": \"high\",\n    \"text\": \"1. 客户端发送用户名密码到 `/api/v1/auth/login`\\n2. 服务端验证凭据，签发 access_token（15分钟）和 refresh_token（7天）\\n
+    [THINK] 找到了相关文档。让我读取完整内容以获取更详细的 RS256 签名验证流程。
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md"})
+    [TOOL_OUT] 1→---
+     2→id: api-auth-001
+     3→title: API 认证与授权设计文档
+    ... (88 lines total)
+    [THINK] ## JWT RS256 签名验证流程 (+37 lines)
+    [RESULT] 604 chars | 4 turns | 73068ms
+  ✅ 通过 | 604字符 | 86.8s | $0.0559 | 引用✅ 文档✅ | ctx:2
+  🔧 工具: Read, Grep
+  📄 检索: /home/shenzt/ws/knowledge-base-search/docs/api/authentication.md, docs/api/authentication.md
+  🔑 关键词: token, jwt, role, 权限, 401
+  📝 答案: ## JWT RS256 签名验证流程
+
+根据文档，每个微服务独立验证 JWT 时执行以下步骤：
+
+1. **验证签名（RS256）**
+   - 使用 RS256 非对称加密算法
+   - 从 JWKS endpoint 获取公钥
+   - 用公钥验证 JWT 签名的有效性
+
+2. **验证过期时间**
+   - 检查 `exp` 字段，确认 token 未过期
+
+3. **验证签发者**
+   - 检查 `iss` 字段，确认与预期的签发者匹配（如 "api-gateway"）
+
+4. **提取权限信息**
+   - 从 `roles` 字段提取用户角色权限
+
+### JWT Payload 示例
+
+```json
+{
+  "sub": "user-uuid",
+  "iss": "api-gateway",
+  "iat": 1707820800,
+  "exp": 1707821700,
+  "roles": ["admin", "editor"],
+  "tenant_id": "tenant-001"
+}
+```
+
+### 安全要点
+
+- access_token 有效期：...
+  结束: 17:54:10 | 耗时: 86.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[6/64] local-so-001 (redis-failover) [scenario]
+  Q: 线上 Redis 突然大量写入失败，错误日志一直刷屏，应用都快挂了，急！
+  💡 SO紧急求助，不含 READONLY/Sentinel/failover
+  开始: 17:54:10
+    [INIT] session=c8d3c10a-e571-46c4-8a7a-be40ae21905b model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你快速定位问题。这是典型的 Redis 故障场景，我会并行搜索本地故障排查文档和 Qdrant 索引中的 Redis 技术文档。
+    [TOOL] Grep({"-i": true, "path": "docs", "pattern": "写入失败|write.*fail|READONLY|master.*down|连接.*失败"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis 写入失败 大量错误 故障排查 主从切换", "top_k": 5})
+    [TOOL] Glob({"pattern": "docs/runbook/*redis*.md"})
+    [TOOL_OUT] Found 3 files
+docs/eval-review.md
+docs/design-review.md
+docs/runbook/redis-failover.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 3.4693,\n    \"doc_id\": \"redis-failover-001\",\n    \"chunk_id\": \"redis-failover-001-000\",\n    \"path\": \"docs/runbook/redis-failover.md\",\n    \"title\": \"Redis 主从切换故障恢复手册\",\n    \"section_path\": \"Redis 主从切换故障恢复手册 > 故障现象\",\n    \"confidence\": \"high\",\n    \"text\": \"当 Redis Sentinel 触发主从切换（failover）后，应用层需要正确处理连接重建。本文档描述完整的故障恢复流程。\\n\\n- 应用日志出现大量 
+    [TOOL_OUT] /home/shenzt/ws/knowledge-base-search/docs/runbook/redis-failover.md
+    [THINK] 找到了！这是 **Redis 主从切换故障**，典型症状是写入失败 + `READONLY` 错误刷屏。 (+38 lines)
+    [RESULT] 828 chars | 4 turns | 72118ms
+  ✅ 通过 | 828字符 | 85.7s | $0.0446 | 引用✅ 文档✅ | ctx:2
+  🔧 工具: Grep, Glob
+  📄 检索: docs/runbook/redis-failover.md
+  🔑 关键词: redis, sentinel, failover, 主从, 切换, master, readonly, 连接, 恢复
+  📝 答案: 找到了！这是 **Redis 主从切换故障**，典型症状是写入失败 + `READONLY` 错误刷屏。
+
+## 🚨 立即操作
+
+### 1. 确认是否主从切换
+```bash
+# 查看 Sentinel 日志，找 +switch-master 事件
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+```
+
+### 2. 快速恢复（2 选 1）
+
+**方案 A：应用用了 Sentinel 客户端（自动切换）**
+- 等待 30 秒，连接池会自动重连新 master
+- 检查客户端配置：必须配置 Sentinel 地址（不是直连 IP）
+- 确认连接池开启了 `testOnBorrow`（连接健康检查）
+
+**方案 B：应用直连 master IP（需手动切换）**
+```bash
+# 1. 获取新 master 地址
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+
+# 2. 滚动重启应用（会读取新配置）
+kubectl rollout r...
+  结束: 17:55:36 | 耗时: 85.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[7/64] local-so-002 (k8s-crashloop) [scenario]
+  Q: 我的 pod 一直在 restart，已经重启了 50 多次了，describe 看了也没啥有用信息
+  💡 SO口语化，不含 CrashLoopBackOff
+  开始: 17:55:36
+    [INIT] session=2ccd6ee5-0c2c-4429-b94c-dcc5f8362830 model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索 Pod 频繁重启的排查方法。这是一个典型的故障排查场景，我会并行搜索本地文档和向量索引。
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "restart|CrashLoop|重启"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "pod keeps restarting crashloopbackoff troubleshooting", "top_k": 5})
+    [TOOL_OUT] Found 4 files
+docs/e2e-testing.md
+docs/runbook/redis-failover.md
+docs/design.md
+docs/runbook/kubernetes-pod-crashloop.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 3.6572,\n    \"doc_id\": \"k8s-crashloop-001\",\n    \"chunk_id\": \"k8s-crashloop-001-000\",\n    \"path\": \"docs/runbook/kubernetes-pod-crashloop.md\",\n    \"title\": \"Kubernetes Pod CrashLoopBackOff Troubleshooting Guide\",\n    \"section_path\": \"Kubernetes Pod CrashLoopBackOff Troubleshooting Guide > Symptoms\",\n    \"confidence\": \"high\",\n    \"text\
+    [THINK] 找到了相关的排查指南。让我读取完整的本地 runbook 文档：
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md"})
+    [TOOL_OUT] 1→---
+     2→id: k8s-crashloop-001
+     3→title: Kubernetes Pod CrashLoopBackOff Troubleshooting Guide
+    ... (96 lines total)
+    [THINK] ## Pod 频繁重启排查步骤 (+55 lines)
+    [RESULT] 1173 chars | 4 turns | 75883ms
+  ✅ 通过 | 1173字符 | 89.5s | $0.0672 | 引用✅ 文档✅ | ctx:2
+  🔧 工具: Read, Grep
+  📄 检索: docs/e2e-testing.md, docs/runbook/kubernetes-pod-crashloop.md, docs/design.md, /home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md, docs/runbook/redis-failover.md
+  🔑 关键词: pod, crash, 重启, oom, log, kubectl, liveness, memory, container
+  📝 答案: ## Pod 频繁重启排查步骤
+
+你的 Pod 重启 50+ 次，describe 没有明显信息，建议按以下顺序排查：
+
+### 1. 查看上一次崩溃的日志（最重要）
+
+```bash
+kubectl logs <pod-name> -n <namespace> --previous
+```
+
+`describe` 可能看不出问题，但日志通常会显示崩溃原因（报错、panic、OOM 等）。
+
+### 2. 检查是否 OOMKilled
+
+```bash
+kubectl describe pod <pod-name> -n <namespace> | grep -i oom
+```
+
+如果看到 `OOMKilled`，说明内存不足，需要增加 memory limits。
+
+### 3. 检查 Liveness Probe 配置
+
+```bash
+kubectl get pod <pod-name> -n <namespace> -o jsonpath='{.spec.containers[*].livenessProbe}'
+```
+
+常见问题：
+- `initialDelaySecon...
+  结束: 17:57:05 | 耗时: 89.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[8/64] local-so-003 (api-auth) [scenario]
+  Q: 用户反馈说登录之后过一会儿就被踢出来了，要重新登录，是 token 的问题吗
+  💡 SO用户反馈，不含 JWT/refresh_token
+  开始: 17:57:05
+    [INIT] session=48b25d86-211a-460a-a943-b5ca91bbe169 model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索关于登录 token 过期的相关文档。
+    [TOOL] Grep({"-i": true, "path": "docs", "pattern": "token|登录|过期|expire|TTL|refresh"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "token 过期 登录 refresh token TTL", "top_k": 5})
+    [TOOL_OUT] Found 7 files
+docs/guides/configuration.md
+docs/archive/PROJECT_STATUS.md
+    ... (8 lines total)
+    [TOOL_OUT] {"result":"[]"}
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md"})
+    [TOOL_OUT] 1→---
+     2→id: api-auth-001
+     3→title: API 认证与授权设计文档
+    ... (88 lines total)
+    [THINK] 是的，很可能是 token 过期的问题。根据文档，这是正常的安全设计： (+21 lines)
+    [RESULT] 536 chars | 4 turns | 70224ms
+  ✅ 通过 | 536字符 | 83.9s | $0.0546 | 引用✅ 文档✅ | ctx:2
+  🔧 工具: Read, Grep
+  📄 检索: docs/e2e-testing.md, docs/dual-repo-architecture.md, docs/api/authentication.md, docs/guides/configuration.md, docs/archive/DUAL_LAYER_SUMMARY.md
+  🔑 关键词: token, refresh, 401, 登录
+  📝 答案: 是的，很可能是 token 过期的问题。根据文档，这是正常的安全设计：
+
+**问题原因：**
+- access_token 有效期只有 **15 分钟**（第 20、70 行）
+- 用户登录后如果超过 15 分钟没有刷新 token，就会被踢出
+
+**解决方案：**
+客户端需要实现 token 自动刷新机制：
+1. 在 access_token 快过期前（比如还剩 2 分钟时），用 refresh_token 调用 `/api/v1/auth/refresh` 换取新 token
+2. refresh_token 有效期是 **7 天**（第 20 行），只要在 7 天内刷新过就不会被踢出
+
+**注意事项：**
+- refresh_token 是单次使用的，用完会立即轮换（第 71 行）
+- 如果用户 7 天都没登录，需要重新输入用户名密码
+
+**排查建议：**
+检查客户端代码是否：
+- 监听了 401 + `TOKEN_EXPIRED` 错误码（第 81 行）
+- 实现了自动调用 refresh 接口的逻辑
+- 正确保存和使用了新的 refresh_token
+
+[来源: docs/...
+  结束: 17:58:29 | 耗时: 83.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[9/64] local-so-004 (k8s-crashloop) [scenario]
+  Q: 容器跑着跑着就被 kill 了，感觉是内存的问题但不确定怎么查
+  💡 模糊描述→OOMKilled
+  开始: 17:58:29
+    [INIT] session=9dc23988-1341-4da4-bec0-8996e2cd3aca model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索容器内存问题的排查方法。这个问题涉及容器被 kill 和内存排查，我会并行使用多个工具来查找相关信息。
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "kill|OOM|内存|memory"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "容器被 kill 内存问题排查 OOM memory limit", "top_k": 5})
+    [TOOL_OUT] Found 16 files
+docs/design-review.md
+docs/archive/FINAL_SUMMARY.md
+    ... (17 lines total)
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 3.3593,\n    \"doc_id\": \"7357939c\",\n    \"chunk_id\": \"7357939c-017\",\n    \"path\": \"tests/fixtures/kb-sources/k8s-website/content/en/docs/concepts/configuration/manage-resources-containers.md\",\n    \"title\": \"Resource Management for Pods and Containers\",\n    \"section_path\": \"Troubleshooting > My container is terminated\",\n    \"confidence\": \"u
+    [THINK] 找到了相关信息！容器被 kill 通常是 OOM（Out of Memory）导致的。以下是排查方法： (+67 lines)
+    [RESULT] 1382 chars | 3 turns | 70969ms
+  ✅ 通过 | 1382字符 | 84.8s | $0.0508 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: Grep
+  📄 检索: docs/e2e-testing.md, docs/archive/FINAL_SUMMARY.md, docs/dual-layer-architecture.md, docs/design-review.md, docs/dual-repo-architecture.md
+  🔑 关键词: pod, crash, restart, 重启, oom, log, kubectl, memory, container
+  📝 答案: 找到了相关信息！容器被 kill 通常是 OOM（Out of Memory）导致的。以下是排查方法：
+
+## 诊断步骤
+
+### 1. 检查容器是否被 OOMKilled
+
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+```
+
+关键信息：
+- **Last State: Terminated** 
+  - `Reason: OOMKilled` — 确认是内存超限
+  - `Exit Code: 137` — OOM kill 的退出码
+- **Restart Count** — 重启次数，如果频繁重启说明持续超限
+
+示例输出：
+```
+Last State:     Terminated
+  Reason:       OOMKilled
+  Exit Code:    137
+  Started:      Fri, 07 Jul 2019 12:54:30 -0700
+  Finished:     Fri, 07 Jul 2019 12:54:33 -0700
+Ready:          False
+Res...
+  结束: 17:59:54 | 耗时: 84.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[10/64] local-so-005 (redis-failover) [scenario]
+  Q: Redis 主库挂了之后从库顶上去了，但是应用还是连的旧地址，怎么让应用自动切换
+  💡 口语化描述 failover + Sentinel 客户端
+  开始: 17:59:54
+    [INIT] session=bfc10179-9eb2-4fda-8354-79e6b49e399c model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索关于 Redis 主从切换后应用自动切换连接的相关文档。
+    [TOOL] Grep({"-i": true, "path": "docs", "pattern": "应用.*切换|自动切换|Sentinel|哨兵|主从切换"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis 主从切换 应用自动切换连接地址 Sentinel", "top_k": 5})
+    [TOOL_OUT] Found 3 files
+docs/eval-review.md
+docs/runbook/redis-failover.md
+docs/design.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 5.2472,\n    \"doc_id\": \"redis-failover-001\",\n    \"chunk_id\": \"redis-failover-001-002\",\n    \"path\": \"docs/runbook/redis-failover.md\",\n    \"title\": \"Redis 主从切换故障恢复手册\",\n    \"section_path\": \"Redis 主从切换故障恢复手册 > 恢复操作 > 手动恢复\",\n    \"confidence\": \"high\",\n    \"text\": \"如果应用使用 Sentinel 客户端（如 Jedis Sentinel、redis-py Sentinel），连接会自动切换。检查：\\n\\n1
+    [THINK] 找到了相关文档。让我读取完整内容：
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/redis-failover.md"})
+    [TOOL_OUT] 1→---
+     2→id: redis-failover-001
+     3→title: Redis 主从切换故障恢复手册
+    ... (87 lines total)
+    [THINK] 根据检索到的文档，Redis 主从切换后让应用自动切换连接的解决方案如下： (+35 lines)
+    [RESULT] 884 chars | 4 turns | 80121ms
+  ✅ 通过 | 884字符 | 93.8s | $0.0649 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: Grep
+  📄 检索: docs/eval-review.md, docs/runbook/redis-failover.md, docs/design.md
+  🔑 关键词: redis, sentinel, failover, 主从, 切换, master, 连接, 恢复
+  📝 答案: 根据检索到的文档，Redis 主从切换后让应用自动切换连接的解决方案如下：
+
+## 推荐方案：使用 Sentinel 客户端（自动切换）
+
+应用必须使用 **Sentinel 客户端**（如 Jedis Sentinel、redis-py Sentinel）而不是直连 master IP。这样当主从切换发生时，连接会自动切换到新 master。
+
+**配置要点：**
+1. 客户端配置 Sentinel 地址，而非直连 master IP
+2. 连接池开启 `testOnBorrow` 或等效配置
+3. 等待 30 秒左右，连接会自动切换，错误率下降
+
+## 如果应用当前直连 master IP（需手动处理）
+
+如果应用配置的是固定 master IP，主从切换后需要手动操作：
+
+1. **获取新 master 地址：**
+   ```bash
+   redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+   ```
+
+2. **更新应用配置中的 Redis 地址**
+
+3. **滚动重启应用：**
+   ```bash...
+  结束: 18:01:28 | 耗时: 93.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[11/64] local-so-006 (api-auth) [scenario]
+  Q: 我们有个多租户系统，不同租户的用户不能互相访问数据，这个权限怎么设计的
+  💡 指向 tenant_id + RBAC
+  开始: 18:01:28
+    [INIT] session=0eaefe28-dd11-4e56-9ca0-3642861cb06c model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索多租户权限设计的相关文档。
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "多租户|租户隔离|tenant|multi-tenant"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "多租户系统权限设计 租户数据隔离", "top_k": 5})
+    [TOOL_OUT] Found 1 file
+docs/api/authentication.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 2.0656,\n    \"doc_id\": \"0936b9d2\",\n    \"chunk_id\": \"0936b9d2-003\",\n    \"path\": \"tests/fixtures/kb-sources/k8s-website/content/en/docs/concepts/security/multi-tenancy.md\",\n    \"title\": \"Multi-tenancy\",\n    \"section_path\": \"Terminology > Isolation\",\n    \"confidence\": \"unknown\",\n    \"text\": \"There are several ways to design and build 
+    [THINK] 找到了相关文档。让我读取本地文档的完整内容：
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/api/authentication.md"})
+    [TOOL_OUT] 1→---
+     2→id: api-auth-001
+     3→title: API 认证与授权设计文档
+    ... (88 lines total)
+    [THINK] 找到了相关的权限设计文档。这个多租户系统的权限设计方案如下： (+46 lines)
+    [RESULT] 963 chars | 4 turns | 71872ms
+  ✅ 通过 | 963字符 | 85.3s | $0.0646 | 引用✅ 文档✅ | ctx:2
+  🔧 工具: Read, Grep
+  📄 检索: /home/shenzt/ws/knowledge-base-search/docs/api/authentication.md, docs/api/authentication.md
+  🔑 关键词: token, jwt, rbac, role, 权限
+  📝 答案: 找到了相关的权限设计文档。这个多租户系统的权限设计方案如下：
+
+## 租户隔离机制
+
+**JWT Token 中包含 `tenant_id` 字段**，每个用户的 token 携带其所属租户标识：
+
+```json
+{
+  "sub": "user-uuid",
+  "tenant_id": "tenant-001",
+  "roles": ["admin", "editor"]
+}
+```
+
+## 权限控制层次
+
+### 1. 基于角色的访问控制（RBAC）
+
+系统定义了 4 个角色：
+- `viewer` — 只读访问
+- `editor` — 读写访问  
+- `admin` — 全部权限 + 用户管理
+- `super_admin` — 跨租户管理（唯一可以访问其他租户数据的角色）
+
+### 2. 资源级权限检查
+
+在资源访问时进行双重验证：
+
+```python
+@require_permission("document:write")
+async def update_document(doc_id: str, user: User):
+    doc = await ge...
+  结束: 18:02:53 | 耗时: 85.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[12/64] local-cross-001 (redis-failover) [cross-lang]
+  Q: How to recover when Redis sentinel triggers a failover?
+  💡 英文问→中文文档
+  开始: 18:02:53
+    [INIT] session=3a22a479-6002-46f7-a828-0c3c72b70099 model=claude-sonnet-4-5-20250929
+    [THINK] I'll search the knowledge base for information about Redis Sentinel failover recovery.
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Redis.*[Ss]entinel.*failover"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis Sentinel failover recovery steps", "top_k": 5})
+    [TOOL_OUT] Found 2 files
+docs/eval-review.md
+docs/runbook/redis-failover.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 3.1445,\n    \"doc_id\": \"redis-failover-001\",\n    \"chunk_id\": \"redis-failover-001-000\",\n    \"path\": \"docs/runbook/redis-failover.md\",\n    \"title\": \"Redis 主从切换故障恢复手册\",\n    \"section_path\": \"Redis 主从切换故障恢复手册 > 故障现象\",\n    \"confidence\": \"high\",\n    \"text\": \"当 Redis Sentinel 触发主从切换（failover）后，应用层需要正确处理连接重建。本文档描述完整的故障恢复流程。\\n\\n- 应用日志出现大量 
+    [THINK] I found detailed information about Redis Sentinel failover recovery. Let me read the complete runbook document:
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/redis-failover.md"})
+    [TOOL_OUT] 1→---
+     2→id: redis-failover-001
+     3→title: Redis 主从切换故障恢复手册
+    ... (87 lines total)
+    [THINK] ## Redis Sentinel Failover Recovery (+50 lines)
+    [RESULT] 1607 chars | 4 turns | 80270ms
+  ✅ 通过 | 1607字符 | 93.9s | $0.0638 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: Grep
+  📄 检索: docs/eval-review.md, docs/runbook/redis-failover.md
+  🔑 关键词: redis, sentinel, failover, master, readonly, read only
+  📝 答案: ## Redis Sentinel Failover Recovery
+
+When Redis Sentinel triggers a failover, here's how to recover:
+
+### Symptoms
+- Application logs show `READONLY You can't write against a read only replica` errors
+- Sentinel logs display `+switch-master` event
+- Monitoring alerts: Redis write latency spike
+
+### Recovery Steps
+
+**1. Verify Sentinel Status**
+```bash
+redis-cli -p 26379 SENTINEL masters
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+```
+Confirm the new master's IP and port.
+
+**2. C...
+  结束: 18:04:27 | 耗时: 93.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[13/64] local-cross-002 (k8s-crashloop) [cross-lang]
+  Q: K8s 容器因为 liveness probe 失败一直重启怎么排查
+  💡 中文问→英文文档
+  开始: 18:04:27
+    [INIT] session=da97b92f-a90a-47bd-b176-48fc9073fad1 model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索关于 K8s 容器因 liveness probe 失败导致重启的排查方法。
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "liveness probe|livenessProbe"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "K8s liveness probe failure container restart troubleshooting", "top_k": 5})
+    [TOOL_OUT] Found 1 file
+docs/runbook/kubernetes-pod-crashloop.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 1.8918,\n    \"doc_id\": \"506a0c4b\",\n    \"chunk_id\": \"506a0c4b-000\",\n    \"path\": \"tests/fixtures/kb-sources/k8s-website/content/en/docs/concepts/configuration/liveness-readiness-startup-probes.md\",\n    \"title\": \"Liveness, Readiness, and Startup Probes\",\n    \"section_path\": \"Startup probe\",\n    \"confidence\": \"unknown\",\n    \"text\": \"Ku
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md"})
+    [TOOL_OUT] 1→---
+     2→id: k8s-crashloop-001
+     3→title: Kubernetes Pod CrashLoopBackOff Troubleshooting Guide
+    ... (96 lines total)
+    [THINK] 根据检索结果，这里是关于 K8s 容器因 liveness probe 失败导致重启的排查方法： (+69 lines)
+    [RESULT] 1455 chars | 4 turns | 79936ms
+  ✅ 通过 | 1455字符 | 93.4s | $0.0724 | 引用✅ 文档✅ | ctx:2
+  🔧 工具: Read, Grep
+  📄 检索: docs/runbook/kubernetes-pod-crashloop.md, /home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md
+  🔑 关键词: pod, crash, 重启, log, kubectl, liveness, container
+  📝 答案: 根据检索结果，这里是关于 K8s 容器因 liveness probe 失败导致重启的排查方法：
+
+## 排查步骤
+
+### 1. 检查 Pod 事件
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+```
+查看事件中是否有 liveness probe 失败的记录。
+
+### 2. 查看当前 liveness probe 配置
+```bash
+kubectl get pod <pod-name> -n <namespace> -o jsonpath='{.spec.containers[*].livenessProbe}'
+```
+
+### 3. 常见的 liveness probe 配置问题
+
+- **`initialDelaySeconds` 设置过短**：应用启动慢，probe 在应用就绪前就开始检查
+- **健康检查端点实现错误**：应用的健康检查逻辑有 bug 或返回错误状态码
+- **probe timeout 过于激进**：`timeoutSeconds` 太短，正常响应也会超时
+- **`periodSec...
+  结束: 18:06:00 | 耗时: 93.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[14/64] local-howto-001 (redis-failover) [howto]
+  Q: 怎么确认 Redis Sentinel 当前的 master 是哪个节点
+  开始: 18:06:00
+    [INIT] session=6b56eadc-f371-4a16-975a-3a5a107143d3 model=claude-sonnet-4-5-20250929
+    [THINK] 我会帮你检索如何确认 Redis Sentinel 当前的 master 节点。让我并行使用 Grep 和 hybrid_search 来查找相关信息。
+    [TOOL] Grep({"-i": true, "path": "docs", "pattern": "Sentinel.*master|sentinel.*get-master|INFO replication"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis Sentinel 确认 master 节点 查询主节点", "top_k": 5})
+    [TOOL_OUT] Found 2 files
+docs/eval-review.md
+docs/runbook/redis-failover.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 1.701,\n    \"doc_id\": \"dc98bff1\",\n    \"chunk_id\": \"dc98bff1-012\",\n    \"path\": \"tests/fixtures/kb-sources/redis-docs/content/operate/oss_and_stack/management/sentinel.md\",\n    \"title\": \"High availability with Redis Sentinel\",\n    \"section_path\": \"Sentinel API\",\n    \"confidence\": \"unknown\",\n    \"text\": \"Sentinel provides an API in or
+    [THINK] 找到了相关信息。确认 Redis Sentinel 当前的 master 节点有以下几种方法： (+39 lines)
+    [RESULT] 809 chars | 3 turns | 77507ms
+  ✅ 通过 | 809字符 | 91.1s | $0.0420 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: Grep
+  📄 检索: docs/eval-review.md, docs/runbook/redis-failover.md
+  🔑 关键词: redis, sentinel, failover, master, 连接
+  📝 答案: 找到了相关信息。确认 Redis Sentinel 当前的 master 节点有以下几种方法：
+
+## 1. 使用 Sentinel 命令查询
+
+**查询所有 master 信息：**
+```bash
+redis-cli -p 26379 SENTINEL masters
+```
+
+**查询指定 master 的地址：**
+```bash
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaster
+```
+这会返回当前 master 的 IP 和端口。
+
+## 2. 直接连接节点验证
+
+连接到疑似 master 的节点，查看其角色：
+```bash
+redis-cli -h <master-ip> -p 6379 INFO replication
+```
+
+确认输出中包含：
+- `role:master` — 确认是 master 角色
+- `connected_slaves` — 查看连接的从节点数量
+
+## 3. 检查应用连接情况
+
+查看应用是否已连接到正确的 master：
+```bash
+redis-cli -h <...
+  结束: 18:07:31 | 耗时: 91.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[15/64] local-howto-002 (k8s-crashloop) [howto]
+  Q: 怎么看上一次容器崩溃的日志
+  💡 文档中有 kubectl logs --previous
+  开始: 18:07:31
+    [INIT] session=0934f67d-9daf-42b1-a36e-cdee2b4af8c9 model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索如何查看上一次容器崩溃的日志。
+    [TOOL] Grep({"-i": true, "glob": "*.md", "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "崩溃.*日志|previous.*crash|kubectl.*logs.*previous"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "查看容器上一次崩溃的日志 previous container crash logs kubectl", "top_k": 5})
+    [TOOL_OUT] Found 1 file
+docs/runbook/kubernetes-pod-crashloop.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 2.5443,\n    \"doc_id\": \"k8s-crashloop-001\",\n    \"chunk_id\": \"k8s-crashloop-001-001\",\n    \"path\": \"docs/runbook/kubernetes-pod-crashloop.md\",\n    \"title\": \"Kubernetes Pod CrashLoopBackOff Troubleshooting Guide\",\n    \"section_path\": \"Kubernetes Pod CrashLoopBackOff Troubleshooting Guide > Diagnostic Steps > 4. Check Liveness Probe\",\n    \"co
+    [THINK] 查看上一次容器崩溃的日志，使用 `kubectl logs` 命令加上 `--previous` 参数： (+28 lines)
+    [RESULT] 614 chars | 3 turns | 68688ms
+  ✅ 通过 | 614字符 | 82.3s | $0.0404 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: Grep
+  📄 检索: docs/runbook/kubernetes-pod-crashloop.md
+  🔑 关键词: pod, crash, 重启, log, kubectl, container
+  📝 答案: 查看上一次容器崩溃的日志，使用 `kubectl logs` 命令加上 `--previous` 参数：
+
+```bash
+# 查看上一次崩溃的日志
+kubectl logs <pod-name> -n <namespace> --previous
+```
+
+如果 Pod 有多个容器，需要用 `-c` 指定容器名：
+
+```bash
+kubectl logs <pod-name> -n <namespace> -c <container-name> --previous
+```
+
+**对比当前日志和上一次崩溃日志：**
+
+```bash
+# 当前运行的容器日志
+kubectl logs <pod-name> -n <namespace>
+
+# 上一次崩溃的容器日志
+kubectl logs <pod-name> -n <namespace> --previous
+```
+
+**注意事项：**
+- `--previous` 只能获取上一次实例的日志，如果容器已经重启多次，只能看到最近一次崩溃前的日志
+- `kubectl logs` 默认只返回最新的日志文件内容（kubelet 会轮转日...
+  结束: 18:08:54 | 耗时: 82.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[16/64] local-howto-003 (api-auth) [howto]
+  Q: access_token 过期了怎么续期，调哪个接口
+  💡 文档中有 /api/v1/auth/refresh
+  开始: 18:08:54
+    [INIT] session=d0cf6b03-8a1c-4ea5-a915-302795be6b24 model=claude-sonnet-4-5-20250929
+    [THINK] 我来检索关于 access_token 续期的信息。
+    [TOOL] Grep({"-i": true, "path": "docs", "pattern": "access_token|续期|refresh|token.*过期"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "access_token 过期 续期 refresh token 接口", "top_k": 5})
+    [TOOL_OUT] Found 1 file
+docs/api/authentication.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 1.4641,\n    \"doc_id\": \"api-auth-001\",\n    \"chunk_id\": \"api-auth-001-004\",\n    \"path\": \"docs/api/authentication.md\",\n    \"title\": \"API 认证与授权设计文档\",\n    \"section_path\": \"API 认证与授权设计文档 > API 错误码\",\n    \"confidence\": \"high\",\n    \"text\": \"- access_token 有效期不超过 15 分钟\\n- refresh_token 单次使用，使用后立即轮换\\n- 敏感操作（删除、权限变更）需要二次验证\\n- 所有 token 传输必须
+    [THINK] 找到了！当 access_token 过期后，使用 refresh_token 调用刷新接口换取新 token。 (+15 lines)
+    [RESULT] 469 chars | 3 turns | 68081ms
+  ✅ 通过 | 469字符 | 81.6s | $0.0363 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: Grep
+  📄 检索: docs/api/authentication.md
+  🔑 关键词: token, 认证, refresh, 401
+  📝 答案: 找到了！当 access_token 过期后，使用 refresh_token 调用刷新接口换取新 token。
+
+**续期接口**：`POST /api/v1/auth/refresh`
+
+**流程**：
+1. access_token 过期（15分钟有效期）
+2. 客户端用 refresh_token 调用 `/api/v1/auth/refresh` 接口
+3. 服务端验证 refresh_token 并签发新的 access_token 和 refresh_token
+4. 旧的 refresh_token 立即失效（单次使用，使用后轮换）
+
+**注意事项**：
+- refresh_token 有效期 7 天
+- refresh_token 是一次性的，使用后会返回新的 refresh_token
+- 如果收到 `401 TOKEN_EXPIRED` 错误码，说明需要刷新 token
+
+[来源: docs/api/authentication.md > API 认证与授权设计文档 > 认证方式 > Token 验证]
+  结束: 18:10:15 | 耗时: 81.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[17/64] local-multi-001 (multi-doc) [multi-doc]
+  Q: Pod 重启后 Redis 连接断了，从排查 Pod 到恢复 Redis 连接的完整流程是什么
+  💡 需要综合两个 runbook
+  开始: 18:10:15
+    [INIT] session=91624dc5-10fa-44e4-a7d3-b1d83c10bed8 model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索这个问题。这是一个跨文档的故障排查场景，涉及 Pod 排查和 Redis 连接恢复两个方面。我会并行使用多个工具来查找相关信息。
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Pod.*重启|CrashLoop|Redis.*连接|连接断"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Pod restart Redis connection troubleshooting recovery", "top_k": 10})
+    [TOOL] Glob({"path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "**/runbook/*.md"})
+    [TOOL_OUT] Found 5 files
+docs/eval-review.md
+docs/e2e-testing.md
+    ... (6 lines total)
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 1.0236,\n    \"doc_id\": \"redis-failover-001\",\n    \"chunk_id\": \"redis-failover-001-002\",\n    \"path\": \"docs/runbook/redis-failover.md\",\n    \"title\": \"Redis 主从切换故障恢复手册\",\n    \"section_path\": \"Redis 主从切换故障恢复手册 > 恢复操作 > 手动恢复\",\n    \"confidence\": \"high\",\n    \"text\": \"如果应用使用 Sentinel 客户端（如 Jedis Sentinel、redis-py Sentinel），连接会自动切换。检查：\\n\\n1
+    [TOOL_OUT] /home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md
+/home/shenzt/ws/knowledge-base-search/docs/runbook/redis-failover.md
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md"})
+    [TOOL] Read({"file_path": "/home/shenzt/ws/knowledge-base-search/docs/runbook/redis-failover.md"})
+    [TOOL_OUT] 1→---
+     2→id: k8s-crashloop-001
+     3→title: Kubernetes Pod CrashLoopBackOff Troubleshooting Guide
+    ... (96 lines total)
+    [TOOL_OUT] 1→---
+     2→id: redis-failover-001
+     3→title: Redis 主从切换故障恢复手册
+    ... (87 lines total)
+    [THINK] 根据知识库文档，这是一个跨场景的故障排查流程，涉及 Pod 排查和 Redis 连接恢复两个阶段： (+85 lines)
+    [RESULT] 1838 chars | 6 turns | 126563ms
+  ✅ 通过 | 1838字符 | 140.0s | $0.0727 | 引用✅ 文档✅ | ctx:3
+  🔧 工具: Read, Grep, Glob
+  📄 检索: docs/runbook/redis-failover.md, /home/shenzt/ws/knowledge-base-search/docs/runbook/redis-failover.md
+  🔑 关键词: redis, pod, 连接, 重启, sentinel, crash
+  📝 答案: 根据知识库文档，这是一个跨场景的故障排查流程，涉及 Pod 排查和 Redis 连接恢复两个阶段：
+
+## 完整排查流程
+
+### 阶段 1：排查 Pod 状态
+
+**1. 检查 Pod 事件**
+```bash
+kubectl describe pod <pod-name> -n <namespace>
+```
+查看是否有 `OOMKilled`、`Error`、`ContainerCannotRun` 等异常事件。
+
+**2. 查看容器日志**
+```bash
+# 当前日志
+kubectl logs <pod-name> -n <namespace>
+
+# 上次崩溃日志
+kubectl logs <pod-name> -n <namespace> --previous
+```
+确认是否有 Redis 连接相关错误（如 `READONLY You can't write against a read only replica`）。
+
+**3. 检查资源限制**
+```bash
+kubectl get pod <pod-name> -n <namespace> -o jsonpath=...
+  结束: 18:12:35 | 耗时: 140.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[18/64] qdrant-redis-sentinel-001 (redis-sentinel) [concept]
+  Q: How does Redis Sentinel automatic failover work?
+  💡 Official Sentinel doc has full failover explanation
+  开始: 18:12:35
+    [INIT] session=ad95161c-8112-44cc-8f11-433d329e92a1 model=claude-sonnet-4-5-20250929
+    [THINK] I'll search for information about Redis Sentinel automatic failover using multiple approaches.
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "Sentinel.*failover|automatic failover|failover.*Sentinel"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis Sentinel automatic failover process mechanism", "top_k": 5})
+    [TOOL_OUT] Found 2 files
+docs/eval-review.md
+docs/runbook/redis-failover.md
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 3.4328,\n    \"doc_id\": \"dc98bff1\",\n    \"chunk_id\": \"dc98bff1-000\",\n    \"path\": \"tests/fixtures/kb-sources/redis-docs/content/operate/oss_and_stack/management/sentinel.md\",\n    \"title\": \"High availability with Redis Sentinel\",\n    \"section_path\": \"Sentinel as a distributed system\",\n    \"confidence\": \"unknown\",\n    \"text\": \"Redis Sen
+    [THINK] Redis Sentinel automatic failover works through a distributed consensus mechanism. Here's how the process operates: (+40 lines)
+    [RESULT] 2220 chars | 3 turns | 77211ms
+  ❌ 失败: 未检索到期望文档 ['sentinel.md'] (实际: ['docs/eval-review.md', 'docs/runbook/redis-failover.md'])
+  📝 答案: Redis Sentinel automatic failover works through a distributed consensus mechanism. Here's how the process operates:
+
+## Failure Detection
+
+**Two-stage detection process:**
+
+1. **SDOWN (Subjectively Down)**: A single Sentinel marks the master as down when it doesn't receive valid PING replies for the configured `is-master-down-after-milliseconds` period.
+
+2. **ODOWN (Objectively Down)**: When enough Sentinels (at least the `quorum` number) agree the master is down, the state escalates to ODOWN. T...
+  结束: 18:14:06 | 耗时: 90.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[19/64] qdrant-redis-sentinel-002 (redis-sentinel) [howto]
+  Q: Redis Sentinel 的 quorum 是什么意思？怎么配置？
+  💡 Cross-lang: Chinese question → English doc
+  开始: 18:14:06
+    [INIT] session=cff9b856-8424-4a33-9179-7749f676aef0 model=claude-sonnet-4-5-20250929
+    [THINK] 我来帮你检索 Redis Sentinel 的 quorum 相关信息。
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "quorum"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis Sentinel quorum 配置", "top_k": 5})
+    [TOOL_OUT] No files found
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 4.1881,\n    \"doc_id\": \"dc98bff1\",\n    \"chunk_id\": \"dc98bff1-002\",\n    \"path\": \"tests/fixtures/kb-sources/redis-docs/content/operate/oss_and_stack/management/sentinel.md\",\n    \"title\": \"High availability with Redis Sentinel\",\n    \"section_path\": \"Sentinel quick start > Configuring Sentinel\",\n    \"confidence\": \"unknown\",\n    \"text\": 
+    [THINK] 根据检索结果，我来回答 Redis Sentinel 的 quorum 相关问题： (+47 lines)
+    [RESULT] 1055 chars | 3 turns | 72171ms
+  ❌ 失败: 未检索到期望文档 ['sentinel.md'] (实际: [])
+  📝 答案: 根据检索结果，我来回答 Redis Sentinel 的 quorum 相关问题：
+
+## quorum 的含义
+
+**quorum** 是指需要多少个 Sentinel 节点同意主节点不可达，才能真正标记主节点为失败状态。
+
+关键点：
+- quorum **仅用于检测故障**，不是执行故障转移的充分条件
+- 要真正执行故障转移（failover），还需要获得**大多数 Sentinel 进程的投票授权**
+
+## 工作机制示例
+
+假设你有 5 个 Sentinel 进程，quorum 设置为 2：
+
+1. 如果 2 个 Sentinel 同时认为主节点不可达，其中一个会尝试启动故障转移
+2. 但只有当**至少 3 个 Sentinel 可达**（大多数）时，故障转移才会被授权并真正开始
+
+**实际意义**：在少数派分区中，Sentinel 永远不会启动故障转移（如果大多数 Sentinel 进程无法通信，就不会发生故障转移）。
+
+## 配置方式
+
+在 `sentinel.conf` 中使用以下格式：
+
+```
+sentinel monitor <master-name> <ip> <...
+  结束: 18:15:32 | 耗时: 85.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[20/64] qdrant-redis-repl-001 (redis-replication) [concept]
+  Q: Redis master-replica replication 是异步的还是同步的？
+  开始: 18:15:32
+    [INIT] session=7105c4c6-9b5e-491c-88b8-bcae5b8176cc model=claude-sonnet-4-5-20250929
+    [THINK] 我来检索关于 Redis master-replica replication 同步机制的信息。
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis master-replica replication asynchronous synchronous", "top_k": 5})
+    [TOOL] Grep({"-i": true, "path": "docs", "pattern": "异步|同步|asynchronous|synchronous|replication"})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 5.0635,\n    \"doc_id\": \"4474c30a\",\n    \"chunk_id\": \"4474c30a-000\",\n    \"path\": \"tests/fixtures/kb-sources/redis-docs/content/operate/oss_and_stack/management/replication.md\",\n    \"title\": \"Redis replication\",\n    \"section_path\": \"\",\n    \"confidence\": \"unknown\",\n    \"text\": \"At the base of Redis replication (excluding the high avail
+    [TOOL_OUT] Found 10 files
+docs/design-review.md
+docs/archive/PROJECT_STATUS.md
+    ... (11 lines total)
+    [THINK] **Redis master-replica replication 默认是异步的（asynchronous）。** (+18 lines)
+    [RESULT] 603 chars | 3 turns | 68800ms
+  ✅ 通过 | 603字符 | 82.5s | $0.0435 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: Grep
+  📄 检索: tests/fixtures/kb-sources/redis-docs/content/operate/oss_and_stack/management/scaling.md, tests/fixtures/kb-sources/redis-docs/content/operate/oss_and_stack/reference/cluster-spec.md, tests/fixtures/kb-sources/redis-docs/content/operate/oss_and_stack/management/replication.md
+  🔑 关键词: replication, replica, master, sync, async
+  📝 答案: **Redis master-replica replication 默认是异步的（asynchronous）。**
+
+Redis 使用异步复制作为默认模式，这是为了保证低延迟和高性能。具体机制如下：
+
+1. **异步复制的工作方式**：
+   - Master 不会等待每个命令被 replica 处理完才返回
+   - Replica 会定期向 master 异步确认（acknowledge）已接收的数据量
+   - Master 知道每个 replica 已处理到哪个命令，但不会阻塞等待
+
+2. **可选的同步复制**：
+   - 客户端可以使用 `WAIT` 命令请求同步复制特定数据
+   - `WAIT` 命令确保指定数量的 replica 已确认写入
+   - 但这不会将 Redis 变成强一致性系统，在故障转移时仍可能丢失已确认的写入
+
+3. **异步复制的权衡**：
+   - **优点**：低延迟、高性能
+   - **缺点**：存在数据丢失窗口 — 如果 master 在将写入传播到 replica 之前崩溃，该写入可能永久丢失
+
+**[来源: tests/fixtur...
+  结束: 18:16:54 | 耗时: 82.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[21/64] qdrant-redis-repl-002 (redis-replication) [scenario]
+  Q: Redis replica 断开连接后重连，是全量同步还是部分同步？
+  开始: 18:16:54
+    [INIT] session=fbad009b-6eaa-43cd-97af-6a330e2438ef model=claude-sonnet-4-5-20250929
+    [THINK] 我来检索关于 Redis replica 重连后的同步机制。
+    [TOOL] Grep({"-i": true, "path": "docs", "pattern": "replica.*重连|部分同步|全量同步|partial.*resync|full.*resync|replication.*reconnect"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis replica 断开连接后重连 全量同步 部分同步 partial resync full resync", "top_k": 5})
+    [TOOL_OUT] No files found
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 3.3651,\n    \"doc_id\": \"4474c30a\",\n    \"chunk_id\": \"4474c30a-000\",\n    \"path\": \"tests/fixtures/kb-sources/redis-docs/content/operate/oss_and_stack/management/replication.md\",\n    \"title\": \"Redis replication\",\n    \"section_path\": \"\",\n    \"confidence\": \"unknown\",\n    \"text\": \"At the base of Redis replication (excluding the high avail
+    [THINK] 根据检索结果，Redis replica 断开连接后重连的同步机制如下： (+27 lines)
+    [RESULT] 753 chars | 3 turns | 70863ms
+  ❌ 失败: 未检索到期望文档 ['replication.md'] (实际: [])
+  📝 答案: 根据检索结果，Redis replica 断开连接后重连的同步机制如下：
+
+**优先尝试部分同步（Partial Resync）**
+
+当 replica 与 master 的连接断开后重连时，replica 会：
+
+1. 使用 `PSYNC` 命令发送它之前记录的 master replication ID 和已处理的 offset
+2. Master 根据这些信息判断能否进行部分同步：
+   - 如果 master 的 backlog 缓冲区中还保留着 replica 缺失的那部分命令流，就执行**部分同步**
+   - 只发送 replica 在断开期间错过的增量命令
+
+**降级到全量同步（Full Resync）的情况**
+
+当以下条件不满足时，会执行全量同步：
+
+- Master 的 backlog 缓冲区不足，已经没有 replica 需要的历史数据
+- Replica 引用的 replication ID 已经不再被 master 识别（比如 master 重启过）
+
+全量同步过程：
+1. Master 后台生成 RDB 快照文件
+2. 同时缓冲新的写命令
+3. 将 RD...
+  结束: 18:18:18 | 耗时: 84.2s
+--------------------------------------------------------------------------------
+
+============================================================
+[22/64] qdrant-redis-persist-001 (redis-persistence) [concept]
+  Q: RDB 和 AOF 有什么区别？该用哪个？
+  开始: 18:18:18
+    [INIT] session=ae6d978f-d068-43b6-88ad-8082cfe29181 model=claude-sonnet-4-5-20250929
+    [THINK] 我来检索关于 RDB 和 AOF 的信息。这是 Redis 持久化相关的问题，我会并行使用 Grep 和 hybrid_search 来查找。
+    [TOOL] Grep({"-i": true, "path": "/home/shenzt/ws/knowledge-base-search/docs", "pattern": "RDB|AOF"})
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "RDB AOF 区别 持久化 persistence difference", "top_k": 5})
+    [TOOL_OUT] No files found

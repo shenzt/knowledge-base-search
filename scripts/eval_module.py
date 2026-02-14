@@ -115,6 +115,14 @@ def _extract_doc_paths(text: str, tool: str) -> list[str]:
     if tool == "Glob":
         # Glob 返回所有匹配文件，太多噪音，只记录工具类型
         return []
+
+    # MCP hybrid_search / keyword_search: 解析 JSON 中的 "path" 字段
+    if "mcp__" in tool or "hybrid_search" in tool or "keyword_search" in tool:
+        # 提取 JSON 中所有 "path": "..." 字段
+        for m in re.finditer(r'"path"\s*:\s*"([^"]+)"', text):
+            paths.append(m.group(1))
+        return list(set(paths))
+
     if tool == "Read":
         # Read 的 input 里有 file_path，但 result 里没有
         # 从 result 的第一行尝试提取
