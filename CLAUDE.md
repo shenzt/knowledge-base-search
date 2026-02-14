@@ -43,9 +43,18 @@
 ## 工作流
 
 - `/search <问题>` — 检索（Agent 自主选择 Grep / hybrid_search / 全量读取）
-- `/ingest <文件或URL>` — 导入文档（Claude Code 调 CLI 转换 + 整理 + git commit）
+- `/ingest <文件或URL>` — 导入单个文档（Claude Code 调 CLI 转换 + 整理 + git commit）
+- `/ingest-repo <repo-url> [--target-dir <path>]` — 导入 Git 仓库（clone → 提取 md → 注入 front-matter → 索引 → git commit 到外部 KB 目录）
 - `/index-docs [--status|--file|--full|--incremental]` — 索引管理（调 index.py）
 - `/review [--scope xxx] [--fix]` — 文档审查（Claude Code 用 Read/Grep 直接检查）
+
+## 架构规范
+
+详见 `.claude/rules/agent-architecture.md`。核心原则：
+- Agent 是唯一入口，不写面向人类的 CLI 工具
+- Skill = 工作流编排（Agent 用内置工具执行）
+- Python 脚本 = 只做 Agent 做不了的事（向量编码、常驻模型）
+- Subagent = 需要隔离 context 的智能任务（如未来 PDF 转换）
 
 ## 常用命令
 

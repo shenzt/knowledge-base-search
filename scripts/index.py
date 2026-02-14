@@ -260,6 +260,32 @@ def delete_doc(doc_id: str) -> None:
     log.info(f"✅ 已删除 doc_id={doc_id} 的所有 chunks")
 
 
+def delete_by_source_repo(repo_url: str) -> None:
+    """按 source_repo 字段批量删除某个仓库的所有 chunks。"""
+    client = get_qdrant()
+    # 先统计数量
+    count_result = client.count(
+        collection_name=COLLECTION,
+        count_filter=models.Filter(must=[
+            models.FieldCondition(key="source_repo", match=models.MatchValue(value=repo_url))
+        ]),
+    )
+    n = count_result.count
+    if n == 0:
+        log.info(f"source_repo={repo_url} 无 chunks，跳过删除")
+        return
+
+    client.delete(
+        collection_name=COLLECTION,
+        points_selector=models.FilterSelector(
+            filter=models.Filter(must=[
+                models.FieldCondition(key="source_repo", match=models.MatchValue(value=repo_url))
+            ])
+        ),
+    )
+    log.info(f"✅ 已删除 source_repo={repo_url} 的 {n} 个 chunks")
+
+
 def _stable_doc_id(filepath: str) -> str:
     """从文件路径生成稳定的 doc_id（基于相对路径，跨机器一致）。"""
     # 去掉常见前缀，保留有意义的路径部分
@@ -304,6 +330,9 @@ def index_file(filepath: str) -> int:
                 "chunk_index": i,
                 "confidence": post.metadata.get("confidence", "unknown"),
                 "tags": post.metadata.get("tags", []),
+                "source_repo": post.metadata.get("source_repo", ""),
+                "source_path": post.metadata.get("source_path", ""),
+                "source_commit": post.metadata.get("source_commit", ""),
             },
         })
 
@@ -439,6 +468,7 @@ def main() -> None:
     parser.add_argument("--incremental", action="store_true", help="增量更新（基于 git diff）")
     parser.add_argument("--delete", action="store_true", help="删除文档")
     parser.add_argument("--doc-id", help="要删除的 doc_id")
+    parser.add_argument("--delete-by-repo", metavar="REPO_URL", help="按 source_repo 批量删除某仓库的所有 chunks")
     parser.add_argument("--drop", action="store_true", help="删除整个 collection（清空索引）")
     parser.add_argument("--status", action="store_true", help="查看索引状态")
     args = parser.parse_args()
@@ -447,6 +477,8 @@ def main() -> None:
         drop_collection()
     elif args.status:
         show_status()
+    elif args.delete_by_repo:
+        delete_by_source_repo(args.delete_by_repo)
     elif args.delete and args.doc_id:
         delete_doc(args.doc_id)
     elif args.file:
