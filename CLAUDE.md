@@ -78,14 +78,30 @@ make test            # 全部测试
 - 文档语言：中英文均支持，回答跟随文档语言
 - 代码变更后必须运行测试验证
 - 编写测试用例前，必须先确认知识库中实际有哪些文档
-- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 21 个文档（K8s + Redis）
+- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 ~206 个文档（K8s + Redis）
 
 ## 知识库数据源
 
-### Qdrant 索引（SSOT，152 chunks）
-- K8s 英文文档 (11 个): Pod, Service, Ingress, Deployment, ReplicationController, Init Containers, Sidecar Containers, Ephemeral Containers, Pod Lifecycle, Pod QoS, Volumes
-- Redis 中文文档 (10 个): pipelining, benchmarks, clients, commands, community, documentation, download, index, support, buzz
-- 来源: `~/ws/kb-test-k8s-en/` + `~/ws/kb-test-redis-cn/`
+### Qdrant 索引（全量，heading-based chunking + section_path）
+- K8s 英文文档 (~144 个): kubernetes/website concepts section
+  - Workloads: Pod, Deployment, ReplicationController, Init/Sidecar/Ephemeral Containers
+  - Networking: Service, Ingress
+  - Storage: Volumes
+  - Configuration: ConfigMap, Secret, Probes, Resource Management
+  - Architecture: Nodes, Controllers, GC, Leases
+  - Policy: LimitRange, ResourceQuota
+  - Scheduling: Taints/Tolerations, Node Affinity, Pod Priority
+  - Security: RBAC, Pod Security, Service Accounts
+  - Overview: Components, API, Labels, Annotations, Namespaces, Finalizers
+- Redis 英文文档 (~62 个): redis/docs official
+  - Data Types: Strings, Lists, Sets, Sorted Sets, Hashes, Streams, JSON, Probabilistic, TimeSeries, Vector Sets
+  - Management: Sentinel, Replication, Persistence, Scaling (Cluster), Config, Admin, Debugging, Troubleshooting
+  - Security: ACL, Encryption
+  - Optimization: Benchmarks, Latency, Memory, CPU Profiling
+  - Develop: Pipelining, Transactions, Pub/Sub, Keyspace, Lua Scripting
+- 来源: git submodules in `tests/fixtures/kb-sources/`
+  - `k8s-website/` → kubernetes/website
+  - `redis-docs/` → redis/docs
 - 查看: `.venv/bin/python scripts/index.py --status`
 
 ### 本地 docs/（项目文档 + 示例 runbook）

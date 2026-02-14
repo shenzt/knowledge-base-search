@@ -51,19 +51,22 @@
 
 ## 当前知识库实际内容
 
-### Qdrant 索引（152 chunks, 21 文档）
+### Qdrant 索引（全量，heading-based chunking）
 
-**K8s 英文文档 (11 个)**:
-- Pods, Pod Lifecycle, Pod QoS
-- Init Containers, Sidecar Containers, Ephemeral Containers
-- Deployments, ReplicationController
-- Service, Ingress, Volumes
+**K8s 英文文档 (~144 个)** — from kubernetes/website concepts:
+- Workloads, Networking, Storage, Configuration, Architecture, Policy, Scheduling, Security, Overview
 
-**Redis 中文文档 (10 个)**:
-- pipelining, benchmarks, clients, commands
-- community, documentation, download, index, support, buzz
+**Redis 英文文档 (~62 个)** — from redis/docs official:
+- Data Types, Management (Sentinel, Replication, Persistence, Scaling), Security, Optimization, Develop
+
+来源: git submodules in `tests/fixtures/kb-sources/`
 
 ### 本地 docs/（3 个技术文档）
 - `runbook/redis-failover.md` — Redis Sentinel 主从切换故障恢复
 - `runbook/kubernetes-pod-crashloop.md` — K8s CrashLoopBackOff 排查
 - `api/authentication.md` — OAuth 2.0 + JWT API 认证设计
+
+### 评测用例（v3, 64 个）
+- Local: 17 (exact/scenario/cross-lang/howto/multi-doc)
+- Qdrant: 40 (Redis 20 + K8s 20)
+- Notfound: 7
