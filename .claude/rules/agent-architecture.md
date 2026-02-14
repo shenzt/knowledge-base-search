@@ -2,7 +2,7 @@
 
 ## 核心原则
 
-**Agent 是唯一入口。** 人类通过 Claude Code 对话触发所有操作，不直接运行脚本。
+**Skill 是第一入口。** 所有系统能力必须先封装为 Skill，确保 Agent 能调用。Python 脚本是 Skill 的底层载体，人类也可以直接使用。
 
 ## 三层分工
 
@@ -17,9 +17,10 @@
 
 ### Layer 2: Python 脚本（scripts/）— 确定性重活
 
-- Agent 做不了的事情才写 Python
-- 当前仅两个：`index.py`（向量编码写入 Qdrant）、`mcp_server.py`（常驻 BGE-M3 模型）
+- Agent 做不了的事情才写 Python（向量编码、常驻模型等）
+- 脚本同时是 CLI 工具，人类可以直接运行（如 `python scripts/index.py --status`）
 - Skill 通过 `Bash: python scripts/xxx.py` 调用
+- 关键：每个 Python 脚本的能力必须有对应的 Skill 封装，不能只有 CLI 没有 Skill
 
 **判断标准：** 需要常驻模型、GPU 推理、向量计算、持久连接 → Python 脚本
 
@@ -36,7 +37,7 @@
 
 - ❌ 不要把 Agent 能做的编排逻辑写成 Python 脚本
 - ❌ 不要为了"自动化"而在 Python 里启动 Agent SDK（除非真的需要 LLM 决策）
-- ❌ 不要写面向人类的 CLI 工具 — 所有能力都封装为 Skill 或 MCP Tool
+- ❌ 不要写只有人类能用、Agent 调不了的工具 — 每个能力必须有 Skill 入口
 - ❌ 不要在 Skill 里写复杂的条件逻辑 — Skill 描述意图，Agent 自主决策
 
 ## 示例
