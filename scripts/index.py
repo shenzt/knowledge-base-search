@@ -83,6 +83,34 @@ def ensure_collection(client: QdrantClient) -> None:
 
 # ── 标题分块 ──────────────────────────────────────────────────────
 
+def _clean_hugo_shortcodes(content: str) -> str:
+    """清理 Hugo shortcodes，保留有意义的文本。"""
+    # {{< glossary_tooltip text="containers" term_id="container" >}} → containers
+    content = re.sub(
+        r'\{\{<\s*glossary_tooltip\s+text="([^"]+)"[^>]*>\}\}',
+        r'\1', content)
+    # {{< glossary_tooltip term_id="node" >}} → node
+    content = re.sub(
+        r'\{\{<\s*glossary_tooltip\s+term_id="([^"]+)"[^>]*>\}\}',
+        r'\1', content)
+    # {{< note >}} ... {{< /note >}} → keep content
+    content = re.sub(r'\{\{[<%]\s*/?\s*note\s*[%>]\}\}', '', content)
+    # {{< warning >}} ... {{< /warning >}} → keep content
+    content = re.sub(r'\{\{[<%]\s*/?\s*warning\s*[%>]\}\}', '', content)
+    # {{< feature-state ... >}} → remove
+    content = re.sub(r'\{\{<\s*feature-state[^>]*>\}\}', '', content)
+    # {{% code_sample file="..." %}} → [code sample: ...]
+    content = re.sub(
+        r'\{\{%\s*code_sample\s+file="([^"]+)"\s*%\}\}',
+        r'[code: \1]', content)
+    # <!-- overview --> etc HTML comments → remove
+    content = re.sub(r'<!--.*?-->', '', content, flags=re.DOTALL)
+    # Any remaining shortcodes → remove
+    content = re.sub(r'\{\{[<%][^}]*[%>]\}\}', '', content)
+    # {{< relref "..." >}} inside links → keep link text
+    content = re.sub(r'\{\{<\s*relref\s+"[^"]*"\s*>\}\}', '', content)
+    return content
+
 def _find_code_fence_ranges(content: str) -> list[tuple[int, int]]:
     """找出所有代码围栏 (```) 的范围，返回 [(start, end), ...]。"""
     fence_re = re.compile(r'^```', re.MULTILINE)
@@ -232,10 +260,24 @@ def delete_doc(doc_id: str) -> None:
     log.info(f"✅ 已删除 doc_id={doc_id} 的所有 chunks")
 
 
+def _stable_doc_id(filepath: str) -> str:
+    """从文件路径生成稳定的 doc_id（基于相对路径，跨机器一致）。"""
+    # 去掉常见前缀，保留有意义的路径部分
+    p = filepath
+    for prefix in ["tests/fixtures/kb-sources/k8s-website/content/en/docs/",
+                    "tests/fixtures/kb-sources/redis-docs/content/",
+                    "docs/"]:
+        if prefix in p:
+            p = p[p.index(prefix) + len(prefix):]
+            break
+    # 用路径的 md5 前 8 位
+    return hashlib.md5(p.encode()).hexdigest()[:8]
+
+
 def index_file(filepath: str) -> int:
     """索引单个 Markdown 文件（按标题语义分块）。返回 chunk 数。"""
     post = frontmatter.load(filepath)
-    doc_id = post.metadata.get("id", hashlib.md5(filepath.encode()).hexdigest()[:8])
+    doc_id = post.metadata.get("id", _stable_doc_id(filepath))
     title = post.metadata.get("title", os.path.basename(filepath))
 
     # 先删除旧 chunks
@@ -244,8 +286,9 @@ def index_file(filepath: str) -> int:
     except Exception:
         pass
 
-    # 按标题分块 + 合并过短段落
-    sections = split_by_headings(post.content)
+    # 清理 Hugo shortcodes + 按标题分块 + 合并过短段落
+    content = _clean_hugo_shortcodes(post.content)
+    sections = split_by_headings(content)
     sections = merge_small_sections(sections)
 
     chunk_data = []
@@ -377,26 +420,40 @@ def show_status() -> None:
         log.info(f"Collection '{COLLECTION}' 不存在，运行索引命令创建")
 
 
+def drop_collection() -> None:
+    """删除整个 collection。"""
+    client = get_qdrant()
+    try:
+        client.delete_collection(COLLECTION)
+        log.info(f"✅ 已删除 collection: {COLLECTION}")
+    except Exception:
+        log.info(f"Collection '{COLLECTION}' 不存在，无需删除")
+
+
 # ── CLI ───────────────────────────────────────────────────────────
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="知识库索引工具")
     parser.add_argument("--file", help="索引单个 Markdown 文件")
-    parser.add_argument("--full", metavar="DIR", help="全量重建指定目录")
+    parser.add_argument("--full", metavar="DIR", nargs="+", help="全量重建指定目录（支持多个）")
     parser.add_argument("--incremental", action="store_true", help="增量更新（基于 git diff）")
     parser.add_argument("--delete", action="store_true", help="删除文档")
     parser.add_argument("--doc-id", help="要删除的 doc_id")
+    parser.add_argument("--drop", action="store_true", help="删除整个 collection（清空索引）")
     parser.add_argument("--status", action="store_true", help="查看索引状态")
     args = parser.parse_args()
 
-    if args.status:
+    if args.drop:
+        drop_collection()
+    elif args.status:
         show_status()
     elif args.delete and args.doc_id:
         delete_doc(args.doc_id)
     elif args.file:
         index_file(args.file)
     elif args.full:
-        index_full(args.full)
+        for d in args.full:
+            index_full(d)
     elif args.incremental:
         index_incremental()
     else:

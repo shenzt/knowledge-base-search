@@ -1,0 +1,6 @@
+[submodule "tests/fixtures/kb-sources/k8s-website"]
+	path = tests/fixtures/kb-sources/k8s-website
+	url = https://github.com/kubernetes/website.git
+[submodule "tests/fixtures/kb-sources/redis-docs"]
+	path = tests/fixtures/kb-sources/redis-docs
+	url = https://github.com/redis/docs.git
