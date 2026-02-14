@@ -88,6 +88,16 @@ class TestGateCheck:
         gate = gate_check(tc, answer, contexts)
         assert gate["passed"] is False
 
+    def test_notfound_admits_with_mei_you_bao_han(self):
+        """没有包含 should be recognized as admitting not found."""
+        tc = {"expect_no_results": True, "source": "none"}
+        contexts = [{"type": "context", "tool": "Grep", "doc_paths": [], "result": "no matches"}]
+        answer = "根据检索结果，docs/ 目录中没有包含 Kafka 相关内容。" + "x" * 600
+        gate = gate_check(tc, answer, contexts)
+        assert gate["checks"]["admits_not_found"] is True
+        assert gate["checks"]["has_factual_claims"] is False
+        assert gate["passed"] is True
+
     def test_qdrant_without_mcp_fails(self):
         import os
         os.environ["USE_MCP"] = "0"

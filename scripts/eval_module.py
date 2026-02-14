@@ -17,58 +17,93 @@ from typing import Any, Optional
 def extract_contexts(messages_log: list[dict]) -> list[dict]:
     """从 Agent SDK messages_log 提取结构化的 retrieved_contexts。
 
+    支持两种格式:
+    1. 字符串序列化: content="[ToolUseBlock(...)]" (SDK 默认)
+    2. 结构化 dict: content=[{"type": "tool_use", ...}] (未来兼容)
+
     返回: [{"tool": "Grep", "doc_path": "docs/xxx.md", "text": "...", ...}]
     """
     contexts = []
     for msg in messages_log:
-        content_str = msg.get("content", "")
-        if not isinstance(content_str, str):
-            continue
+        content = msg.get("content", "")
 
-        # 解析 ToolUseBlock
-        tool_match = re.search(
-            r"ToolUseBlock\(id='[^']*', name='(\w+)', input=(\{[^)]+\})\)",
-            content_str,
-        )
-        if tool_match:
-            tool_name = tool_match.group(1)
-            try:
-                tool_input = eval(tool_match.group(2))  # safe: only from our own logs
-            except Exception:
-                tool_input = {}
+        # ── 格式 1: 字符串序列化 (当前 SDK 行为) ──
+        if isinstance(content, str):
+            # 解析 ToolUseBlock
+            tool_match = re.search(
+                r"ToolUseBlock\(id='[^']*', name='(\w+)', input=(\{[^)]+\})\)",
+                content,
+            )
+            if tool_match:
+                tool_name = tool_match.group(1)
+                try:
+                    tool_input = eval(tool_match.group(2))  # safe: only from our own logs
+                except Exception:
+                    tool_input = {}
 
-            contexts.append({
-                "type": "tool_call",
-                "tool": tool_name,
-                "input": tool_input,
-            })
-            continue
+                contexts.append({
+                    "type": "tool_call",
+                    "tool": tool_name,
+                    "input": tool_input,
+                })
+                continue
 
-        # 解析 ToolResultBlock
-        result_match = re.search(
-            r"ToolResultBlock\(tool_use_id='([^']*)', content='(.*?)'(?:, is_error=\w+)?\)",
-            content_str, re.DOTALL,
-        )
-        if result_match:
-            tool_use_id = result_match.group(1)
-            result_text = result_match.group(2).replace("\\n", "\n")
+            # 解析 ToolResultBlock
+            result_match = re.search(
+                r"ToolResultBlock\(tool_use_id='([^']*)', content='(.*?)'(?:, is_error=\w+)?\)",
+                content, re.DOTALL,
+            )
+            if result_match:
+                tool_use_id = result_match.group(1)
+                result_text = result_match.group(2).replace("\\n", "\n")
 
-            # 找到对应的 tool_call 并合并
-            for ctx in reversed(contexts):
-                if ctx.get("type") == "tool_call":
-                    ctx["type"] = "context"
-                    ctx["result"] = result_text
-                    ctx["tool_use_id"] = tool_use_id
-                    # 提取 doc_paths
-                    tool = ctx.get("tool", "")
-                    ctx["doc_paths"] = _extract_doc_paths(result_text, tool)
-                    # Read 工具: 从 input 中提取 file_path
-                    if tool == "Read":
-                        fp = ctx.get("input", {}).get("file_path", "")
-                        if fp:
-                            ctx["doc_paths"] = [fp]
-                    break
-            continue
+                # 找到对应的 tool_call 并合并
+                for ctx in reversed(contexts):
+                    if ctx.get("type") == "tool_call":
+                        ctx["type"] = "context"
+                        ctx["result"] = result_text
+                        ctx["tool_use_id"] = tool_use_id
+                        # 提取 doc_paths
+                        tool = ctx.get("tool", "")
+                        ctx["doc_paths"] = _extract_doc_paths(result_text, tool)
+                        # Read 工具: 从 input 中提取 file_path
+                        if tool == "Read":
+                            fp = ctx.get("input", {}).get("file_path", "")
+                            if fp:
+                                ctx["doc_paths"] = [fp]
+                        break
+                continue
+
+        # ── 格式 2: 结构化 list[dict] (未来兼容) ──
+        elif isinstance(content, list):
+            for block in content:
+                if not isinstance(block, dict):
+                    continue
+                btype = block.get("type", "")
+                if btype == "tool_use":
+                    contexts.append({
+                        "type": "tool_call",
+                        "tool": block.get("name", ""),
+                        "input": block.get("input", {}),
+                    })
+                elif btype == "tool_result":
+                    result_text = block.get("content", "")
+                    if isinstance(result_text, list):
+                        result_text = "\n".join(
+                            b.get("text", str(b)) for b in result_text
+                        )
+                    for ctx in reversed(contexts):
+                        if ctx.get("type") == "tool_call":
+                            ctx["type"] = "context"
+                            ctx["result"] = result_text
+                            ctx["tool_use_id"] = block.get("tool_use_id", "")
+                            tool = ctx.get("tool", "")
+                            ctx["doc_paths"] = _extract_doc_paths(result_text, tool)
+                            if tool == "Read":
+                                fp = ctx.get("input", {}).get("file_path", "")
+                                if fp:
+                                    ctx["doc_paths"] = [fp]
+                            break
 
     # 只返回有结果的 context
     return [c for c in contexts if c.get("type") == "context" and c.get("result")]
@@ -172,7 +207,9 @@ def gate_check(tc: dict, answer: str, contexts: list[dict]) -> dict:
     # 5. notfound 严格检查
     if tc.get("expect_no_results"):
         nf_phrases = ["未找到", "没有找到", "not found", "no relevant", "无法找到",
-                       "没有相关", "没有专门", "不包含", "无相关"]
+                       "没有相关", "没有专门", "不包含", "无相关", "没有包含",
+                       "不在知识库", "没有收录", "无法在", "does not contain",
+                       "no documentation", "no docs"]
         admits_not_found = any(p.lower() in answer.lower() for p in nf_phrases)
 
         # 检查是否输出了具体事实性断言 (不应该)

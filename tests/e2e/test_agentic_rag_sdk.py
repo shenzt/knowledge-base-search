@@ -440,8 +440,9 @@ else:
 4. 综合分析并回答，必须带引用 [来源: docs/xxx.md]
 
 回答要求：
-- 基于检索到的文档内容回答
-- 如果文档中没有相关信息，明确说明"未找到相关文档"
+- 必须且只能基于检索到的文档内容回答
+- 如果文档中没有相关信息，只回答"未找到相关文档"，不要提供任何建议、替代方案或通用知识
+- 严禁用你自己的训练知识补充回答。如果 docs/ 中没有，就是没有
 - 回答语言跟随查询语言（中文问中文答，英文问英文答）
 - 引用具体文档路径
 """,
@@ -680,7 +681,8 @@ async def main():
         results = []
         passed = failed = errors = 0
         total_time = total_cost = 0.0
-        session_id = None
+        # 不复用 session — 每个用例独立 session，确保 Agent 每次都执行工具调用
+        # 复用 session 会导致 Claude 从上下文记忆回答，跳过检索，extract_contexts() 为空
 
         for i, tc in enumerate(TEST_CASES, 1):
             log(f"\n{'='*60}", lf)
@@ -688,18 +690,13 @@ async def main():
             log(f"  Q: {tc['query']}", lf)
             if tc.get("note"):
                 log(f"  💡 {tc['note']}", lf)
-            if i == 1:
+            if i == 1 and USE_MCP:
                 log(f"  ⏳ 首次查询，加载 MCP server (BGE-M3)...", lf)
             log(f"  开始: {datetime.now().strftime('%H:%M:%S')}", lf)
 
             # 如果有 MCP + skills，用 /search；否则直接提问
             prompt = f"/search {tc['query']}" if USE_MCP else f"请在 docs/ 目录中检索并回答: {tc['query']}"
-            result = await run_query(prompt, session_id, lf)
-
-            if result.get("session_id"):
-                session_id = result["session_id"]
-                if i == 1:
-                    log(f"  📌 Session: {session_id}", lf)
+            result = await run_query(prompt, None, lf)  # None = 每次新 session
 
             elapsed = result.get("elapsed", 0)
             total_time += elapsed
