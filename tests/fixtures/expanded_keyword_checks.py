@@ -1,0 +1,40 @@
+"""扩展的关键词检查映射 — 对应 expanded_test_cases.py 中的新 category。"""
+
+EXPANDED_KEYWORD_CHECKS = {
+    # Redis official docs
+    "redis-sentinel": ["sentinel", "failover", "master", "replica", "quorum", "monitor",
+                        "automatic", "high availability"],
+    "redis-replication": ["replication", "replica", "master", "sync", "resync", "partial",
+                           "full", "async", "WAIT", "leader", "follower"],
+    "redis-persistence": ["rdb", "aof", "persistence", "snapshot", "append", "rewrite",
+                           "fsync", "dump", "backup"],
+    "redis-scaling": ["cluster", "hash slot", "node", "shard", "scaling", "partition"],
+    "redis-strings": ["string", "SET", "GET", "counter", "INCR", "bitwise", "cache"],
+    "redis-sorted-sets": ["sorted set", "ZADD", "ZRANGE", "score", "rank", "leaderboard"],
+    "redis-streams": ["stream", "XADD", "XREAD", "consumer", "group", "message"],
+    "redis-bloom": ["bloom", "filter", "probabilistic", "false positive", "BF.ADD"],
+    "redis-latency": ["latency", "slow", "delay", "slowlog", "monitor", "intrinsic"],
+    "redis-memory": ["memory", "maxmemory", "eviction", "fragmentation", "optimization",
+                      "used_memory", "RSS"],
+    "redis-acl": ["acl", "user", "permission", "auth", "password", "command"],
+    "redis-pipelining": ["pipeline", "pipelining", "RTT", "batch", "round trip"],
+    "redis-transactions": ["MULTI", "EXEC", "transaction", "WATCH", "atomic", "lua"],
+    "redis-debugging": ["debug", "crash", "log", "INFO", "MONITOR", "SLOWLOG", "diagnos"],
+    "redis-benchmark": ["benchmark", "redis-benchmark", "QPS", "throughput", "performance",
+                         "ops/sec"],
+
+    # K8s expanded
+    "k8s-configmap": ["configmap", "configuration", "env", "volume", "mount", "data"],
+    "k8s-secret": ["secret", "base64", "opaque", "tls", "password", "sensitive"],
+    "k8s-probes": ["liveness", "readiness", "startup", "probe", "health", "check"],
+    "k8s-namespace": ["namespace", "isolation", "default", "kube-system", "resource"],
+    "k8s-labels": ["label", "selector", "matchLabels", "annotation", "metadata"],
+    "k8s-resources": ["requests", "limits", "cpu", "memory", "resource", "quota"],
+    "k8s-nodes": ["node", "NotReady", "condition", "kubelet", "status", "capacity"],
+    "k8s-gc": ["garbage", "collection", "owner", "dependent", "cascading", "delete",
+                "finalizer"],
+    "k8s-deploy-vs-rc": ["deployment", "replicationcontroller", "replicaset", "replica"],
+    "k8s-lifecycle-hooks": ["preStop", "postStart", "hook", "lifecycle", "graceful",
+                             "terminationGracePeriodSeconds"],
+    "k8s-policy": ["limitrange", "resourcequota", "limit", "quota", "constraint"],
+}
