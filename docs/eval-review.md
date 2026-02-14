@@ -188,13 +188,31 @@ retrieval_metrics = {
 
 ## 改进计划
 
-### Phase 1: 自建改进（0 依赖）
+### Phase 1: 自建改进（0 依赖）— ✅ 已实现
 
-- [ ] 从 messages_log 提取 retrieved_contexts
-- [ ] 加入 `correct_doc_retrieved` 指标（检查 tool_result 中是否包含 expected_doc）
-- [ ] 加入 `hybrid_search_used` 指标（检查是否调用了 MCP 工具）
-- [ ] 为每个 test case 写 `reference_answer`（简短标准答案）
-- [ ] LLM-as-Judge: 用 Claude API 做 0-5 分评估
+`scripts/eval_module.py` 实现了两阶段评估:
+
+**Stage 1: Context 结构化提取**
+- 从 Agent SDK `messages_log` 解析 ToolUseBlock / ToolResultBlock
+- 提取 `tool`, `doc_paths`, `result`, `input` 等结构化字段
+- Glob 结果过滤（噪音太多），Read 从 input 提取 file_path
+
+**Stage 2: Gate 门禁（确定性规则，一票否决）**
+- `has_contexts`: found 用例必须有检索结果
+- `expected_doc_hit`: 从 contexts 的 doc_paths 判断（不从 answer 文本匹配）
+- `must_use`: 强制要求使用特定工具（如 hybrid_search）
+- `has_citation`: answer 中是否有机器可读引用
+- `admits_not_found`: notfound 用例必须明确拒答
+- `has_factual_claims`: notfound 用例不能输出具体事实断言
+- `hybrid_search_used`: Qdrant 用例在无 MCP 模式下必须失败
+
+**Stage 3: LLM-as-Judge（只对 Gate 通过的样本打分）**
+- 输入: query + contexts (截断到 2000 字/个, 最多 10 个) + answer
+- 输出: `score`, `faithfulness`, `relevancy`, `used_contexts`, `unsupported_claims`
+- 规则: unsupported_claims 非空 → faithfulness ≤ 2; used_contexts 为空 → score ≤ 1
+- temperature=0 保证稳定性
+
+**单元测试**: 13 个测试覆盖 context 提取 + gate 门禁逻辑
 
 ### Phase 2: 可选引入 Ragas
 
@@ -207,6 +225,7 @@ retrieval_metrics = {
 - ❌ 不为了引入 Ragas 而引入 Ragas
 - ❌ 不在没有 ground truth 的情况下跑 Context Precision/Recall
 - ❌ 不用 Ragas 替代我们的快速检查（两层互补，不是替代）
+- ❌ LLM Judge 不用同一个模型自评（避免 Self-Bias）
 
 ## 数据格式设计
 
