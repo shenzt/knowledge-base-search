@@ -198,15 +198,18 @@ TEST_CASES = [
     # ── I. 未收录内容（应明确说"未找到"）──
     {"id": "notfound-001",
      "query": "Redis 集群模式下 slot 迁移怎么做",
-     "category": "not-in-kb", "type": "notfound", "expect_no_results": True,
+     "category": "not-in-kb", "type": "notfound", "source": "none",
+     "expect_no_results": True,
      "note": "KB 没有 Redis Cluster 内容"},
     {"id": "notfound-002",
      "query": "Kubernetes HPA 自动扩缩容怎么配置",
-     "category": "not-in-kb", "type": "notfound", "expect_no_results": True,
+     "category": "not-in-kb", "type": "notfound", "source": "none",
+     "expect_no_results": True,
      "note": "KB 没有 HPA 内容"},
     {"id": "notfound-003",
      "query": "MongoDB 分片集群如何配置",
-     "category": "not-in-kb", "type": "notfound", "expect_no_results": True,
+     "category": "not-in-kb", "type": "notfound", "source": "none",
+     "expect_no_results": True,
      "note": "KB 完全没有 MongoDB"},
 ]
 
@@ -500,7 +503,30 @@ def evaluate(tc: Dict, result: Dict) -> Dict:
     matched = [k for k in expected if k.lower() in answer.lower()]
     ev["quality"]["keywords"] = matched
 
-    if len(answer) >= 100 and len(matched) >= 1:
+    # 检查是否明确说"未找到"（说明 Claude 没有从文档中检索到内容）
+    not_found_phrases = ["未找到", "没有找到", "not found", "没有相关", "没有关于",
+                         "没有专门", "不包含", "无法找到", "no relevant"]
+    admits_no_docs = any(p.lower() in answer.lower() for p in not_found_phrases)
+    ev["quality"]["admits_no_docs"] = admits_no_docs
+
+    # 判断通过条件
+    if tc.get("source") == "qdrant" and not USE_MCP:
+        # Qdrant 用例在无 MCP 模式下：必须严格判断
+        # 如果 Claude 明确说"未找到"，说明 Grep 无法触达 Qdrant 内容 → 预期失败
+        if admits_no_docs:
+            ev["passed"] = False
+            ev["reasons"].append("Qdrant 内容无法通过 Grep 检索（预期行为，需 USE_MCP=1）")
+        elif len(answer) >= 100 and len(matched) >= 2 and ev["quality"].get("correct_doc"):
+            # 严格：需要 2+ 关键词 + 正确文档引用才算通过
+            ev["passed"] = True
+            ev["quality"]["source_note"] = "通用知识回答（非文档检索）"
+        else:
+            ev["passed"] = False
+            if not ev["quality"].get("correct_doc"):
+                ev["reasons"].append("未引用正确文档（Qdrant 内容不在本地 docs/）")
+            if len(matched) < 2:
+                ev["reasons"].append(f"关键词不足 ({len(matched)}<2)")
+    elif len(answer) >= 100 and len(matched) >= 1:
         ev["passed"] = True
     else:
         if len(answer) < 100:
