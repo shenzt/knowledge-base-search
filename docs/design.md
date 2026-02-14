@@ -1,7 +1,7 @@
 # knowledge-base-search — 设计文档
 
-> 版本: v0.5 | 日期: 2025-02
-> 状态: 核心功能已验证
+> 版本: v1.0 | 日期: 2025-02
+> 状态: 核心功能已验证，评测体系已建立
 > 部署模式: 纯本地
 
 ---
@@ -12,7 +12,7 @@
 
 这是一套 Agentic RAG 的本地化落地方案：
 - Git 仓库作为文档单一事实源（SSOT）：版本化、可追溯、可回滚
-- Claude Code 作为核心 agent：文档预处理、分块、检索、审查全部通过 Skills 编排
+- Claude Code 作为核心 agent：文档导入、检索、审查全部通过 Skills 编排
 - Qdrant 作为可再生索引层：本地混合检索，中英文均有一流支持
 - MCP Server 只做一件事：向量检索（因为需要常驻 BGE-M3 模型）
 
@@ -22,6 +22,16 @@
 2. **Skills 定义行为** — Claude Code 用内置工具（Read/Grep/Glob/Bash/Write）执行
 3. **Git 管理一切** — 文档、配置、Skills 全部版本化，索引可再生不进 Git
 4. **中英文并重** — BGE-M3 天然支持多语言，包括跨语言检索
+
+### 架构分层规范
+
+| 层 | 角色 | 判断标准 |
+|---|---|---|
+| Skill (SKILL.md) | 工作流编排 | 每步都能用 Claude Code 内置工具完成 |
+| Python 脚本 | 确定性重活 | 需要常驻模型、向量计算、持久连接 |
+| Subagent | 隔离的智能任务 | 需要 LLM 做决策 + 隔离 context |
+
+详见 `.claude/rules/agent-architecture.md`。
 
 ---
 
@@ -99,19 +109,39 @@
 
 ### /search — 知识库检索
 
-两层检索策略，回答必须带引用 `[来源: docs/xxx.md:行号]`。
+Agent 自主路由：Grep（精确关键词）/ hybrid_search（语义模糊）/ Read（完整上下文）。可并行调用。回答必须带引用 `[来源: docs/xxx.md > section_path]`。
 
-### /ingest — 文档导入
+### /ingest — 单文档导入
 
 Claude Code 判断输入类型 → 调 CLI 转换 → 整理 Markdown + front-matter → 保存到 docs/ → git commit → 索引。
 
+### /ingest-repo — Git 仓库导入
+
+核心能力。将任意 Git 仓库的 Markdown 文档导入知识库：
+1. Shallow clone 仓库到临时目录
+2. 扫描 .md 文件（格式路由预留 PDF/DOCX/HTML 桩）
+3. 注入溯源 front-matter（source_repo, source_path, source_commit）
+4. 输出到外部独立 Git 目录（`--target-dir`），保留原始目录结构
+5. Drop 旧索引 + 全量重建（按 source_repo 过滤删除）
+6. 在外部目录 git commit 保留历史版本
+
+设计要点：
+- 存储隔离：生成的文档不放在代码仓库中，输出到外部 Git 目录
+- 溯源完整：每个 chunk 的 Qdrant payload 包含 source_repo/source_path/source_commit
+- 每次重建：初期 repo 不大，drop + full rebuild 保证一致性
+- 格式扩展：未来 PDF 用 MinerU，可能需要 Subagent 做智能清洗
+
 ### /index-docs — 索引管理
 
-纯 Bash 调用 index.py，支持 --status / --file / --incremental。
+纯 Bash 调用 index.py，支持 --status / --file / --full / --incremental / --delete-by-repo。
 
 ### /review — 文档审查
 
 Claude Code 用 Read/Grep/Glob 直接检查 front-matter 完整性、时效性、TODO 标记等，输出健康度评分。
+
+### /eval — RAG 评测
+
+64 个用例（Local 17 + Qdrant 41 + Notfound 6），两阶段评估：Gate 门禁（确定性规则）→ 质量检查。
 
 ---
 
@@ -157,21 +187,30 @@ knowledge-base-search/
 ├── Makefile                     # 快捷命令
 ├── docker-compose.yml           # Qdrant
 ├── .claude/
-│   ├── rules/                   # 路径条件规则
+│   ├── rules/                   # 约束规则
+│   │   ├── agent-architecture.md  # Skill vs Python vs Subagent 规范
 │   │   ├── retrieval-strategy.md
 │   │   ├── doc-frontmatter.md
-│   │   └── python-style.md
+│   │   ├── python-style.md
+│   │   └── testing-lessons.md
 │   └── skills/                  # Agent 技能
 │       ├── search/SKILL.md
 │       ├── ingest/SKILL.md
+│       ├── ingest-repo/SKILL.md
 │       ├── index-docs/SKILL.md
-│       └── review/SKILL.md
+│       ├── review/SKILL.md
+│       └── eval/SKILL.md
 ├── scripts/
 │   ├── mcp_server.py            # 向量检索 MCP Server
-│   ├── index.py                 # 索引构建工具
+│   ├── index.py                 # 索引构建工具（heading-based chunking + section_path）
+│   ├── eval_module.py           # 评估模块（extract_contexts + gate_check）
 │   └── requirements.txt
 ├── docs/                        # 知识库文档（Git 管理）
-└── raw/                         # 原始文件（PDF/DOCX 等）
+├── tests/
+│   ├── unit/                    # 单元测试 (40 tests)
+│   ├── integration/             # 集成测试
+│   └── e2e/                     # E2E 测试 (Agent SDK)
+└── eval/                        # 评测结果
 ```
 
 ---
@@ -191,31 +230,32 @@ knowledge-base-search/
 
 ---
 
-## 8. TODO
+## 8. 进展
 
-### Phase 1: 完善核心功能
-- [ ] index.py 增量索引（基于 git diff + doc_hash）
-- [ ] index.py 全量重建（--full）
-- [ ] mcp_server.py 添加 get_document 工具（拉取完整文档上下文）
-- [ ] 语义分块优化：Header-based 切分 + section_path 保留
-- [ ] .mcp.json 中 python 路径改为相对 venv 路径
+### Phase 1: 核心功能 ✅
+- [x] index.py 增量索引（基于 git diff + doc_hash）
+- [x] index.py 全量重建（--full）
+- [x] 语义分块：Heading-based 切分 + section_path 保留
+- [x] Agentic Router：Agent 自主路由，非串行 fallback
+- [x] 防幻觉约束：必须基于检索结果回答
+- [x] delete_by_source_repo：按仓库批量删除索引
 
-### Phase 2: 测试知识库
-- [ ] 英文测试库：redis-doc（Redis 官方文档，结构化技术文档）
-- [ ] 中文测试库：CS-Base 网络篇（小林 coding，中文技术教程）
-- [ ] 端到端测试：ingest → index → search → 回答质量验证
+### Phase 2: 评测体系 ✅
+- [x] 64 个测试用例（Local 17 + Qdrant 41 + Notfound 6）
+- [x] Gate 门禁 + 质量检查两阶段评估
+- [x] extract_contexts 从 Agent SDK messages_log 提取结构化 contexts
+- [x] USE_MCP=0: 23/64 (35.9%), USE_MCP=1: 60/64 (93.8%)
 
-### Phase 3: 增强功能
-- [ ] /review skill 实际运行验证
-- [ ] 目录索引生成（SUMMARY.md / index.json，给 agent 建"目录册"）
-- [ ] Eval 回归框架（questions.jsonl + 评测脚本）
-- [ ] 算力解耦：MCP HTTP transport 支持远程 GPU 服务器
+### Phase 3: 仓库导入 🔧 (当前)
+- [x] /ingest-repo skill 定义
+- [x] 架构规范（Skill vs Python vs Subagent）
+- [ ] 实际运行验证 /ingest-repo
+- [ ] 格式扩展：PDF (MinerU) / DOCX (Pandoc)
 
 ### Phase 4: 生态扩展
-- [ ] 示例仓库：kb-example-sre-runbook
-- [ ] 示例仓库：kb-example-redis-docs
-- [ ] 文档预处理工具集成测试（MinerU / Docling / Marker）
+- [ ] 算力解耦：MCP HTTP transport 支持远程 GPU 服务器
 - [ ] CI 集成检索回归
+- [ ] 示例仓库：kb-example-sre-runbook
 
 ---
 
