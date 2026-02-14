@@ -1,0 +1,120 @@
+{
+  "timestamp": "2026-02-14T00:12:17.344449",
+  "test_type": "enhanced_rag",
+  "config": {
+    "top_k": 10,
+    "min_score": 0.2
+  },
+  "total": 15,
+  "passed": 0,
+  "failed": 0,
+  "errors": 15,
+  "total_tokens": 0,
+  "results": [
+    {
+      "test_id": "basic-001",
+      "category": "k8s-basic",
+      "query": "What is a Pod in Kubernetes?",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "basic-002",
+      "category": "k8s-service",
+      "query": "Kubernetes Service 是什么？",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "basic-003",
+      "category": "k8s-init",
+      "query": "What are Init Containers?",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "cross-lang-001",
+      "category": "redis-pipeline",
+      "query": "Redis 管道技术如何工作？",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "cross-lang-002",
+      "category": "redis-pipeline",
+      "query": "How does Redis pipelining improve performance?",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "complex-001",
+      "category": "k8s-comparison",
+      "query": "What's the difference between Deployment and StatefulSet?",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "complex-002",
+      "category": "k8s-troubleshooting",
+      "query": "How to troubleshoot CrashLoopBackOff in Kubernetes?",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "complex-003",
+      "category": "k8s-service-discovery",
+      "query": "Kubernetes 中如何实现服务发现？",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "howto-001",
+      "category": "k8s-howto",
+      "query": "How to create a Pod with multiple containers?",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "howto-002",
+      "category": "k8s-resources",
+      "query": "如何配置 Kubernetes 资源限制？",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "concept-001",
+      "category": "k8s-concept",
+      "query": "What is the purpose of a ReplicaSet?",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "concept-002",
+      "category": "k8s-namespace",
+      "query": "Kubernetes 命名空间的作用是什么？",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "edge-001",
+      "category": "k8s-pattern",
+      "query": "What is a sidecar container?",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "edge-002",
+      "category": "k8s-daemonset",
+      "query": "Kubernetes 中的 DaemonSet 是什么？",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    },
+    {
+      "test_id": "notfound-001",
+      "category": "not-in-kb",
+      "query": "How to configure Kubernetes with blockchain?",
+      "status": "error",
+      "error": "search_with_rag() got an unexpected keyword argument 'min_score'"
+    }
+  ]
+}

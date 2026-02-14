@@ -1,0 +1,16 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 15 | 时间: 2026-02-14 00:35:21
+模式: Grep/Glob/Read (无 MCP)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_003521.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260214_003521_detail.jsonl
+
+
+============================================================
+[1/15] basic-001 (k8s-basic)
+  Q: What is a Pod in Kubernetes?
+  ⏳ 首次查询，加载 MCP server (BGE-M3)...
+  开始: 00:35:21
+    [INIT] session=0e60705f-565e-4524-a4e7-7591737ea319
