@@ -51,25 +51,27 @@
 
 ## 当前知识库实际内容
 
-### Qdrant 索引（全量，heading-based chunking）
+### Qdrant 索引（2122 chunks，heading-based chunking）
 
-**K8s 英文文档 (~144 个)** — from kubernetes/website concepts:
-- Workloads, Networking, Storage, Configuration, Architecture, Policy, Scheduling, Security, Overview
+**Redis 官方文档 (234 docs, 1120 chunks)** — from redis/docs:
+- Data Types, Management (Sentinel, Replication, Persistence, Scaling), Security, Optimization, Develop, Install
 
-**Redis 英文文档 (~62 个)** — from redis/docs official:
-- Data Types, Management (Sentinel, Replication, Persistence, Scaling), Security, Optimization, Develop
+**awesome-llm-apps (207 docs, 979 chunks)** — from Shubhamsaboo/awesome-llm-apps:
+- RAG Tutorials, AI Agents, Chat with X, Multi-Agent, LLM Frameworks, Advanced Apps
 
-来源: git submodules in `tests/fixtures/kb-sources/`
+**本地 docs/ (3 docs, 23 chunks)**
+
+来源: 通过 /ingest-repo 导入，存储在 `../my-agent-kb/`
 
 ### 本地 docs/（3 个技术文档）
 - `runbook/redis-failover.md` — Redis Sentinel 主从切换故障恢复
 - `runbook/kubernetes-pod-crashloop.md` — K8s CrashLoopBackOff 排查
 - `api/authentication.md` — OAuth 2.0 + JWT API 认证设计
 
-### 评测用例（v4, 64 个）
-- Local: 17 (exact/scenario/cross-lang/howto/multi-doc)
-- Qdrant: 41 (Redis 20 + K8s 21, 含 HPA)
-- Notfound: 6 (MongoDB/Kafka/Prometheus/Nginx/MySQL/Docker Compose)
+### 评测用例（v5, 100 个）
+- Local: 15 (redis-failover, k8s-crashloop, api-auth)
+- Qdrant: 75 (Redis 40 + LLM Apps 35)
+- Notfound: 10
 
 ### 评测经验教训
 
@@ -98,3 +100,21 @@
 **规则**：
 - 评测时每个用例必须独立 session（`session_id=None`）
 - 确保每次查询都触发完整的工具调用链
+
+## 教训 9：CLAUDE.md 的 KB 描述决定 Agent 是否搜索
+
+**问题**：v5 评测中 5 个 LLM Apps 用例（chat_with_youtube, ai_travel_planner, resume_job_matcher 等）Agent 直接回答"未找到"，完全没调用任何工具。原因是 CLAUDE.md 中只列了 K8s + Redis，Agent 读到后认为 KB 没有 LLM/AI 内容，跳过了检索。
+
+**规则**：
+- CLAUDE.md 的"知识库数据源"部分必须准确反映当前 Qdrant 索引内容
+- 每次 /ingest-repo 导入新数据源后，必须更新 CLAUDE.md
+- Agent 会根据 CLAUDE.md 的描述决定是否值得搜索，描述不准 = 跳过检索 = 假阴性
+
+## 教训 10：expected_doc 要用宽松匹配
+
+**问题**：v5 评测中 5 个用例 Agent 找到了正确主题的文档，但文件名不是 expected_doc 指定的那个（如 compare-data-types.md vs hashes.md）。这是 test fixture 问题，不是检索问题。
+
+**规则**：
+- expected_doc 应该用关键路径片段而非完整文件名（如 `compare-data-types` 或 `hashes`）
+- 对于"比较类"问题，expected_doc 应包含多个可能的文档
+- 编写 expected_doc 前，先用 hybrid_search 确认实际会返回哪些文档

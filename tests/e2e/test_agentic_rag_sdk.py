@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Agentic RAG 自动化测试 - 使用 Claude Agent SDK + Session 复用
+"""Agentic RAG 自动化测试 v5 — 100 个真实问题
 
-关键优化：使用 session resume 保持 MCP server 活跃，避免每次重新加载模型。
-完整记录中间过程到日志文件，方便排查和调优。
+数据源: redis-docs (234 docs) + awesome-llm-apps (207 docs) + local docs/ (3 docs)
+评估: eval_module (Gate 门禁 + 质量检查)
 """
 
 import asyncio
@@ -25,379 +25,23 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 from eval_module import extract_contexts, gate_check, get_tools_used, get_retrieved_doc_paths, get_kb_commit
 
-TEST_CASES = [
-    # ══════════════════════════════════════════════════════════════════
-    # v4: 基于全量 K8s + Redis 官方文档的测试用例
-    #
-    # 数据源 1 — 本地 docs/（Grep/Glob/Read 可达）:
-    #   - runbook/redis-failover.md (中文, Redis Sentinel 主从切换)
-    #   - runbook/kubernetes-pod-crashloop.md (English, CrashLoopBackOff)
-    #   - api/authentication.md (中文, OAuth 2.0 + JWT)
-    #
-    # 数据源 2 — Qdrant 索引（MCP hybrid_search 可达）:
-    #   K8s: 144 docs from kubernetes/website (concepts section)
-    #     Pod, Service, Ingress, Deployment, ConfigMap, Secret, Probes,
-    #     Volumes, Namespaces, Labels, Nodes, GC, ResourceQuota, HPA, etc.
-    #   Redis: ~62 docs from redis/docs (official English)
-    #     Sentinel, Replication, Persistence, Scaling, Data Types,
-    #     Pipelining, Transactions, ACL, Latency, Memory, Debugging, etc.
-    #
-    # 用例: 17 local + 41 qdrant + 6 notfound = 64 total
-    # ══════════════════════════════════════════════════════════════════
+# 导入 v5 测试用例
+sys.path.insert(0, str(PROJECT_ROOT / "tests" / "fixtures"))
+from v5_test_queries import TEST_CASES_V5
 
-    # ── A. 本地文档：精确关键词（Grep 直接命中）──
-    {"id": "local-exact-001",
-     "query": "READONLY You can't write against a read only replica 这个报错怎么解决",
-     "category": "redis-failover", "type": "exact", "source": "local",
-     "expected_doc": "redis-failover.md",
-     "note": "SO风格：贴错误信息求解"},
-    {"id": "local-exact-002",
-     "query": "kubectl describe pod 显示 OOMKilled 怎么办",
-     "category": "k8s-crashloop", "type": "exact", "source": "local",
-     "expected_doc": "kubernetes-pod-crashloop.md",
-     "note": "SO风格：贴命令输出求解"},
-    {"id": "local-exact-003",
-     "query": "API 返回 401 TOKEN_EXPIRED，前端该怎么处理",
-     "category": "api-auth", "type": "exact", "source": "local",
-     "expected_doc": "authentication.md",
-     "note": "SO风格：具体错误码"},
-    {"id": "local-exact-004",
-     "query": "redis-cli SENTINEL get-master-addr-by-name 命令返回什么",
-     "category": "redis-failover", "type": "exact", "source": "local",
-     "expected_doc": "redis-failover.md"},
-    {"id": "local-exact-005",
-     "query": "JWT RS256 签名验证流程是什么",
-     "category": "api-auth", "type": "exact", "source": "local",
-     "expected_doc": "authentication.md"},
+TEST_CASES = TEST_CASES_V5
 
-    # ── B. 本地文档：StackOverflow 真实场景（症状描述）──
-    {"id": "local-so-001",
-     "query": "线上 Redis 突然大量写入失败，错误日志一直刷屏，应用都快挂了，急！",
-     "category": "redis-failover", "type": "scenario", "source": "local",
-     "expected_doc": "redis-failover.md",
-     "note": "SO紧急求助，不含 READONLY/Sentinel/failover"},
-    {"id": "local-so-002",
-     "query": "我的 pod 一直在 restart，已经重启了 50 多次了，describe 看了也没啥有用信息",
-     "category": "k8s-crashloop", "type": "scenario", "source": "local",
-     "expected_doc": "kubernetes-pod-crashloop.md",
-     "note": "SO口语化，不含 CrashLoopBackOff"},
-    {"id": "local-so-003",
-     "query": "用户反馈说登录之后过一会儿就被踢出来了，要重新登录，是 token 的问题吗",
-     "category": "api-auth", "type": "scenario", "source": "local",
-     "expected_doc": "authentication.md",
-     "note": "SO用户反馈，不含 JWT/refresh_token"},
-    {"id": "local-so-004",
-     "query": "容器跑着跑着就被 kill 了，感觉是内存的问题但不确定怎么查",
-     "category": "k8s-crashloop", "type": "scenario", "source": "local",
-     "expected_doc": "kubernetes-pod-crashloop.md",
-     "note": "模糊描述→OOMKilled"},
-    {"id": "local-so-005",
-     "query": "Redis 主库挂了之后从库顶上去了，但是应用还是连的旧地址，怎么让应用自动切换",
-     "category": "redis-failover", "type": "scenario", "source": "local",
-     "expected_doc": "redis-failover.md",
-     "note": "口语化描述 failover + Sentinel 客户端"},
-    {"id": "local-so-006",
-     "query": "我们有个多租户系统，不同租户的用户不能互相访问数据，这个权限怎么设计的",
-     "category": "api-auth", "type": "scenario", "source": "local",
-     "expected_doc": "authentication.md",
-     "note": "指向 tenant_id + RBAC"},
-
-    # ── C. 本地文档：跨语言 ──
-    {"id": "local-cross-001",
-     "query": "How to recover when Redis sentinel triggers a failover?",
-     "category": "redis-failover", "type": "cross-lang", "source": "local",
-     "expected_doc": "redis-failover.md",
-     "note": "英文问→中文文档"},
-    {"id": "local-cross-002",
-     "query": "K8s 容器因为 liveness probe 失败一直重启怎么排查",
-     "category": "k8s-crashloop", "type": "cross-lang", "source": "local",
-     "expected_doc": "kubernetes-pod-crashloop.md",
-     "note": "中文问→英文文档"},
-
-    # ── D. 本地文档：How-to 实操 ──
-    {"id": "local-howto-001",
-     "query": "怎么确认 Redis Sentinel 当前的 master 是哪个节点",
-     "category": "redis-failover", "type": "howto", "source": "local",
-     "expected_doc": "redis-failover.md"},
-    {"id": "local-howto-002",
-     "query": "怎么看上一次容器崩溃的日志",
-     "category": "k8s-crashloop", "type": "howto", "source": "local",
-     "expected_doc": "kubernetes-pod-crashloop.md",
-     "note": "文档中有 kubectl logs --previous"},
-    {"id": "local-howto-003",
-     "query": "access_token 过期了怎么续期，调哪个接口",
-     "category": "api-auth", "type": "howto", "source": "local",
-     "expected_doc": "authentication.md",
-     "note": "文档中有 /api/v1/auth/refresh"},
-
-    # ── E. 本地文档：多文档综合 ──
-    {"id": "local-multi-001",
-     "query": "Pod 重启后 Redis 连接断了，从排查 Pod 到恢复 Redis 连接的完整流程是什么",
-     "category": "multi-doc", "type": "multi-doc", "source": "local",
-     "expected_doc": "kubernetes-pod-crashloop.md,redis-failover.md",
-     "note": "需要综合两个 runbook"},
-
-    # ── F. Qdrant: Redis 官方文档 ──
-    {"id": "qdrant-redis-sentinel-001",
-     "query": "How does Redis Sentinel automatic failover work?",
-     "category": "redis-sentinel", "type": "concept", "source": "qdrant",
-     "expected_doc": "sentinel.md",
-     "note": "Official Sentinel doc has full failover explanation"},
-    {"id": "qdrant-redis-sentinel-002",
-     "query": "Redis Sentinel 的 quorum 是什么意思？怎么配置？",
-     "category": "redis-sentinel", "type": "howto", "source": "qdrant",
-     "expected_doc": "sentinel.md",
-     "note": "Cross-lang: Chinese question → English doc"},
-    {"id": "qdrant-redis-repl-001",
-     "query": "Redis master-replica replication 是异步的还是同步的？",
-     "category": "redis-replication", "type": "concept", "source": "qdrant",
-     "expected_doc": "replication.md"},
-    {"id": "qdrant-redis-repl-002",
-     "query": "Redis replica 断开连接后重连，是全量同步还是部分同步？",
-     "category": "redis-replication", "type": "scenario", "source": "qdrant",
-     "expected_doc": "replication.md"},
-    {"id": "qdrant-redis-persist-001",
-     "query": "RDB 和 AOF 有什么区别？该用哪个？",
-     "category": "redis-persistence", "type": "concept", "source": "qdrant",
-     "expected_doc": "persistence.md"},
-    {"id": "qdrant-redis-persist-002",
-     "query": "Redis AOF rewrite 是怎么工作的？会阻塞主线程吗？",
-     "category": "redis-persistence", "type": "scenario", "source": "qdrant",
-     "expected_doc": "persistence.md"},
-    {"id": "qdrant-redis-cluster-001",
-     "query": "Redis Cluster 的 hash slot 是怎么分配的？",
-     "category": "redis-scaling", "type": "concept", "source": "qdrant",
-     "expected_doc": "scaling.md"},
-    {"id": "qdrant-redis-strings-001",
-     "query": "Redis Strings 除了缓存还能做什么？支持哪些操作？",
-     "category": "redis-strings", "type": "concept", "source": "qdrant",
-     "expected_doc": "strings.md"},
-    {"id": "qdrant-redis-sorted-set-001",
-     "query": "How to implement a leaderboard with Redis Sorted Sets?",
-     "category": "redis-sorted-sets", "type": "howto", "source": "qdrant",
-     "expected_doc": "sorted-sets.md"},
-    {"id": "qdrant-redis-streams-001",
-     "query": "Redis Streams 和 Pub/Sub 有什么区别？什么时候用 Streams？",
-     "category": "redis-streams", "type": "concept", "source": "qdrant",
-     "expected_doc": "streams/_index.md",
-     "note": "Streams vs Pub/Sub comparison"},
-    {"id": "qdrant-redis-bloom-001",
-     "query": "What is a Bloom filter in Redis and when should I use it?",
-     "category": "redis-bloom", "type": "concept", "source": "qdrant",
-     "expected_doc": "bloom-filter.md"},
-    {"id": "qdrant-redis-latency-001",
-     "query": "Redis 延迟突然变高怎么排查？有哪些常见原因？",
-     "category": "redis-latency", "type": "scenario", "source": "qdrant",
-     "expected_doc": "latency.md"},
-    {"id": "qdrant-redis-memory-001",
-     "query": "Redis 内存占用太高怎么优化？",
-     "category": "redis-memory", "type": "scenario", "source": "qdrant",
-     "expected_doc": "memory-optimization.md"},
-    {"id": "qdrant-redis-acl-001",
-     "query": "How to set up Redis ACL to restrict user permissions?",
-     "category": "redis-acl", "type": "howto", "source": "qdrant",
-     "expected_doc": "acl.md"},
-    {"id": "qdrant-redis-pipelining-001",
-     "query": "Redis pipelining 的原理是什么？和普通请求有什么区别？",
-     "category": "redis-pipelining", "type": "concept", "source": "qdrant",
-     "expected_doc": "pipelining.md"},
-    {"id": "qdrant-redis-transactions-001",
-     "query": "Redis MULTI/EXEC 事务和 Lua 脚本哪个更好？",
-     "category": "redis-transactions", "type": "concept", "source": "qdrant",
-     "expected_doc": "transactions.md"},
-    {"id": "qdrant-redis-debug-001",
-     "query": "线上 Redis 出问题了怎么 debug？有哪些诊断命令？",
-     "category": "redis-debugging", "type": "scenario", "source": "qdrant",
-     "expected_doc": "debugging.md"},
-    {"id": "qdrant-redis-benchmark-001",
-     "query": "How to benchmark Redis performance? What tool should I use?",
-     "category": "redis-benchmark", "type": "howto", "source": "qdrant",
-     "expected_doc": "benchmarks/index.md"},
-    {"id": "qdrant-redis-so-001",
-     "query": "我的 Redis 主从同步一直断，日志里刷 LOADING Redis is loading the dataset in memory",
-     "category": "redis-replication", "type": "scenario", "source": "qdrant",
-     "expected_doc": "replication.md",
-     "note": "SO-style: full resync loop problem"},
-    {"id": "qdrant-redis-so-002",
-     "query": "Redis used_memory 比 maxmemory 大很多，但 keys 不多，内存去哪了？",
-     "category": "redis-memory", "type": "scenario", "source": "qdrant",
-     "expected_doc": "memory-optimization.md",
-     "note": "SO-style: memory fragmentation"},
-
-    # ── G. Qdrant: K8s 官方文档 ──
-    {"id": "qdrant-k8s-pod-001",
-     "query": "What is a Pod in Kubernetes?",
-     "category": "k8s-pod", "type": "concept", "source": "qdrant",
-     "expected_doc": "pods/_index.md"},
-    {"id": "qdrant-k8s-service-001",
-     "query": "Kubernetes Service 有哪些类型？ClusterIP 和 NodePort 的区别？",
-     "category": "k8s-service", "type": "concept", "source": "qdrant",
-     "expected_doc": "service.md"},
-    {"id": "qdrant-k8s-deploy-001",
-     "query": "Deployment 滚动更新卡住了，新旧 Pod 并存，怎么回滚？",
-     "category": "k8s-deployment", "type": "scenario", "source": "qdrant",
-     "expected_doc": "deployment.md"},
-    {"id": "qdrant-k8s-configmap-001",
-     "query": "How to use ConfigMap to inject configuration into a Pod?",
-     "category": "k8s-configmap", "type": "howto", "source": "qdrant",
-     "expected_doc": "configmap.md"},
-    {"id": "qdrant-k8s-secret-001",
-     "query": "Kubernetes Secret 和 ConfigMap 有什么区别？Secret 安全吗？",
-     "category": "k8s-secret", "type": "concept", "source": "qdrant",
-     "expected_doc": "secret.md"},
-    {"id": "qdrant-k8s-probe-001",
-     "query": "liveness probe 和 readiness probe 有什么区别？什么时候用哪个？",
-     "category": "k8s-probes", "type": "concept", "source": "qdrant",
-     "expected_doc": "liveness-readiness-startup-probes.md"},
-    {"id": "qdrant-k8s-ingress-001",
-     "query": "How does Kubernetes Ingress route traffic to different services?",
-     "category": "k8s-ingress", "type": "concept", "source": "qdrant",
-     "expected_doc": "ingress.md"},
-    {"id": "qdrant-k8s-volume-001",
-     "query": "Kubernetes 里怎么给 Pod 挂载持久化存储？PV 和 PVC 的关系？",
-     "category": "k8s-volumes", "type": "concept", "source": "qdrant",
-     "expected_doc": "volumes.md"},
-    {"id": "qdrant-k8s-init-001",
-     "query": "What are Init Containers and when should I use them?",
-     "category": "k8s-init", "type": "concept", "source": "qdrant",
-     "expected_doc": "init-containers.md"},
-    {"id": "qdrant-k8s-lifecycle-001",
-     "query": "Pod 的生命周期有哪些阶段？Pending 和 Running 的区别？",
-     "category": "k8s-lifecycle", "type": "concept", "source": "qdrant",
-     "expected_doc": "pod-lifecycle.md"},
-    {"id": "qdrant-k8s-namespace-001",
-     "query": "Kubernetes Namespace 是什么？什么时候需要用多个 Namespace？",
-     "category": "k8s-namespace", "type": "concept", "source": "qdrant",
-     "expected_doc": "namespaces.md"},
-    {"id": "qdrant-k8s-label-001",
-     "query": "How do Labels and Selectors work in Kubernetes?",
-     "category": "k8s-labels", "type": "concept", "source": "qdrant",
-     "expected_doc": "labels.md"},
-    {"id": "qdrant-k8s-resource-001",
-     "query": "怎么给 Pod 设置 CPU 和内存的 requests 和 limits？",
-     "category": "k8s-resources", "type": "howto", "source": "qdrant",
-     "expected_doc": "manage-resources-containers.md"},
-    {"id": "qdrant-k8s-node-001",
-     "query": "Kubernetes Node 的状态有哪些？NotReady 是什么意思？",
-     "category": "k8s-nodes", "type": "concept", "source": "qdrant",
-     "expected_doc": "nodes.md"},
-    {"id": "qdrant-k8s-gc-001",
-     "query": "Kubernetes garbage collection 是怎么清理资源的？",
-     "category": "k8s-gc", "type": "concept", "source": "qdrant",
-     "expected_doc": "garbage-collection.md"},
-    {"id": "qdrant-k8s-so-001",
-     "query": "Pod 一直 Pending 不调度，describe 显示 Insufficient cpu，怎么办？",
-     "category": "k8s-resources", "type": "scenario", "source": "qdrant",
-     "expected_doc": "manage-resources-containers.md",
-     "note": "SO-style: resource quota issue"},
-    {"id": "qdrant-k8s-so-002",
-     "query": "Deployment rollout 卡在 Progressing，maxUnavailable 和 maxSurge 怎么调？",
-     "category": "k8s-deployment", "type": "scenario", "source": "qdrant",
-     "expected_doc": "deployment.md"},
-    {"id": "qdrant-k8s-so-003",
-     "query": "What's the difference between a Deployment and a ReplicationController?",
-     "category": "k8s-deploy-vs-rc", "type": "concept", "source": "qdrant",
-     "expected_doc": "deployment.md,replicationcontroller.md"},
-    {"id": "qdrant-k8s-so-004",
-     "query": "Container 的 preStop hook 没执行就被 kill 了，怎么保证优雅退出？",
-     "category": "k8s-lifecycle-hooks", "type": "scenario", "source": "qdrant",
-     "expected_doc": "container-lifecycle-hooks.md"},
-    {"id": "qdrant-k8s-so-005",
-     "query": "LimitRange 和 ResourceQuota 有什么区别？怎么限制单个 Pod 的资源？",
-     "category": "k8s-policy", "type": "concept", "source": "qdrant",
-     "expected_doc": "limit-range.md,resource-quotas.md"},
-
-    # ── H. 未收录内容（应明确说"未找到"）──
-    {"id": "notfound-002",
-     "query": "MongoDB 分片集群如何配置",
-     "category": "not-in-kb", "type": "notfound", "source": "none",
-     "expect_no_results": True,
-     "note": "KB 完全没有 MongoDB"},
-    {"id": "notfound-003",
-     "query": "Kafka consumer group rebalance 怎么优化？",
-     "category": "not-in-kb", "type": "notfound", "source": "none",
-     "expect_no_results": True,
-     "note": "KB 没有 Kafka 内容"},
-    {"id": "notfound-004",
-     "query": "How to set up Prometheus alerting rules?",
-     "category": "not-in-kb", "type": "notfound", "source": "none",
-     "expect_no_results": True,
-     "note": "KB 没有 Prometheus 内容"},
-    {"id": "notfound-005",
-     "query": "Nginx 反向代理配置 upstream 负载均衡",
-     "category": "not-in-kb", "type": "notfound", "source": "none",
-     "expect_no_results": True,
-     "note": "KB 没有 Nginx 内容"},
-    {"id": "notfound-006",
-     "query": "MySQL InnoDB 死锁怎么排查和解决？",
-     "category": "not-in-kb", "type": "notfound", "source": "none",
-     "expect_no_results": True,
-     "note": "KB 没有 MySQL 内容"},
-    {"id": "notfound-007",
-     "query": "Docker Compose 多容器编排怎么配置网络？",
-     "category": "not-in-kb", "type": "notfound", "source": "none",
-     "expect_no_results": True,
-     "note": "KB 没有 Docker Compose 内容"},
-
-    # ── I. 原 notfound-001 (HPA) 实际在 K8s 文档中存在，改为 qdrant 用例 ──
-    {"id": "qdrant-k8s-hpa-001",
-     "query": "Kubernetes HPA 自动扩缩容怎么配置",
-     "category": "k8s-hpa", "type": "howto", "source": "qdrant",
-     "expected_doc": "horizontal-pod-autoscale.md",
-     "note": "HPA 在 K8s concepts 中有文档"},
-]
-
-KEYWORD_CHECKS = {
-    # 本地文档
-    "redis-failover": ["redis", "sentinel", "failover", "主从", "切换", "master",
-                        "readonly", "read only", "连接", "恢复"],
-    "k8s-crashloop": ["pod", "crash", "restart", "重启", "oom", "log", "kubectl",
-                       "liveness", "memory", "container"],
-    "api-auth": ["token", "jwt", "oauth", "认证", "refresh", "rbac", "role",
-                  "权限", "401", "login", "登录"],
-    "multi-doc": ["redis", "pod", "token", "认证", "安全", "连接", "重启",
-                   "sentinel", "crash", "权限"],
-    # Qdrant: Redis 官方文档
-    "redis-sentinel": ["sentinel", "failover", "master", "replica", "quorum",
-                        "monitor", "high availability"],
-    "redis-replication": ["replication", "replica", "master", "sync", "resync",
-                           "partial", "full", "async", "leader", "follower"],
-    "redis-persistence": ["rdb", "aof", "persistence", "snapshot", "append",
-                           "rewrite", "fsync", "backup"],
-    "redis-scaling": ["cluster", "hash slot", "node", "shard", "scaling"],
-    "redis-strings": ["string", "SET", "GET", "counter", "INCR", "cache"],
-    "redis-sorted-sets": ["sorted set", "ZADD", "ZRANGE", "score", "rank", "leaderboard"],
-    "redis-streams": ["stream", "XADD", "XREAD", "consumer", "group", "message"],
-    "redis-bloom": ["bloom", "filter", "probabilistic", "false positive"],
-    "redis-latency": ["latency", "slow", "delay", "slowlog", "monitor"],
-    "redis-memory": ["memory", "maxmemory", "eviction", "fragmentation", "optimization"],
-    "redis-acl": ["acl", "user", "permission", "auth", "password"],
-    "redis-pipelining": ["pipeline", "pipelining", "RTT", "batch", "round trip"],
-    "redis-transactions": ["MULTI", "EXEC", "transaction", "WATCH", "atomic", "lua"],
-    "redis-debugging": ["debug", "crash", "log", "INFO", "MONITOR", "SLOWLOG"],
-    "redis-benchmark": ["benchmark", "redis-benchmark", "QPS", "throughput",
-                         "performance", "ops"],
-    # Qdrant: K8s 官方文档
-    "k8s-pod": ["pod", "container", "kubernetes", "workload"],
-    "k8s-service": ["service", "clusterip", "nodeport", "loadbalancer", "endpoint"],
-    "k8s-deployment": ["deployment", "rollout", "rollback", "replica", "update"],
-    "k8s-configmap": ["configmap", "configuration", "env", "volume", "mount"],
-    "k8s-secret": ["secret", "base64", "opaque", "tls", "password", "sensitive"],
-    "k8s-probes": ["liveness", "readiness", "startup", "probe", "health"],
-    "k8s-ingress": ["ingress", "service", "host", "path", "rule", "tls"],
-    "k8s-volumes": ["volume", "pv", "pvc", "storage", "mount", "persistent"],
-    "k8s-init": ["init", "container", "before", "app"],
-    "k8s-lifecycle": ["lifecycle", "phase", "pending", "running", "succeeded", "failed"],
-    "k8s-namespace": ["namespace", "isolation", "default", "kube-system"],
-    "k8s-labels": ["label", "selector", "matchLabels", "annotation", "metadata"],
-    "k8s-resources": ["requests", "limits", "cpu", "memory", "resource", "quota"],
-    "k8s-nodes": ["node", "NotReady", "condition", "kubelet", "status"],
-    "k8s-gc": ["garbage", "collection", "owner", "dependent", "cascading", "finalizer"],
-    "k8s-deploy-vs-rc": ["deployment", "replicationcontroller", "replicaset", "replica"],
-    "k8s-lifecycle-hooks": ["preStop", "postStart", "hook", "lifecycle", "graceful"],
-    "k8s-policy": ["limitrange", "resourcequota", "limit", "quota", "constraint"],
-    "k8s-hpa": ["hpa", "horizontal", "autoscal", "scale", "cpu", "metric", "replica"],
-}
+# 从 v5 用例的 expected_keywords 动态构建 KEYWORD_CHECKS
+KEYWORD_CHECKS = {}
+for _tc in TEST_CASES:
+    cat = _tc["category"]
+    kws = _tc.get("expected_keywords", [])
+    if cat not in KEYWORD_CHECKS:
+        KEYWORD_CHECKS[cat] = list(kws)
+    else:
+        for kw in kws:
+            if kw not in KEYWORD_CHECKS[cat]:
+                KEYWORD_CHECKS[cat].append(kw)
 
 # 是否启用 MCP（模型加载需要 15-20 分钟，可选关闭）
 USE_MCP = os.environ.get("USE_MCP", "0") == "1"
@@ -436,7 +80,7 @@ else:
         max_turns=15,
         system_prompt="""你是一个知识库检索助手。用户会用 /search 命令查询知识库。
 
-知识库文档在 docs/ 目录下，格式为 Markdown，包含 Kubernetes 和 Redis 相关技术文档。
+知识库文档在 docs/ 目录下，格式为 Markdown，包含 Redis、LLM/AI 应用开发等技术文档。
 
 检索策略：
 1. 使用 Grep 搜索关键词
@@ -845,10 +489,11 @@ async def main():
             if r["status"] == "passed": source_stats[src]["p"] += 1
 
         log("", lf)
-        log("🗄️ 按数据源:", lf)
+        log("📈 按数据源:", lf)
         source_labels = {
             "local": "本地 docs/ (Grep/Glob/Read)",
-            "qdrant": "Qdrant 索引 (需 MCP hybrid_search)",
+            "qdrant": "Qdrant 索引 (MCP hybrid_search)",
+            "notfound": "未收录 (应拒答)",
         }
         for src, s in sorted(source_stats.items()):
             r2 = s["p"]/s["t"]*100
@@ -866,16 +511,16 @@ async def main():
         # 保存汇总 JSON
         kb_commit = get_kb_commit()
         out_dir = PROJECT_ROOT / "eval"
-        out_file = out_dir / f"agentic_rag_test_{timestamp}.json"
+        out_file = out_dir / f"agentic_rag_v5_{timestamp}.json"
         with open(out_file, "w", encoding="utf-8") as f:
             json.dump({
-                "timestamp": datetime.now().isoformat(), "test_type": "agentic_rag",
-                "method": "claude_agent_sdk_session_reuse", "total": total,
+                "timestamp": datetime.now().isoformat(), "test_type": "agentic_rag_v5",
+                "method": "claude_agent_sdk", "total": total,
                 "passed": passed, "failed": failed, "errors": errors,
                 "total_time": total_time, "total_cost": total_cost,
                 "kb_commit": kb_commit,
                 "eval_module": "eval_module.py (gate + quality)",
-                "type_stats": {t: {"total": s["t"], "passed": s["p"]} for t, s in type_stats.items()},
+                "category_stats": {c: {"total": s["t"], "passed": s["p"]} for c, s in cats.items()},
                 "source_stats": {s: {"total": v["t"], "passed": v["p"]} for s, v in source_stats.items()},
                 "use_mcp": USE_MCP,
                 "results": results,
@@ -885,76 +530,7 @@ async def main():
         log(f"📋 日志: {log_path}", lf)
         log(f"📝 详细: {detail_path}", lf)
 
-    # 生成对比报告
-    generate_comparison(str(out_file))
     return results
-
-
-def generate_comparison(agentic_file: str):
-    """生成 Simple RAG vs Agentic RAG 对比"""
-    baseline = PROJECT_ROOT / "eval" / "comprehensive_test_20260213_234320.json"
-    if not baseline.exists():
-        candidates = sorted((PROJECT_ROOT / "eval").glob("comprehensive_test_*.json"))
-        if not candidates:
-            print("❌ 未找到 Simple RAG baseline", flush=True)
-            return
-        baseline = candidates[-1]
-
-    with open(baseline) as f: simple = json.load(f)
-    with open(agentic_file) as f: agentic = json.load(f)
-
-    s_map = {r["test_id"]: r for r in simple["results"]}
-    a_map = {r["test_id"]: r for r in agentic["results"]}
-    s_rate = simple["passed"]/simple["total"]*100
-    a_rate = agentic["passed"]/agentic["total"]*100
-    s_avg = simple.get("total_time",0)/simple["total"]
-    a_avg = agentic.get("total_time",0)/agentic["total"]
-
-    improved = [t for t in TEST_CASES if s_map.get(t["id"],{}).get("status")!="passed" and a_map.get(t["id"],{}).get("status")=="passed"]
-    regressed = [t for t in TEST_CASES if s_map.get(t["id"],{}).get("status")=="passed" and a_map.get(t["id"],{}).get("status")!="passed"]
-
-    report = f"""# Simple RAG vs Agentic RAG 对比报告
-
-**时间**: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | **方法**: Claude Agent SDK + Session 复用
-
-## 📊 总体
-
-| 指标 | Simple RAG | Agentic RAG | 变化 |
-|------|-----------|-------------|------|
-| 通过率 | {simple['passed']}/{simple['total']} ({s_rate:.1f}%) | {agentic['passed']}/{agentic['total']} ({a_rate:.1f}%) | **{a_rate-s_rate:+.1f}%** |
-| 失败 | {simple['failed']} | {agentic['failed']} | {agentic['failed']-simple['failed']:+d} |
-| 平均耗时 | {s_avg:.1f}s | {a_avg:.1f}s | {a_avg-s_avg:+.1f}s |
-| 费用 | ~${simple.get('total_tokens',0)*0.000003:.4f} | ${agentic.get('total_cost',0):.4f} | - |
-
-## 逐用例
-
-| ID | 查询 | Simple | Agentic | |
-|----|------|--------|---------|--|
-"""
-    for tc in TEST_CASES:
-        s = "✅" if s_map.get(tc["id"],{}).get("status")=="passed" else "❌"
-        a = "✅" if a_map.get(tc["id"],{}).get("status")=="passed" else "❌"
-        ch = "🟢" if s=="❌" and a=="✅" else "🔴" if s=="✅" and a=="❌" else ""
-        q = tc["query"][:35]+"..." if len(tc["query"])>35 else tc["query"]
-        report += f"| {tc['id']} | {q} | {s} | {a} | {ch} |\n"
-
-    if improved:
-        report += f"\n## 🟢 改善 ({len(improved)})\n\n"
-        for tc in improved:
-            a = a_map.get(tc["id"],{})
-            report += f"- **{tc['id']}**: {tc['query']} → {a.get('answer_length',0)}字符, 工具: {', '.join(a.get('tools_used',[]))}\n"
-
-    if regressed:
-        report += f"\n## 🔴 退步 ({len(regressed)})\n\n"
-        for tc in regressed:
-            a = a_map.get(tc["id"],{})
-            report += f"- **{tc['id']}**: {tc['query']} → {'; '.join(a.get('failure_reasons',[]))}\n"
-
-    report += f"\n## 结论\n\n通过率 {s_rate:.1f}% → {a_rate:.1f}% ({a_rate-s_rate:+.1f}%), 改善 {len(improved)} 个, 退步 {len(regressed)} 个。\n"
-
-    rf = PROJECT_ROOT / "eval" / f"AGENTIC_VS_SIMPLE_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
-    with open(rf, "w", encoding="utf-8") as f: f.write(report)
-    print(f"📊 报告: {rf}", flush=True)
 
 
 if __name__ == "__main__":

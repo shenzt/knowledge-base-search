@@ -87,30 +87,27 @@ make test            # 全部测试
 - 文档语言：中英文均支持，回答跟随文档语言
 - 代码变更后必须运行测试验证
 - 编写测试用例前，必须先确认知识库中实际有哪些文档
-- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 ~206 个文档（K8s + Redis）
+- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 2122 chunks（Redis + LLM Apps + 本地）
 
 ## 知识库数据源
 
-### Qdrant 索引（全量，heading-based chunking + section_path）
-- K8s 英文文档 (~144 个): kubernetes/website concepts section
-  - Workloads: Pod, Deployment, ReplicationController, Init/Sidecar/Ephemeral Containers
-  - Networking: Service, Ingress
-  - Storage: Volumes
-  - Configuration: ConfigMap, Secret, Probes, Resource Management
-  - Architecture: Nodes, Controllers, GC, Leases
-  - Policy: LimitRange, ResourceQuota
-  - Scheduling: Taints/Tolerations, Node Affinity, Pod Priority
-  - Security: RBAC, Pod Security, Service Accounts
-  - Overview: Components, API, Labels, Annotations, Namespaces, Finalizers
-- Redis 英文文档 (~62 个): redis/docs official
+### Qdrant 索引（2122 chunks，heading-based chunking + section_path）
+- Redis 官方文档 (234 docs, 1120 chunks): redis/docs
   - Data Types: Strings, Lists, Sets, Sorted Sets, Hashes, Streams, JSON, Probabilistic, TimeSeries, Vector Sets
   - Management: Sentinel, Replication, Persistence, Scaling (Cluster), Config, Admin, Debugging, Troubleshooting
   - Security: ACL, Encryption
   - Optimization: Benchmarks, Latency, Memory, CPU Profiling
   - Develop: Pipelining, Transactions, Pub/Sub, Keyspace, Lua Scripting
-- 来源: git submodules in `tests/fixtures/kb-sources/`
-  - `k8s-website/` → kubernetes/website
-  - `redis-docs/` → redis/docs
+  - Install: Linux, macOS, Docker, Build from source
+- awesome-llm-apps (207 docs, 979 chunks): Shubhamsaboo/awesome-llm-apps
+  - RAG Tutorials: hybrid search, agentic RAG, database routing, local RAG, Cohere RAG
+  - AI Agents: research agent, data analysis, travel planner, sales intelligence, VC due diligence
+  - Chat with X: YouTube videos, PDF, GitHub, Gmail, research papers
+  - Multi-Agent: agent teams, code reviewer, multimodal agents
+  - LLM Frameworks: LangChain, CrewAI, Phidata, OpenAI SDK
+  - Advanced: resume matcher, content generator, voice AI
+- 本地 docs/ (3 docs, 23 chunks): 项目 runbook + API 文档
+- 来源: 通过 /ingest-repo 导入，存储在 `../my-agent-kb/`
 - 查看: `.venv/bin/python scripts/index.py --status`
 
 ### 本地 docs/（项目文档 + 示例 runbook）

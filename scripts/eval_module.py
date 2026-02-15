@@ -214,14 +214,15 @@ def gate_check(tc: dict, answer: str, contexts: list[dict]) -> dict:
             reasons.append(f"未调用必需工具: {missing}")
 
     # 2. 检索结果检查 (found 用例必须有 context)
+    is_notfound = tc.get("expect_no_results") or tc.get("source") == "notfound"
     has_contexts = len(contexts) > 0
     checks["has_contexts"] = has_contexts
-    if not tc.get("expect_no_results") and not has_contexts:
+    if not is_notfound and not has_contexts:
         reasons.append("无检索结果")
 
     # 3. expected_doc 命中检查 (从 contexts 的 doc_paths 判断，不从 answer 文本)
-    expected_doc = tc.get("expected_doc", "")
-    if expected_doc and not tc.get("expect_no_results"):
+    expected_doc = tc.get("expected_doc") or ""
+    if expected_doc and not is_notfound:
         retrieved_paths = get_retrieved_doc_paths(contexts)
         expected_docs = [d.strip() for d in expected_doc.split(",")]
         hit = any(
@@ -239,8 +240,9 @@ def gate_check(tc: dict, answer: str, contexts: list[dict]) -> dict:
     has_citation = any(re.search(p, answer) for p in citation_patterns)
     checks["has_citation"] = has_citation
 
-    # 5. notfound 严格检查
-    if tc.get("expect_no_results"):
+    # 5. notfound 严格检查 (支持 v4 expect_no_results 和 v5 source=="notfound")
+    is_notfound = tc.get("expect_no_results") or tc.get("source") == "notfound"
+    if is_notfound:
         nf_phrases = ["未找到", "没有找到", "not found", "no relevant", "无法找到",
                        "没有相关", "没有专门", "不包含", "无相关", "没有包含",
                        "不在知识库", "没有收录", "无法在", "does not contain",
