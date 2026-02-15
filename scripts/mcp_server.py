@@ -114,8 +114,14 @@ def hybrid_search(
     if not results.points:
         return json.dumps([], ensure_ascii=False)
 
-    # Rerank
-    pairs = [(query, p.payload.get("text", "")) for p in results.points]
+    # Rerank — 拼接 title + text 提升短文档的匹配质量
+    pairs = []
+    for p in results.points:
+        title = p.payload.get("title", "")
+        text = p.payload.get("text", "")
+        # title 作为前缀，帮助 reranker 理解文档主题（对短文档尤其重要）
+        rerank_text = f"{title}\n{text}" if title else text
+        pairs.append((query, rerank_text))
     scores = reranker.compute_score(pairs)
     if isinstance(scores, (int, float)):
         scores = [scores]

@@ -2,7 +2,7 @@
 """Agentic RAG 自动化测试 v5 — 100 个真实问题
 
 数据源: redis-docs (234 docs) + awesome-llm-apps (207 docs) + local docs/ (3 docs)
-评估: eval_module (Gate 门禁 + 质量检查)
+评估: eval_module (Gate 门禁 + 质量检查 + LLM-as-Judge)
 """
 
 import asyncio
@@ -23,7 +23,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 # 导入评测模块
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-from eval_module import extract_contexts, gate_check, get_tools_used, get_retrieved_doc_paths, get_kb_commit
+from eval_module import extract_contexts, gate_check, get_tools_used, get_retrieved_doc_paths, get_kb_commit, llm_judge
 
 # 导入 v5 测试用例
 sys.path.insert(0, str(PROJECT_ROOT / "tests" / "fixtures"))
@@ -45,6 +45,8 @@ for _tc in TEST_CASES:
 
 # 是否启用 MCP（模型加载需要 15-20 分钟，可选关闭）
 USE_MCP = os.environ.get("USE_MCP", "0") == "1"
+# 是否启用 LLM-as-Judge（对 Gate 通过的用例做质量打分）
+USE_JUDGE = os.environ.get("USE_JUDGE", "0") == "1"
 
 if USE_MCP:
     BASE_OPTIONS = dict(
@@ -299,6 +301,17 @@ def evaluate(tc: Dict, result: Dict) -> Dict:
         ev["passed"] = True
     else:
         ev["reasons"].append(f"答案过短 ({len(answer)})")
+        return ev
+
+    # ── Stage 4: LLM-as-Judge (可选，Gate 通过后) ──
+    if USE_JUDGE and ev["passed"] and not tc.get("source") == "notfound":
+        judge = llm_judge(tc["query"], answer, contexts)
+        ev["quality"]["judge"] = judge
+        # Judge score < 2 视为质量不合格（但不改变 pass/fail）
+        if judge.get("score", -1) >= 0:
+            ev["quality"]["judge_score"] = judge["score"]
+            ev["quality"]["faithfulness"] = judge.get("faithfulness", -1)
+            ev["quality"]["relevancy"] = judge.get("relevancy", -1)
 
     return ev
 
@@ -434,6 +447,9 @@ async def main():
                 "gate_passed": gate.get("passed"),
                 "failure_reasons": ev.get("reasons", []),
                 "answer_preview": result.get("answer", "")[:300],
+                "judge_score": quality.get("judge_score"),
+                "faithfulness": quality.get("faithfulness"),
+                "relevancy": quality.get("relevancy"),
             })
             log("-" * 80, lf)
 
@@ -508,10 +524,42 @@ async def main():
             log(f"     通过 {qdrant_pass}/{qdrant_total} — 可能是 Claude 用通用知识回答（非检索）", lf)
             log(f"     设置 USE_MCP=1 启用 hybrid_search 以测试真正的向量检索", lf)
 
+        # LLM Judge 统计
+        if USE_JUDGE:
+            judge_scores = [r.get("judge_score") for r in results
+                           if r.get("judge_score") is not None]
+            if judge_scores:
+                avg_score = sum(judge_scores) / len(judge_scores)
+                avg_faith = sum(r.get("faithfulness", 0) for r in results
+                               if r.get("faithfulness") is not None and r.get("faithfulness", -1) >= 0) / max(len(judge_scores), 1)
+                avg_rel = sum(r.get("relevancy", 0) for r in results
+                             if r.get("relevancy") is not None and r.get("relevancy", -1) >= 0) / max(len(judge_scores), 1)
+                low_quality = [r for r in results if r.get("judge_score") is not None and r["judge_score"] < 3]
+                log("", lf)
+                log(f"🧑‍⚖️ LLM Judge ({len(judge_scores)} cases):", lf)
+                log(f"  平均 score: {avg_score:.2f}/5 | faithfulness: {avg_faith:.2f}/5 | relevancy: {avg_rel:.2f}/5", lf)
+                if low_quality:
+                    log(f"  ⚠️ 低质量 (score<3): {len(low_quality)} 个", lf)
+                    for r in low_quality[:5]:
+                        log(f"    - {r['test_id']}: score={r['judge_score']} {r.get('query', '')[:40]}", lf)
+
         # 保存汇总 JSON
         kb_commit = get_kb_commit()
         out_dir = PROJECT_ROOT / "eval"
         out_file = out_dir / f"agentic_rag_v5_{timestamp}.json"
+
+        # Judge 汇总
+        judge_summary = {}
+        if USE_JUDGE:
+            judge_scores = [r.get("judge_score") for r in results
+                           if r.get("judge_score") is not None]
+            if judge_scores:
+                judge_summary = {
+                    "count": len(judge_scores),
+                    "avg_score": round(sum(judge_scores) / len(judge_scores), 2),
+                    "low_quality_count": sum(1 for s in judge_scores if s < 3),
+                }
+
         with open(out_file, "w", encoding="utf-8") as f:
             json.dump({
                 "timestamp": datetime.now().isoformat(), "test_type": "agentic_rag_v5",
@@ -519,10 +567,12 @@ async def main():
                 "passed": passed, "failed": failed, "errors": errors,
                 "total_time": total_time, "total_cost": total_cost,
                 "kb_commit": kb_commit,
-                "eval_module": "eval_module.py (gate + quality)",
+                "eval_module": "eval_module.py (gate + quality + judge)",
                 "category_stats": {c: {"total": s["t"], "passed": s["p"]} for c, s in cats.items()},
                 "source_stats": {s: {"total": v["t"], "passed": v["p"]} for s, v in source_stats.items()},
+                "judge_summary": judge_summary,
                 "use_mcp": USE_MCP,
+                "use_judge": USE_JUDGE,
                 "results": results,
             }, f, indent=2, ensure_ascii=False)
 

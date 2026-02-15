@@ -214,9 +214,16 @@ def index_chunks(chunks: list[dict], batch_size: int = 256) -> None:
     client = get_qdrant()
     ensure_collection(client)
 
-    texts = [c["text"] for c in chunks]
-    log.info(f"编码 {len(texts)} 个 chunks（batch_size={batch_size}）...")
-    output = model.encode(texts, return_dense=True, return_sparse=True,
+    # 编码时拼接 title + text，提升短文档的语义信号
+    # 存储的 payload.text 保持原始内容不变
+    encode_texts = []
+    for c in chunks:
+        title = c.get("metadata", {}).get("title", "")
+        text = c["text"]
+        encode_texts.append(f"{title}\n{text}" if title else text)
+
+    log.info(f"编码 {len(encode_texts)} 个 chunks（batch_size={batch_size}）...")
+    output = model.encode(encode_texts, return_dense=True, return_sparse=True,
                           batch_size=batch_size)
 
     points = []

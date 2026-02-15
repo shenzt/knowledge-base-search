@@ -116,7 +116,21 @@ git add docs/<repo-name>/
 git commit -m "ingest: <repo-name> @ <commit-hash> (<N> docs)"
 ```
 
-### 8. 生成 Repo 级 Skill（可选）
+### 8. 更新 CLAUDE.md 知识库描述（关键！）
+
+**这一步必须执行。** Agent 根据 CLAUDE.md 的"知识库数据源"部分决定是否值得搜索某个主题。如果不更新，新导入的内容会被 Agent 跳过。
+
+1. 用 Read 读取 `CLAUDE.md`
+2. 找到 `## 知识库数据源` 部分
+3. 在 Qdrant 索引列表中添加/更新该 repo 的描述：
+   - repo 名称、文档数、chunk 数
+   - 主要内容分类（从文件目录结构和 README 提取）
+4. 更新总 chunk 数
+5. 用 Edit 写回 `CLAUDE.md`
+
+同时更新 `.claude/rules/testing-lessons.md` 中的"当前知识库实际内容"部分。
+
+### 9. 生成 Repo 级 Skill（可选）
 
 在当前项目的 `.claude/skills/repos/<repo-name>/SKILL.md` 生成检索 skill：
 
@@ -134,7 +148,7 @@ description: 搜索 <repo-name> 知识库
 搜索时使用 hybrid_search，scope 过滤 "docs/<repo-name>"
 ```
 
-### 9. 输出摘要
+### 10. 输出摘要
 
 ```
 ✅ Ingest 完成
