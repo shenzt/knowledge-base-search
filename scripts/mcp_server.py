@@ -126,9 +126,27 @@ def hybrid_search(
     if isinstance(scores, (int, float)):
         scores = [scores]
 
-    ranked = sorted(zip(results.points, scores), key=lambda x: -x[1])
-    # 保底返回 top_k 个结果，不按 min_score 过滤
-    # reranker 不够可靠（对短文档评分过低），让 Agent 自己判断相关性
+    # RRF top-N 保护：reranker 不够可靠（对短文档/标题匹配评分过低），
+    # 保证 RRF 排名靠前的结果不会被 reranker 完全淹没。
+    # 策略：RRF top-3 必定保留，其余按 rerank 分数排序，合并去重取 top_k。
+    RRF_PROTECT = 3
+    indexed = list(zip(results.points, scores))
+    # RRF 顺序就是 results.points 的原始顺序
+    rrf_top = indexed[:RRF_PROTECT]
+    rest = indexed[RRF_PROTECT:]
+    # 对剩余按 rerank 分数排序
+    rest_sorted = sorted(rest, key=lambda x: -x[1])
+    # 合并：RRF top-N 在前（按 rerank 分数排序），再拼接剩余
+    rrf_top_sorted = sorted(rrf_top, key=lambda x: -x[1])
+    merged = rrf_top_sorted + rest_sorted
+    # 去重（理论上不会重复，但防御性编程）
+    seen_ids = set()
+    ranked = []
+    for point, score in merged:
+        pid = point.id
+        if pid not in seen_ids:
+            seen_ids.add(pid)
+            ranked.append((point, score))
     ranked = ranked[:top_k]
 
     # 格式化输出
