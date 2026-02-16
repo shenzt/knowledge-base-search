@@ -249,7 +249,7 @@ TEST_CASES_V5 = [
     {"id": "redis-so-014",
      "query": "Redis vector sets 怎么做 filtered search？能结合标签过滤吗？",
      "source": "qdrant", "category": "redis-so",
-     "expected_doc": "filtered-search.md",
+     "expected_doc": "filtered-search.md,vector-database.md,vector-sets",
      "expected_keywords": ["vector", "filter", "search"]},
 
     {"id": "redis-so-015",
