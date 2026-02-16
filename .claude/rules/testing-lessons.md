@@ -118,3 +118,25 @@
 - expected_doc 应该用关键路径片段而非完整文件名（如 `compare-data-types` 或 `hashes`）
 - 对于"比较类"问题，expected_doc 应包含多个可能的文档
 - 编写 expected_doc 前，先用 hybrid_search 确认实际会返回哪些文档
+
+## 教训 11：RRF top-N 保护 — reranker 不可靠时的防御策略
+
+**问题**：code-reviewer (llm-fw-004) 在 dense search 排名第 1、RRF 排名第 2，但 reranker 将其从 rank 2 降到 rank 8（score -2.68），超出 top_k=5 被截断。
+
+**规则**：
+- BGE-reranker-v2-m3 对短文档/标题匹配型查询评分不可靠
+- 实现 RRF top-N 保护：RRF 排名前 3 的结果必定保留在最终输出中
+- reranker 只对 RRF rank 4+ 的结果做排序，不能覆盖向量检索的强信号
+- 这是 `mcp_server.py` hybrid_search 的核心防御机制
+
+## 教训 12：LLM Judge 的 faithfulness 问题 — Agent 过度补充知识
+
+**问题**：v5 100/100 gate 通过，但 LLM Judge 平均 score 3.83/5，20 个 case score<3。根因：Agent 检索到相关文档后，用自己的训练知识大量补充细节（命令、配置、代码示例），judge 判定为 unsupported claims。
+
+**分布**：redis-so (9), redis-ops (5), llm-agent (2), redis-failover (2), redis-data-types (1), llm-framework (1)
+
+**规则**：
+- system prompt 必须强调"逐字逐句有据可查"，不能只说"基于文档回答"
+- 如果文档只覆盖部分问题，Agent 应明确说"文档中未涉及其余内容"
+- 不要编造命令/配置/代码——除非直接出现在检索到的文档中
+- faithfulness 和 helpfulness 是 trade-off：严格忠实 = 更短但更可靠的回答
