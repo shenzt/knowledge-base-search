@@ -115,11 +115,11 @@ def hybrid_search(
         return json.dumps([], ensure_ascii=False)
 
     # Rerank — 拼接 title + text 提升短文档的匹配质量
+    # 注意：reranker 只做排序，不做过滤。最终判断权交给 Agent。
     pairs = []
     for p in results.points:
         title = p.payload.get("title", "")
         text = p.payload.get("text", "")
-        # title 作为前缀，帮助 reranker 理解文档主题（对短文档尤其重要）
         rerank_text = f"{title}\n{text}" if title else text
         pairs.append((query, rerank_text))
     scores = reranker.compute_score(pairs)
@@ -127,7 +127,9 @@ def hybrid_search(
         scores = [scores]
 
     ranked = sorted(zip(results.points, scores), key=lambda x: -x[1])
-    ranked = [(p, s) for p, s in ranked if s >= min_score][:top_k]
+    # 保底返回 top_k 个结果，不按 min_score 过滤
+    # reranker 不够可靠（对短文档评分过低），让 Agent 自己判断相关性
+    ranked = ranked[:top_k]
 
     # 格式化输出
     output = []
