@@ -386,6 +386,11 @@ async def main():
                     log(f"  📄 检索: {', '.join(quality['retrieved_paths'][:5])}", lf)
                 if kw:
                     log(f"  🔑 关键词: {', '.join(kw)}", lf)
+                if quality.get("judge_score") is not None:
+                    js = quality["judge_score"]
+                    ff = quality.get("faithfulness", "?")
+                    rr = quality.get("relevancy", "?")
+                    log(f"  🧑‍⚖️ Judge: score={js} faith={ff} rel={rr}", lf)
                 passed += 1
                 status = "passed"
             else:
@@ -424,6 +429,10 @@ async def main():
                 "gate_passed": gate.get("passed"),
                 "gate_checks": gate.get("checks", {}),
                 "failure_reasons": ev.get("reasons", []),
+                "judge_score": quality.get("judge_score"),
+                "faithfulness": quality.get("faithfulness"),
+                "relevancy": quality.get("relevancy"),
+                "judge": quality.get("judge"),
                 "messages": result.get("messages_log", []),
             }
             df.write(json.dumps(detail_record, ensure_ascii=False) + "\n")
