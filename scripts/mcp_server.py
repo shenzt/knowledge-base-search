@@ -156,6 +156,7 @@ def hybrid_search(
             "score": round(float(score), 4),
             "doc_id": point.payload.get("doc_id", ""),
             "chunk_id": point.payload.get("chunk_id", ""),
+            "chunk_index": point.payload.get("chunk_index", 0),
             "path": point.payload.get("path", ""),
             "title": point.payload.get("title", ""),
             "section_path": point.payload.get("section_path", ""),
@@ -163,7 +164,12 @@ def hybrid_search(
             "text": point.payload.get("text", ""),
         })
 
-    return json.dumps(output, ensure_ascii=False, indent=2)
+    # Agentic hint: 提醒 Agent 评估 chunk 充分性，必要时读取完整文档
+    hint = ("[SEARCH NOTE] 以上为文档片段（chunks），可能不完整。"
+            "如果 chunk 内容不足以完整回答问题（缺少具体步骤、命令、配置、代码），"
+            "请用 Read(path) 读取对应文件获取完整上下文，严禁用通用知识补充。")
+    result = json.dumps(output, ensure_ascii=False, indent=2)
+    return result + "\n\n" + hint
 
 
 @mcp.tool()
