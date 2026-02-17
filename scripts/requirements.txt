@@ -6,3 +6,7 @@ python-frontmatter>=1.1.0
 torch>=2.0.0
 numpy>=1.24.0
 transformers>=4.38.0,<5.0.0
+
+# LLM 客户端（多模型支持）
+anthropic>=0.30.0
+openai>=1.30.0

@@ -272,17 +272,17 @@ def gate_check(tc: dict, answer: str, contexts: list[dict]) -> dict:
 # ── LLM-as-Judge ─────────────────────────────────────────────────
 
 def llm_judge(query: str, answer: str, contexts: list[dict],
-              model: str = "claude-sonnet-4-5-20250929") -> dict:
+              model: str = "") -> dict:
     """用 LLM 评估 RAG 回答质量。只对 Gate 通过的样本调用。
+
+    模型配置优先级：
+    1. 环境变量 JUDGE_PROVIDER + JUDGE_MODEL（推荐）
+    2. model 参数（向后兼容）
+    3. 默认 anthropic/claude-sonnet-4-5-20250929
 
     返回: {"score": 0-5, "faithfulness": 0-5, "relevancy": 0-5,
            "used_contexts": [...], "unsupported_claims": [...], "reason": "..."}
     """
-    try:
-        import anthropic
-    except ImportError:
-        return {"score": -1, "reason": "anthropic SDK not installed"}
-
     # 拼接 contexts，截断防超长
     ctx_parts = []
     for i, c in enumerate(contexts[:10]):  # 最多 10 个 context
@@ -319,14 +319,16 @@ def llm_judge(query: str, answer: str, contexts: list[dict],
 - 若 used_contexts 为空且回答给出具体结论，score ≤ 1。"""
 
     try:
-        client = anthropic.Anthropic()
-        msg = client.messages.create(
-            model=model,
-            max_tokens=300,
-            temperature=0,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        text = msg.content[0].text
+        from llm_client import get_client
+
+        # 向后兼容：如果传了 model 参数且没设环境变量，用旧方式
+        if model and not os.environ.get("JUDGE_PROVIDER"):
+            from llm_client import AnthropicClient
+            client = AnthropicClient(model=model)
+        else:
+            client = get_client("judge")
+
+        text = client.generate(prompt, max_tokens=300, temperature=0)
         # 提取 JSON
         json_match = re.search(r'\{[^{}]*\}', text, re.DOTALL)
         if json_match:

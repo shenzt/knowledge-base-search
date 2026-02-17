@@ -84,11 +84,11 @@ async def search_with_rag(query: str, top_k: int = 3) -> Dict[str, Any]:
 
         context = "\n---\n".join(context_parts)
 
-        # 3. 使用 Anthropic SDK 生成答案
+        # 3. 使用 LLM 生成答案
         try:
-            import anthropic
+            from llm_client import get_client
 
-            client = anthropic.Anthropic()
+            client = get_client("worker")
 
             prompt = f"""基于以下检索到的文档内容，回答用户的问题。
 
@@ -106,16 +106,7 @@ async def search_with_rag(query: str, top_k: int = 3) -> Dict[str, Any]:
 
 请回答:"""
 
-            response = client.messages.create(
-                model=WORKER_MODEL,
-                max_tokens=2000,
-                messages=[{
-                    "role": "user",
-                    "content": prompt
-                }]
-            )
-
-            answer = response.content[0].text
+            answer = client.generate(prompt, max_tokens=2000)
 
             log.info(f"[Simple RAG] 生成答案成功")
 
