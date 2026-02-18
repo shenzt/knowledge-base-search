@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-"""Agentic RAG 自动化测试 v5 — 100 个真实问题
+"""Agentic RAG 自动化测试 v5 — 多数据集支持
 
-数据源: redis-docs (234 docs) + awesome-llm-apps (207 docs) + local docs/ (3 docs)
-评估: eval_module (Gate 门禁 + 质量检查 + LLM-as-Judge)
+数据源: redis-docs + awesome-llm-apps + local docs/ + RAGBench techqa + CRAG finance
+评估: eval_module (Gate 门禁 + RAGAS faithfulness/relevancy)
+
+环境变量:
+  EVAL_DATASET=v5|ragbench|crag|all  选择数据集（默认 v5）
 """
 
 import asyncio
@@ -25,11 +28,25 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 from eval_module import extract_contexts, gate_check, get_tools_used, get_retrieved_doc_paths, get_kb_commit, llm_judge
 
-# 导入 v5 测试用例
+# 导入测试用例
 sys.path.insert(0, str(PROJECT_ROOT / "tests" / "fixtures"))
 from v5_test_queries import TEST_CASES_V5
 
-TEST_CASES = TEST_CASES_V5
+# 数据集选择
+EVAL_DATASET = os.environ.get("EVAL_DATASET", "v5")
+
+if EVAL_DATASET == "ragbench":
+    from ragbench_techqa_cases import RAGBENCH_TECHQA_CASES
+    TEST_CASES = RAGBENCH_TECHQA_CASES
+elif EVAL_DATASET == "crag":
+    from crag_finance_cases import CRAG_FINANCE_CASES
+    TEST_CASES = CRAG_FINANCE_CASES
+elif EVAL_DATASET == "all":
+    from ragbench_techqa_cases import RAGBENCH_TECHQA_CASES
+    from crag_finance_cases import CRAG_FINANCE_CASES
+    TEST_CASES = TEST_CASES_V5 + RAGBENCH_TECHQA_CASES + CRAG_FINANCE_CASES
+else:
+    TEST_CASES = TEST_CASES_V5
 
 # 从 v5 用例的 expected_keywords 动态构建 KEYWORD_CHECKS
 KEYWORD_CHECKS = {}

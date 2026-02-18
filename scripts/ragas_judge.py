@@ -19,26 +19,28 @@ log = logging.getLogger(__name__)
 
 
 def _get_ragas_llm():
-    """构建 RAGAS 使用的 Judge LLM（默认 Claude Sonnet 4.5）。"""
+    """构建 RAGAS 使用的 Judge LLM（默认 DeepSeek V3.2 reasoner）。"""
     from ragas.llms import LangchainLLMWrapper
 
-    provider = os.environ.get("JUDGE_PROVIDER", "anthropic")
-    model = os.environ.get("JUDGE_MODEL", "claude-sonnet-4-5-20250929")
+    provider = os.environ.get("JUDGE_PROVIDER", "openai")
+    model = os.environ.get("JUDGE_MODEL", "deepseek-reasoner")
+    base_url = os.environ.get("JUDGE_BASE_URL", "https://api.deepseek.com")
     api_key = (os.environ.get("JUDGE_API_KEY")
-               or os.environ.get("ANTHROPIC_API_KEY", ""))
+               or os.environ.get("DEEPSEEK_API_KEY")
+               or os.environ.get("DOC_PROCESS_API_KEY", ""))
 
     if provider == "anthropic":
         from langchain_anthropic import ChatAnthropic
+        anthropic_key = api_key or os.environ.get("ANTHROPIC_API_KEY", "")
         chat = ChatAnthropic(
             model=model,
-            anthropic_api_key=api_key,
+            anthropic_api_key=anthropic_key,
             temperature=0,
             max_tokens=1024,
         )
     else:
         # OpenAI-compatible (DeepSeek, GLM, etc.)
         from langchain_openai import ChatOpenAI
-        base_url = os.environ.get("JUDGE_BASE_URL", "")
         chat = ChatOpenAI(
             model=model,
             base_url=base_url,
