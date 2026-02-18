@@ -37,3 +37,7 @@ config.local.json
 # OS
 .DS_Store
 Thumbs.db
+
+# Doc preprocessing sidecar (regenerable)
+.preprocess/
+scripts/.preprocess_cache.json

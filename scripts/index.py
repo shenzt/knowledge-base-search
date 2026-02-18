@@ -111,6 +111,20 @@ def _clean_hugo_shortcodes(content: str) -> str:
     content = re.sub(r'\{\{<\s*relref\s+"[^"]*"\s*>\}\}', '', content)
     return content
 
+
+def _load_sidecar(filepath: str) -> Optional[dict]:
+    """加载文档的 sidecar 预处理 JSON。不存在则返回 None。"""
+    p = Path(filepath)
+    sidecar = p.parent / ".preprocess" / (p.stem + ".json")
+    if sidecar.exists():
+        try:
+            with open(sidecar) as f:
+                return json.load(f)
+        except Exception:
+            return None
+    return None
+
+
 def _find_code_fence_ranges(content: str) -> list[tuple[int, int]]:
     """找出所有代码围栏 (```) 的范围，返回 [(start, end), ...]。"""
     fence_re = re.compile(r'^```', re.MULTILINE)
@@ -214,13 +228,18 @@ def index_chunks(chunks: list[dict], batch_size: int = 256) -> None:
     client = get_qdrant()
     ensure_collection(client)
 
-    # 编码时拼接 title + text，提升短文档的语义信号
-    # 存储的 payload.text 保持原始内容不变
+    # 编码时拼接 title + section_path + text + contextual_summary
+    # summary 放末尾避免过度主导相似度（ChatGPT 建议）
     encode_texts = []
     for c in chunks:
         title = c.get("metadata", {}).get("title", "")
+        section = c.get("metadata", {}).get("section_path", "")
         text = c["text"]
-        encode_texts.append(f"{title}\n{text}" if title else text)
+        ctx_summary = c.get("metadata", {}).get("contextual_summary", "")
+        parts = [title, section, text]
+        if ctx_summary:
+            parts.append(f"DOC_SUMMARY: {ctx_summary}")
+        encode_texts.append("\n".join(p for p in parts if p))
 
     log.info(f"编码 {len(encode_texts)} 个 chunks（batch_size={batch_size}）...")
     output = model.encode(encode_texts, return_dense=True, return_sparse=True,
@@ -325,23 +344,39 @@ def parse_file(filepath: str) -> list[dict]:
     sections = split_by_headings(content)
     sections = merge_small_sections(sections)
 
+    # 加载 sidecar 预处理数据
+    sidecar = _load_sidecar(filepath)
+
     chunk_data = []
     for i, sec in enumerate(sections):
+        metadata = {
+            "path": filepath,
+            "title": title,
+            "section_path": sec["section_path"],
+            "chunk_index": i,
+            "confidence": post.metadata.get("confidence", "unknown"),
+            "tags": post.metadata.get("tags", []),
+            "source_repo": post.metadata.get("source_repo", ""),
+            "source_path": post.metadata.get("source_path", ""),
+            "source_commit": post.metadata.get("source_commit", ""),
+        }
+
+        # 注入 sidecar 元数据（如果存在）
+        if sidecar and sidecar.get("llm_status") != "failed":
+            metadata["doc_type"] = sidecar.get("doc_type", "")
+            metadata["quality_score"] = sidecar.get("quality_score", 0)
+            metadata["key_concepts"] = sidecar.get("key_concepts", [])
+            metadata["gap_flags"] = sidecar.get("gap_flags", [])
+            metadata["contextual_summary"] = sidecar.get("contextual_summary", "")
+        # evidence_flags 始终注入（即使 LLM 失败也有）
+        if sidecar:
+            metadata["evidence_flags"] = sidecar.get("evidence_flags", {})
+
         chunk_data.append({
             "doc_id": doc_id,
             "chunk_id": f"{doc_id}-{i:03d}",
             "text": sec["text"],
-            "metadata": {
-                "path": filepath,
-                "title": title,
-                "section_path": sec["section_path"],
-                "chunk_index": i,
-                "confidence": post.metadata.get("confidence", "unknown"),
-                "tags": post.metadata.get("tags", []),
-                "source_repo": post.metadata.get("source_repo", ""),
-                "source_path": post.metadata.get("source_path", ""),
-                "source_commit": post.metadata.get("source_commit", ""),
-            },
+            "metadata": metadata,
         })
     return chunk_data
 
@@ -367,7 +402,8 @@ def index_file(filepath: str) -> int:
 def index_full(docs_dir: str) -> None:
     """全量重建：先收集所有 chunks，再一次性批量编码 + 写入。"""
     md_files = sorted(Path(docs_dir).rglob("*.md"))
-    if not md_files:
+    # 跳过 .preprocess 目录下的文件
+    md_files = [f for f in md_files if ".preprocess" not in f.parts]
         log.info(f"目录 {docs_dir} 下没有 .md 文件")
         return
 

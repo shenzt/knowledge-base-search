@@ -33,6 +33,22 @@ allowed-tools: Read, Grep, Glob, Bash
 
 **判断规则**：如果 chunk 只有概述/定义/标题级别的内容，而问题需要具体操作步骤或配置细节 → chunk 不充分，必须扩展。
 
+### Step 2b: 使用预处理元数据（如果存在）
+
+检索结果可能包含 `agent_hint` 和 `evidence_flags` 字段，用于快速判断 chunk 质量：
+
+| 字段 | 用途 |
+|------|------|
+| `evidence_flags` | `has_command/has_config/has_code_block/has_steps`。问题需要命令但 has_command=false → chunk 可能不充分 |
+| `agent_hint` 中的 `gaps:` | `missing_command/missing_config/missing_example`。非空时主动告知用户缺失内容，不要编造 |
+| `agent_hint` 中的 `quality:` | 低于 5/10 建议寻找更多来源或 Read 完整文档 |
+
+使用规则：
+- 这些是辅助信号，不是硬过滤
+- gap_flags 非空 → 在回答中声明缺失内容，不用训练知识补充
+- 多个结果 quality < 5 → 考虑 Read(path) 确认
+- **硬规则**：若用户问"怎么做/如何配置/排障"且命中 chunk `has_command=false && has_config=false` → 必须继续 search/Read 扩展，直到拿到含命令/配置的证据，或明确宣告 KB 缺失
+
 ### Step 3: 扩展上下文（chunk 不充分时执行）
 
 - **Qdrant 结果** → 用 `Read(path)` 读取 hybrid_search 返回的 path 字段指向的文件

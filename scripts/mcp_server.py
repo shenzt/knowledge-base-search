@@ -152,7 +152,7 @@ def hybrid_search(
     # 格式化输出
     output = []
     for point, score in ranked:
-        output.append({
+        item = {
             "score": round(float(score), 4),
             "doc_id": point.payload.get("doc_id", ""),
             "chunk_id": point.payload.get("chunk_id", ""),
@@ -162,7 +162,24 @@ def hybrid_search(
             "section_path": point.payload.get("section_path", ""),
             "confidence": point.payload.get("confidence", ""),
             "text": point.payload.get("text", ""),
-        })
+        }
+        # 预处理元数据（如果存在）
+        doc_type = point.payload.get("doc_type", "")
+        quality_score = point.payload.get("quality_score", 0)
+        evidence_flags = point.payload.get("evidence_flags", {})
+        gap_flags = point.payload.get("gap_flags", [])
+        if doc_type or evidence_flags or gap_flags:
+            hints = []
+            if doc_type:
+                hints.append(doc_type)
+            if quality_score and quality_score < 5:
+                hints.append(f"quality:{quality_score}/10")
+            if gap_flags:
+                hints.append(f"gaps:{','.join(gap_flags)}")
+            # 压缩为单行提示，节省 context window
+            item["agent_hint"] = f"[{' | '.join(hints)}]" if hints else ""
+            item["evidence_flags"] = evidence_flags
+        output.append(item)
 
     # Agentic hint: 提醒 Agent 评估 chunk 充分性，必要时读取完整文档
     hint = ("[SEARCH NOTE] 以上为文档片段（chunks），可能不完整。"
