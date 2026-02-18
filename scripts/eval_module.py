@@ -6,10 +6,14 @@
 """
 
 import json
+import logging
 import os
 import re
 import subprocess
+import sys
 from typing import Any, Optional
+
+log = logging.getLogger(__name__)
 
 
 # ── Context 提取 ─────────────────────────────────────────────────
@@ -273,16 +277,31 @@ def gate_check(tc: dict, answer: str, contexts: list[dict]) -> dict:
 
 def llm_judge(query: str, answer: str, contexts: list[dict],
               model: str = "") -> dict:
-    """用 LLM 评估 RAG 回答质量。只对 Gate 通过的样本调用。
+    """用 RAGAS 或自研 Judge 评估 RAG 回答质量。只对 Gate 通过的样本调用。
 
-    模型配置优先级：
-    1. 环境变量 JUDGE_PROVIDER + JUDGE_MODEL（推荐）
-    2. model 参数（向后兼容）
-    3. 默认 anthropic/claude-sonnet-4-5-20250929
+    默认使用 RAGAS（faithfulness 0-1 claim-level + answer_relevancy 0-1）。
+    设置 USE_LEGACY_JUDGE=1 可回退到自研 Judge。
 
-    返回: {"score": 0-5, "faithfulness": 0-5, "relevancy": 0-5,
-           "used_contexts": [...], "unsupported_claims": [...], "reason": "..."}
+    返回: {"score": 0-5, "faithfulness": float, "relevancy": float, "reason": "..."}
     """
+    use_legacy = os.environ.get("USE_LEGACY_JUDGE", "0") == "1"
+
+    if not use_legacy:
+        try:
+            sys.path.insert(0, os.path.dirname(__file__))
+            from ragas_judge import ragas_judge
+            return ragas_judge(query, answer, contexts)
+        except ImportError as e:
+            log.warning(f"RAGAS 未安装，回退到自研 Judge: {e}")
+        except Exception as e:
+            log.warning(f"RAGAS 异常，回退到自研 Judge: {e}")
+
+    return _legacy_llm_judge(query, answer, contexts, model)
+
+
+def _legacy_llm_judge(query: str, answer: str, contexts: list[dict],
+                      model: str = "") -> dict:
+    """自研 LLM Judge（旧版，0-5 分制）。"""
     # 拼接 contexts，截断防超长
     ctx_parts = []
     for i, c in enumerate(contexts[:10]):  # 最多 10 个 context

@@ -10,3 +10,13 @@ transformers>=4.38.0,<5.0.0
 # LLM 客户端（多模型支持）
 anthropic>=0.30.0
 openai>=1.30.0
+
+# 评测（RAGAS 标准化指标）
+ragas>=0.2.0,<0.3.0
+datasets>=2.14.0
+langchain-anthropic>=0.3.0
+langchain-core>=0.3.0
+langchain-openai>=0.3.0
+
+# 数据集导入
+markdownify>=0.12.0
