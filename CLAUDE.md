@@ -130,7 +130,9 @@ make test            # 全部测试
   - LLM Frameworks: LangChain, CrewAI, Phidata, OpenAI SDK
   - Advanced: resume matcher, content generator, voice AI
 - 本地 docs/ (21 docs, ~168 chunks): 项目 runbook + API 文档 + 设计文档
-- 来源: 通过 /ingest-repo 导入，存储在 `../my-agent-kb/`
+- RAGBench techqa (245 docs): IBM 技术文档 QA，来自 rungalileo/ragbench
+- CRAG finance (121 docs): 金融领域 QA，来自 facebookresearch/CRAG
+- 来源: 通过 /ingest-repo 或导入脚本导入
 - 预处理: 462 docs 已完成 LLM 预处理（DeepSeek V3），sidecar 存储在 `.preprocess/` 目录
 - 查看: `.venv/bin/python scripts/index.py --status`
 
