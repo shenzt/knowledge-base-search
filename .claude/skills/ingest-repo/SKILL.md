@@ -98,17 +98,28 @@ confidence: medium
 }
 ```
 
-### 6. Drop 旧索引 + 全量重建
+### 6. LLM 预处理（推荐）
+
+导入完成后，对新文档运行 LLM 预处理，生成 sidecar 元数据：
+
+```bash
+# 需要配置 DOC_PROCESS_* 环境变量（见 /preprocess Skill）
+.venv/bin/python scripts/doc_preprocess.py --dir <target-dir>/docs/<repo-name>/
+```
+
+预处理生成 `.preprocess/*.json` sidecar，包含 contextual_summary（注入 embedding 提升检索）、evidence_flags、gap_flags 等。如果未配置 LLM 环境变量，可跳过此步，索引仍可正常工作，但检索质量会略低。
+
+### 7. Drop 旧索引 + 全量重建
 
 ```bash
 # 删除该 repo 的旧 chunks（按 source_repo 过滤）
 .venv/bin/python scripts/index.py --delete-by-repo "<repo-url>"
 
-# 全量索引新文件
+# 全量索引新文件（自动读取 sidecar 注入 embedding + metadata）
 .venv/bin/python scripts/index.py --full <target-dir>/docs/<repo-name>/
 ```
 
-### 7. Git Commit（在 target-dir 中）
+### 8. Git Commit（在 target-dir 中）
 
 ```bash
 cd <target-dir>
@@ -116,7 +127,7 @@ git add docs/<repo-name>/
 git commit -m "ingest: <repo-name> @ <commit-hash> (<N> docs)"
 ```
 
-### 8. 更新 CLAUDE.md 知识库描述（关键！）
+### 9. 更新 CLAUDE.md 知识库描述（关键！）
 
 **这一步必须执行。** Agent 根据 CLAUDE.md 的"知识库数据源"部分决定是否值得搜索某个主题。如果不更新，新导入的内容会被 Agent 跳过。
 
@@ -130,7 +141,7 @@ git commit -m "ingest: <repo-name> @ <commit-hash> (<N> docs)"
 
 同时更新 `.claude/rules/testing-lessons.md` 中的"当前知识库实际内容"部分。
 
-### 9. 生成 Repo 级 Skill（可选）
+### 10. 生成 Repo 级 Skill（可选）
 
 在当前项目的 `.claude/skills/repos/<repo-name>/SKILL.md` 生成检索 skill：
 
@@ -148,7 +159,7 @@ description: 搜索 <repo-name> 知识库
 搜索时使用 hybrid_search，scope 过滤 "docs/<repo-name>"
 ```
 
-### 10. 输出摘要
+### 11. 输出摘要
 
 ```
 ✅ Ingest 完成

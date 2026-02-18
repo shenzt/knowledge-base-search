@@ -51,17 +51,18 @@
 
 ## 当前知识库实际内容
 
-### Qdrant 索引（2122 chunks，heading-based chunking）
+### Qdrant 索引（2267 chunks，heading-based chunking + 预处理元数据）
 
-**Redis 官方文档 (234 docs, 1120 chunks)** — from redis/docs:
+**Redis 官方文档 (234 docs, ~1120 chunks)** — from redis/docs:
 - Data Types, Management (Sentinel, Replication, Persistence, Scaling), Security, Optimization, Develop, Install
 
-**awesome-llm-apps (207 docs, 979 chunks)** — from Shubhamsaboo/awesome-llm-apps:
+**awesome-llm-apps (207 docs, ~979 chunks)** — from Shubhamsaboo/awesome-llm-apps:
 - RAG Tutorials, AI Agents, Chat with X, Multi-Agent, LLM Frameworks, Advanced Apps
 
-**本地 docs/ (3 docs, 23 chunks)**
+**本地 docs/ (21 docs, ~168 chunks)**
 
 来源: 通过 /ingest-repo 导入，存储在 `../my-agent-kb/`
+预处理: 462 docs 已完成 LLM 预处理（DeepSeek V3），sidecar 存储在 `.preprocess/` 目录
 
 ### 本地 docs/（3 个技术文档）
 - `runbook/redis-failover.md` — Redis Sentinel 主从切换故障恢复
@@ -72,6 +73,14 @@
 - Local: 15 (redis-failover, k8s-crashloop, api-auth)
 - Qdrant: 75 (Redis 40 + LLM Apps 35)
 - Notfound: 10
+
+### 评测结果历史
+
+| Run | Gate | Faithfulness | Relevancy | Cost | 备注 |
+|-----|------|-------------|-----------|------|------|
+| R8 | 100/100 | 3.88/5 | - | - | Hard Grounding Guardrail |
+| R9 | 100/100 | 4.27/5 | 4.83/5 | $11.88 | baseline |
+| R10 | 100/100 | 3.94/5 | 4.76/5 | $8.72 | +预处理管线，faithfulness 在历史方差内 |
 
 ### 评测经验教训
 

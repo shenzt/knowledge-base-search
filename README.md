@@ -72,10 +72,11 @@ docker compose up -d
 |-------|------|---------|
 | `/search` | 知识库检索 | Agent 自主路由 Grep / hybrid_search / Read |
 | `/ingest` | 导入单个文档 | Agent 调 CLI 转换 + 整理 + git commit |
-| `/ingest-repo` | 导入 Git 仓库 | Agent clone → 提取 md → 注入溯源 front-matter → 索引 → git commit 到外部 KB 目录 |
+| `/ingest-repo` | 导入 Git 仓库 | Agent clone → 提取 md → 注入溯源 front-matter → 预处理 → 索引 → git commit |
+| `/preprocess` | LLM 文档预处理 | 生成 contextual_summary + evidence_flags + gap_flags sidecar |
 | `/index-docs` | 索引管理 | 调 index.py（--status / --file / --full / --incremental） |
 | `/review` | 文档审查 | Agent 用 Read/Grep 检查 front-matter、时效性等 |
-| `/eval` | RAG 评测 | 64 个用例，Gate 门禁 + 质量检查 |
+| `/eval` | RAG 评测 | 100 个用例，Gate 门禁 + LLM Judge |
 
 ## 导入 Git 仓库
 
@@ -90,10 +91,32 @@ docker compose up -d
 2. 扫描 .md 文件（未来支持 PDF/DOCX 格式路由）
 3. 注入溯源 front-matter（source_repo, source_path, source_commit）
 4. 输出到外部独立 Git 目录，保留原始目录结构
-5. Drop 旧索引 + 全量重建（按 source_repo 过滤删除）
-6. 在外部目录 git commit 保留历史版本
+5. LLM 预处理：生成 `.preprocess/*.json` sidecar（contextual_summary + gap_flags + evidence_flags）
+6. Drop 旧索引 + 全量重建（contextual_summary 注入 embedding，元数据写入 Qdrant payload）
+7. 在外部目录 git commit 保留历史版本
 
-每个 chunk 的 Qdrant payload 包含完整溯源信息，可回溯到原始 repo 的具体文件和 commit。
+每个 chunk 的 Qdrant payload 包含完整溯源信息 + 预处理元数据，可回溯到原始 repo 的具体文件和 commit。
+
+## 文档预处理
+
+预处理管线在 chunking 前为每个文档生成 sidecar JSON 元数据，提升检索质量和 Agent 决策能力：
+
+```bash
+# 批量预处理（推荐 DeepSeek V3，1000 docs ≈ ¥1.5）
+DOC_PROCESS_PROVIDER=openai DOC_PROCESS_MODEL=deepseek-chat \
+DOC_PROCESS_BASE_URL=https://api.deepseek.com \
+DOC_PROCESS_API_KEY=$DEEPSEEK_KEY \
+.venv/bin/python scripts/doc_preprocess.py --dir ../my-agent-kb/docs/
+
+# 预处理后重建索引（sidecar 自动注入）
+.venv/bin/python scripts/index.py --full ../my-agent-kb/docs/
+```
+
+生成的元数据：
+- `contextual_summary` — 注入 embedding，弥补 heading-based chunking 丢失的文档级上下文
+- `evidence_flags` — 正则检测（has_command/has_config/has_code_block/has_steps），零 LLM 成本
+- `gap_flags` — LLM + 规则融合（missing_command/missing_config 等），Agent 据此避免幻觉
+- `doc_type` / `quality_score` / `key_concepts` — 辅助 Agent 判断 chunk 充分性
 
 ## 技术栈
 
@@ -105,6 +128,8 @@ docker compose up -d
 | Agent | Claude Code | Skills 编排，内置工具执行 |
 | 版本管理 | Git | 文档 SSOT |
 | 分块策略 | Heading-based | 按 Markdown 标题切分，保留 section_path 层级 |
+| 文档预处理 | DeepSeek V3 / GLM-4.5 | contextual_summary + gap_flags，sidecar JSON |
+| LLM 抽象层 | llm_client.py | Anthropic + OpenAI-compatible 统一接口 |
 
 ## 检索架构
 
@@ -126,21 +151,25 @@ make setup                                        # 初始化环境
 make start                                        # 启动 Qdrant
 make status                                       # 查看索引状态
 make test                                         # 运行测试
-.venv/bin/python scripts/index.py --full docs/    # 全量索引
+.venv/bin/python scripts/doc_preprocess.py --dir docs/   # LLM 预处理
+.venv/bin/python scripts/doc_preprocess.py --status docs/ # 预处理状态
+.venv/bin/python scripts/index.py --full docs/    # 全量索引（含 sidecar 注入）
 .venv/bin/python scripts/index.py --incremental   # 增量索引（基于 git diff）
 .venv/bin/python scripts/index.py --delete-by-repo <url>  # 按仓库删除索引
 ```
 
 ## 评测
 
-64 个测试用例，两阶段评估（Gate 门禁 + 质量检查）：
+100 个测试用例，两阶段评估（Gate 门禁 + LLM Judge faithfulness/relevancy）：
 
-| 模式 | Local | Qdrant | Notfound | 总计 |
-|------|-------|--------|----------|------|
-| USE_MCP=0 | 17/17 (100%) | 0/41 (0%) | 6/6 (100%) | 23/64 (35.9%) |
-| USE_MCP=1 | 17/17 (100%) | 37/41 (90%) | 6/6 (100%) | 60/64 (93.8%) |
+| 指标 | R10（最新） |
+|------|-----------|
+| Gate 通过率 | 100/100 |
+| Faithfulness | 3.94/5 |
+| Relevancy | 4.76/5 |
+| 评测成本 | $8.72 |
 
-详见 `.claude/skills/eval/SKILL.md`。
+详见 `eval/` 目录和 `.claude/skills/eval/SKILL.md`。
 
 ## 项目结构
 
@@ -148,7 +177,8 @@ make test                                         # 运行测试
 knowledge-base-search/
 ├── .claude/
 │   ├── skills/                  # Agent Skills
-│   │   ├── search/              # 知识库检索
+│   │   ├── search/              # 知识库检索（含预处理元数据使用指南）
+│   │   ├── preprocess/          # LLM 文档预处理
 │   │   ├── ingest/              # 单文档导入
 │   │   ├── ingest-repo/         # Git 仓库导入
 │   │   ├── index-docs/          # 索引管理
@@ -161,8 +191,10 @@ knowledge-base-search/
 │       ├── python-style.md
 │       └── testing-lessons.md
 ├── scripts/
-│   ├── mcp_server.py            # MCP Server (hybrid_search + keyword_search)
-│   ├── index.py                 # 索引工具 (heading-based chunking + section_path)
+│   ├── mcp_server.py            # MCP Server (hybrid_search + keyword_search + agent_hint)
+│   ├── index.py                 # 索引工具 (heading-based chunking + sidecar 注入)
+│   ├── doc_preprocess.py        # LLM 文档预处理 (contextual_summary + gap_flags)
+│   ├── llm_client.py            # 统一 LLM 调用接口 (Anthropic + OpenAI-compatible)
 │   ├── eval_module.py           # 评估模块 (extract_contexts + gate_check)
 │   └── requirements.txt
 ├── docs/                        # 本地知识库文档
