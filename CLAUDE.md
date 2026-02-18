@@ -109,12 +109,12 @@ make test            # 全部测试
 - 文档语言：中英文均支持，回答跟随文档语言
 - 代码变更后必须运行测试验证
 - 编写测试用例前，必须先确认知识库中实际有哪些文档
-- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 2267 chunks（Redis + LLM Apps + 本地）
+- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 2662 chunks（Redis + LLM Apps + 本地 + RAGBench + CRAG）
 - 导入新数据源后，必须运行预处理 + 重建索引才能生效
 
 ## 知识库数据源
 
-### Qdrant 索引（2267 chunks，heading-based chunking + section_path + 预处理元数据）
+### Qdrant 索引（2662 chunks，heading-based chunking + section_path + 预处理元数据）
 - Redis 官方文档 (234 docs, ~1120 chunks): redis/docs
   - Data Types: Strings, Lists, Sets, Sorted Sets, Hashes, Streams, JSON, Probabilistic, TimeSeries, Vector Sets
   - Management: Sentinel, Replication, Persistence, Scaling (Cluster), Config, Admin, Debugging, Troubleshooting
@@ -130,8 +130,8 @@ make test            # 全部测试
   - LLM Frameworks: LangChain, CrewAI, Phidata, OpenAI SDK
   - Advanced: resume matcher, content generator, voice AI
 - 本地 docs/ (21 docs, ~168 chunks): 项目 runbook + API 文档 + 设计文档
-- RAGBench techqa (245 docs): IBM 技术文档 QA，来自 rungalileo/ragbench
-- CRAG finance (121 docs): 金融领域 QA，来自 facebookresearch/CRAG
+- RAGBench techqa (245 docs, ~249 chunks): IBM 技术文档 QA，来自 rungalileo/ragbench
+- CRAG finance (121 docs, ~146 chunks): 金融领域 QA，来自 facebookresearch/CRAG
 - 来源: 通过 /ingest-repo 或导入脚本导入
 - 预处理: 462 docs 已完成 LLM 预处理（DeepSeek V3），sidecar 存储在 `.preprocess/` 目录
 - 查看: `.venv/bin/python scripts/index.py --status`

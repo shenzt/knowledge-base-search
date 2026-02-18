@@ -51,7 +51,7 @@
 
 ## 当前知识库实际内容
 
-### Qdrant 索引（2267 chunks，heading-based chunking + 预处理元数据）
+### Qdrant 索引（2662 chunks，heading-based chunking + 预处理元数据）
 
 **Redis 官方文档 (234 docs, ~1120 chunks)** — from redis/docs:
 - Data Types, Management (Sentinel, Replication, Persistence, Scaling), Security, Optimization, Develop, Install
@@ -61,7 +61,13 @@
 
 **本地 docs/ (21 docs, ~168 chunks)**
 
-来源: 通过 /ingest-repo 导入，存储在 `../my-agent-kb/`
+**RAGBench techqa (245 docs, ~249 chunks)** — from rungalileo/ragbench:
+- IBM 技术文档 QA，涵盖 IBM 产品技术支持文档
+
+**CRAG finance (121 docs, ~146 chunks)** — from facebookresearch/CRAG:
+- 金融领域 QA，8 种问题类型（simple, comparison, multi-hop, set, aggregation 等）
+
+来源: 通过 /ingest-repo 或导入脚本导入，存储在 `../my-agent-kb/` 和 `docs/`
 预处理: 462 docs 已完成 LLM 预处理（DeepSeek V3），sidecar 存储在 `.preprocess/` 目录
 
 ### 本地 docs/（3 个技术文档）
@@ -69,10 +75,11 @@
 - `runbook/kubernetes-pod-crashloop.md` — K8s CrashLoopBackOff 排查
 - `api/authentication.md` — OAuth 2.0 + JWT API 认证设计
 
-### 评测用例（v5, 100 个）
-- Local: 15 (redis-failover, k8s-crashloop, api-auth)
-- Qdrant: 75 (Redis 40 + LLM Apps 35)
-- Notfound: 10
+### 评测用例
+- v5 (100 个): Local 15 + Qdrant 75 (Redis 40 + LLM Apps 35) + Notfound 10
+- RAGBench techqa (50 个): IBM 技术文档 QA，EVAL_DATASET=ragbench
+- CRAG finance (50 个): 金融领域 QA，EVAL_DATASET=crag
+- 全量 (200 个): EVAL_DATASET=all
 
 ### 评测结果历史
 
