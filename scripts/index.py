@@ -404,6 +404,7 @@ def index_full(docs_dir: str) -> None:
     md_files = sorted(Path(docs_dir).rglob("*.md"))
     # 跳过 .preprocess 目录下的文件
     md_files = [f for f in md_files if ".preprocess" not in f.parts]
+    if not md_files:
         log.info(f"目录 {docs_dir} 下没有 .md 文件")
         return
 
