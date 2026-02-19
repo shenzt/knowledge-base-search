@@ -68,6 +68,16 @@ USE_MCP = os.environ.get("USE_MCP", "0") == "1"
 USE_JUDGE = os.environ.get("USE_JUDGE", "0") == "1"
 # 并发数（默认 1 = 串行，建议 3-5）
 EVAL_CONCURRENCY = int(os.environ.get("EVAL_CONCURRENCY", "1"))
+# Router 模式：通过 claude-code-router 代理到其他模型（如 GLM-5）
+# 用法: USE_ROUTER=1 （需要先 ccr start 启动 router）
+USE_ROUTER = os.environ.get("USE_ROUTER", "0") == "1"
+ROUTER_URL = os.environ.get("ROUTER_URL", "http://127.0.0.1:3456")
+
+if USE_ROUTER:
+    # 设置环境变量让 Agent SDK 走 router 代理
+    os.environ["ANTHROPIC_BASE_URL"] = ROUTER_URL
+    os.environ["ANTHROPIC_AUTH_TOKEN"] = os.environ.get("ANTHROPIC_AUTH_TOKEN", "test")
+    os.environ.setdefault("DISABLE_COST_WARNINGS", "true")
 
 if USE_MCP:
     # 不使用 setting_sources=["project"]，因为它会加载 .mcp.json 并覆盖 allowed_tools
@@ -521,12 +531,14 @@ async def main():
          open(detail_path, "w", encoding="utf-8") as df:
 
         mode = "MCP + Grep/Glob/Read" if USE_MCP else "Grep/Glob/Read (无 MCP)"
+        model_info = f"via router → {ROUTER_URL}" if USE_ROUTER else "Claude (direct)"
         kb_commit_header = get_kb_commit()
         log("=" * 80, lf)
         log(f"🤖 Agentic RAG 测试 (Agent SDK)", lf)
         log("=" * 80, lf)
         log(f"用例: {len(TEST_CASES)} | 时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", lf)
         log(f"模式: {mode}", lf)
+        log(f"模型: {model_info}", lf)
         log(f"并发: {EVAL_CONCURRENCY}", lf)
         log(f"KB commit: {kb_commit_header}", lf)
         log(f"评估: eval_module (Gate 门禁 + 质量检查)", lf)
@@ -670,11 +682,15 @@ async def main():
                 "total_time": total_time, "total_cost": total_cost,
                 "kb_commit": kb_commit,
                 "eval_module": "eval_module.py (gate + quality + judge)",
+                "model": f"router:{ROUTER_URL}" if USE_ROUTER else "claude-sonnet",
+                "dataset": EVAL_DATASET,
                 "category_stats": {c: {"total": s["t"], "passed": s["p"]} for c, s in cats.items()},
                 "source_stats": {s: {"total": v["t"], "passed": v["p"]} for s, v in source_stats.items()},
                 "judge_summary": judge_summary,
                 "use_mcp": USE_MCP,
                 "use_judge": USE_JUDGE,
+                "use_router": USE_ROUTER,
+                "concurrency": EVAL_CONCURRENCY,
                 "results": results,
             }, f, indent=2, ensure_ascii=False)
 
