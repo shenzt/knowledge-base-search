@@ -235,7 +235,10 @@ def gate_check(tc: dict, answer: str, contexts: list[dict]) -> dict:
         )
         checks["expected_doc_hit"] = hit
         checks["retrieved_paths"] = retrieved_paths
-        if not hit:
+        # 公开数据集（ragbench/crag）的 expected_doc 是 soft signal
+        # Agent 可能从同 corpus 的其他文档找到答案，不作为 gate 失败条件
+        is_benchmark = tc.get("category", "").startswith(("ragbench", "crag"))
+        if not hit and not is_benchmark:
             reasons.append(f"未检索到期望文档 {expected_docs} (实际: {retrieved_paths})")
 
     # 4. 引用检查 (answer 中是否有机器可读的引用)

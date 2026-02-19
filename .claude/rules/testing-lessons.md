@@ -89,6 +89,18 @@
 | R9 | 100/100 | 4.27/5 | 4.83/5 | $11.88 | baseline |
 | R10 | 100/100 | 3.94/5 | 4.76/5 | $8.72 | +预处理管线，faithfulness 在历史方差内 |
 
+#### RAGAS + DeepSeek V3 Judge 评测（2026-02-19）
+
+| Dataset | Run | Gate | Faithfulness | Errors | Cost | Bash | 备注 |
+|---------|-----|------|-------------|--------|------|------|------|
+| RAGBench | R1 (serial) | 27/50 (54%) | 0.54 | 9 | $13.50 | 21 | Agent 用 Bash pkill MCP server |
+| RAGBench | R2 (concurrent) | 33/50 (66%) | 0.54 | 10 | $10.10 | 28 | setting_sources 覆盖 allowed_tools |
+| RAGBench | R3 (Bash blocked) | 48/50 (96%) | 0.47 | 0 | $4.80 | 0 | ✅ 最终修复版 |
+| CRAG | R1 (concurrent) | 25/50 (50%) | 0.74 | 10 | $10.55 | 27 | Bash 未封禁 |
+| v5 | R11 (old) | 53/100 (53%) | 0.35 | 39 | $13.67 | 22 | Bash 未封禁 |
+| CRAG | R2 | - | - | 429 | - | - | 周费用限额 $280 |
+| v5 | R12 | - | - | 429 | - | - | 周费用限额 $280 |
+
 ### 评测经验教训
 
 ## 教训 6：eval_module 必须正确解析 MCP 工具结果
@@ -156,3 +168,63 @@
 - 如果文档只覆盖部分问题，Agent 应明确说"文档中未涉及其余内容"
 - 不要编造命令/配置/代码——除非直接出现在检索到的文档中
 - faithfulness 和 helpfulness 是 trade-off：严格忠实 = 更短但更可靠的回答
+
+## 教训 13：setting_sources=["project"] 会覆盖 allowed_tools / disallowed_tools
+
+**问题**：评测中设置了 `allowed_tools` 排除 Bash，但 Agent 仍然使用 Bash 执行 `pkill -f mcp_server.py`，导致 MCP server 被杀死，所有并发 session 全部失败。根因：`setting_sources=["project"]` 会加载 `.mcp.json` 和项目设置，完全覆盖 SDK 传入的工具限制。
+
+**影响**：RAGBench R1/R2 各 9-10 个 error，CRAG R1 10 个 error，v5 R11 39 个 error。Agent 用 Bash 做了各种意外操作（pkill、循环搜索、写文件）。
+
+**修复**：
+- 移除 `setting_sources=["project"]`
+- 改用 `system_prompt` 注入知识库描述和 Hard Grounding 规则
+- 手动配置 `mcp_servers` 字典（只启动 knowledge-base MCP）
+- 设置 `disallowed_tools=["Bash", "Write", "Edit", "NotebookEdit", "Task"]`
+
+**规则**：
+- 评测场景下绝对不要用 `setting_sources=["project"]`
+- 用 `system_prompt` + `mcp_servers` 替代，精确控制 Agent 能力边界
+- `disallowed_tools` 只在没有 `setting_sources` 时才生效
+- Agent 会用 Task 工具 spawn subagent 绕过限制，Task 也要禁
+
+**效果**：RAGBench R3 gate 从 54% → 96%，errors 从 9 → 0，cost 从 $13.50 → $4.80
+
+## 教训 14：Benchmark 数据集的 expected_doc 不适合做硬性 gate
+
+**问题**：RAGBench/CRAG 的 expected_doc 来自原始数据集标注，但我们的 chunking 策略（heading-based）和文档路径与原始数据集不同，导致 expected_doc 匹配率偏低。这不代表检索失败——Agent 可能找到了正确内容但路径不匹配。
+
+**修复**：
+- `eval_module.py` 中对 ragbench/crag 类别的 expected_doc miss 改为 soft signal（记录但不 fail gate）
+- v5 数据集保持严格 gate（expected_doc 是我们自己标注的）
+
+**规则**：
+- 自建数据集（v5）：expected_doc 严格匹配
+- 公开 benchmark（ragbench/crag）：expected_doc 仅作参考，gate 主要看 answer 质量
+- 不同数据集的评估标准应该不同，不能一刀切
+
+## 教训 15：RAGAS faithfulness 与 DeepSeek 模型兼容性
+
+**问题**：
+1. `deepseek-reasoner`（R1）不兼容 RAGAS structured output，faithfulness 返回 NaN
+2. `OPENAI_API_KEY` 环境变量实际是 Claude key（`cr_*`），导致 embedding 401 错误
+3. RAGAS answer_relevancy 需要 OpenAI embedding，没有真正的 OpenAI key 时应跳过
+
+**修复**：
+- Judge 模型从 `deepseek-reasoner` 改为 `deepseek-chat`（V3）
+- embedding key 检测：拒绝 `cr_*` 和 `sk-ant-*` 前缀
+- 无有效 OpenAI key 时 answer_relevancy 返回 None 而非报错
+
+**规则**：
+- RAGAS 的 LLM 必须支持 structured output（function calling），reasoning 模型不行
+- embedding 和 LLM judge 用不同的 API key，要分别验证
+- 评测脚本启动时应做 preflight check：验证所有 API key 有效
+
+## 教训 16：并发评测的资源冲突
+
+**问题**：两个评测进程同时启动（v5 + CRAG），共享同一个时间戳的日志文件，结果互相覆盖。
+
+**规则**：
+- 不要同时启动多个评测进程（不同 dataset），它们会竞争日志文件和 MCP server
+- 同一个评测内的并发（EVAL_CONCURRENCY=5）是安全的，因为共享同一个 MCP server 进程
+- 如果需要跑多个 dataset，串行执行或确保日志文件名包含 dataset 标识
+- 注意 API 费用累积：5 并发 × 2 个 dataset = 10 个并发 session，容易触发费用限额

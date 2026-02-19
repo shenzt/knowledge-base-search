@@ -1,0 +1,1469 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 100 | 时间: 2026-02-19 12:08:35
+模式: MCP + Grep/Glob/Read
+并发: 5
+KB commit: 0064d9a
+评估: eval_module (Gate 门禁 + 质量检查)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read + MCP hybrid_search)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260219_120835.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260219_120835_detail.jsonl
+
+============================================================
+[3/50] crag-fin-003 (crag-finance) [?]
+  Q: on which date did sgml distribute dividends the first time
+  开始: 12:08:35
+    [INIT] session=2a762eab-ee38-473e-98c4-9f99253fbbb9 model=claude-sonnet-4-5-20250929
+    [THINK] I'll search the knowledge base for information about SGML dividend distribution dates.
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "SGML dividends distribution date first time", "top_k": 10})
+    [TOOL] Grep({"-i": true, "output_mode": "content", "pattern": "SGML.*dividend"})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": -0.0144,\n    \"doc_id\": \"1db35727\",\n    \"chunk_id\": \"1db35727-000\",\n    \"chunk_index\": 0,\n    \"path\": \"docs/crag-finance/1db35727.md\",\n    \"title\": \"Sigma Lithium Corporation Common Shares (SGML) Dividend History ...\",\n    \"section_path\": \"Sigma Lithium Corporation Common Shares (SGML) Dividend History ...\",\n    \"confidence\": \"medium
+    [TOOL_OUT] docs/crag-finance/1db35727.md:3:title: "Sigma Lithium Corporation Common Shares (SGML) Dividend History ..."
+docs/crag-finance/1db35727.md:10:# Sigma Lithium Corporation Common Shares (SGML) Dividend History ...
+docs/crag-finance/1db35727.md:12:[Omitted long matching line]
+    ... (19 lines total)
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 3 turns | 1040515ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:26:19 | 耗时: 1064.2s
+--------------------------------------------------------------------------------
+
+============================================================
+[1/50] crag-fin-001 (crag-finance) [?]
+  Q: where did the ceo of salesforce previously work?
+  开始: 12:08:35
+    [INIT] session=a1d60da1-b52a-45af-8c0e-abe7eb6fae09 model=claude-sonnet-4-5-20250929
+    [THINK] I'll search the knowledge base for information about the CEO of Salesforce and their previous work experience.
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "CEO Salesforce previous work employment history", "top_k": 10})
+    [TOOL] mcp__knowledge-base__keyword_search({"query": "Salesforce CEO previous work", "top_k": 10})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": -1.1074,\n    \"doc_id\": \"206114bd\",\n    \"chunk_id\": \"206114bd-000\",\n    \"chunk_index\": 0,\n    \"path\": \"docs/crag-finance/206114bd.md\",\n    \"title\": \"The History of Salesforce - Salesforce\",\n    \"section_path\": \"The History of Salesforce - Salesforce\",\n    \"confidence\": \"medium\",\n    \"text\": \"Here&#x27;s a history of Salesforce o
+    [TOOL_OUT] {"result":"[]"}
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 3 turns | 1050472ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:26:29 | 耗时: 1074.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[4/50] crag-fin-004 (crag-finance) [?]
+  Q: which company in the s&p 500 index has the highest percentage of green energy usage?
+  开始: 12:08:35
+    [INIT] session=7586b222-c4e6-4087-9ac2-9dbd28992792 model=claude-sonnet-4-5-20250929
+    [THINK] I'll search the knowledge base for information about S&P 500 companies and their green energy usage.
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "S&P 500 company highest green energy usage percentage renewable", "top_k": 10})
+    [TOOL] Grep({"-i": true, "output_mode": "files_with_matches", "pattern": "S&P 500|green energy|renewable energy|highest percentage"})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": -2.2777,\n    \"doc_id\": \"53b47481\",\n    \"chunk_id\": \"53b47481-000\",\n    \"chunk_index\": 0,\n    \"path\": \"docs/crag-finance/53b47481.md\",\n    \"title\": \"Top 3 Clean Energy ETFs to Consider | Nasdaq\",\n    \"section_path\": \"Top 3 Clean Energy ETFs to Consider | Nasdaq\",\n    \"confidence\": \"medium\",\n    \"text\": \"The effects of global cli
+    [TOOL_OUT] Found 35 files
+eval/logs/agentic_rag_20260219_103441_detail.jsonl
+eval/logs/agentic_rag_20260219_085409_detail.jsonl
+    ... (36 lines total)
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 3 turns | 1060952ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:26:38 | 耗时: 1083.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[5/50] crag-fin-005 (crag-finance) [?]
+  Q: how much did voyager therapeutics's stock rise in value over the past month?
+  开始: 12:08:35
+    [INIT] session=fd47f16e-fcec-4703-9a37-24a1ec4a1395 model=claude-sonnet-4-5-20250929
+    [THINK] I'll search the knowledge base for information about Voyager Therapeutics stock performance.
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Voyager Therapeutics stock price rise value past month", "top_k": 10})
+    [TOOL] Grep({"-i": true, "output_mode": "content", "pattern": "Voyager Therapeutics|VYGR|stock (price|rise|value)"})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 1.145,\n    \"doc_id\": \"e622fe6a\",\n    \"chunk_id\": \"e622fe6a-000\",\n    \"chunk_index\": 0,\n    \"path\": \"docs/crag-finance/e622fe6a.md\",\n    \"title\": \"VYGR | Voyager Therapeutics Inc. Stock Price & News - WSJ\",\n    \"section_path\": \"VYGR | Voyager Therapeutics Inc. Stock Price & News - WSJ\",\n    \"confidence\": \"medium\",\n    \"text\": \"V
+    [TOOL_OUT] <persisted-output>
+Output too large (32.9KB). Full output saved to: /home/shenzt/.claude/projects/-home-shenzt-ws-knowledge-base-search/fd47f16e-fcec-4703-9a37-24a1ec4a1395/tool-results/tooluse_av2psXIqyNrZI31kSknlFj.txt
+
+    ... (26 lines total)
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 3 turns | 1063418ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:26:42 | 耗时: 1087.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[2/50] crag-fin-002 (crag-finance) [?]
+  Q: what company in the dow jones is the best performer today?
+  开始: 12:08:35
+    [INIT] session=3c2b33ca-3f4e-442c-911e-fb039802d5df model=claude-sonnet-4-5-20250929
+    [THINK] I'll search the knowledge base for information about Dow Jones performance today.
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "dow jones best performer today stock performance", "top_k": 10})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": -2.4582,\n    \"doc_id\": \"76e9578a\",\n    \"chunk_id\": \"76e9578a-000\",\n    \"chunk_index\": 0,\n    \"path\": \"docs/crag-finance/76e9578a.md\",\n    \"title\": \"Best Dow Jones Stocks To Watch In 2024\",\n    \"section_path\": \"\",\n    \"confidence\": \"medium\",\n    \"text\": \";window.NREUM||(NREUM={});NREUM.init={distributed\\\\_tracing:{enabled:true
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 2 turns | 1072097ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:26:52 | 耗时: 1097.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[6/50] crag-fin-006 (crag-finance) [?]
+  Q: what was the total value of all corporate bond issuances in 2024 for the first week?
+  开始: 12:26:19
+    [INIT] session=7ca5420a-c500-4de1-bf57-24d022e5238f model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 179747ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:29:32 | 耗时: 193.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[7/50] crag-fin-007 (crag-finance) [?]
+  Q: what is the ex-dividend date of microsoft in the 1st qtr of 2024
+  开始: 12:26:29
+    [INIT] session=ca00a1e7-9d48-4267-8a59-4a61ec13ddb2 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 187966ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:29:51 | 耗时: 202.2s
+--------------------------------------------------------------------------------
+
+============================================================
+[9/50] crag-fin-009 (crag-finance) [?]
+  Q: can you tell me the earnings per share of lgstw?
+  开始: 12:26:42
+    [INIT] session=e92d2130-b2a7-421f-a82e-b017f7e926bd model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 179572ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:29:56 | 耗时: 193.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[8/50] crag-fin-008 (crag-finance) [?]
+  Q: which company's stock has had the lowest trading activity this week, kind or  casi?
+  开始: 12:26:38
+    [INIT] session=b275fc91-c4e6-4e25-b2fe-c249002b0421 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 193814ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:30:06 | 耗时: 208.2s
+--------------------------------------------------------------------------------
+
+============================================================
+[10/50] crag-fin-010 (crag-finance) [?]
+  Q: what was the closing price of hamilton lane yesterday?
+  开始: 12:26:52
+    [INIT] session=1c76a873-3f97-4cef-86bc-9fc42b7c3d0a model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 193172ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:30:19 | 耗时: 206.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[11/50] crag-fin-011 (crag-finance) [?]
+  Q: what are 3 examples of stocks that increased in value today?
+  开始: 12:29:32
+    [INIT] session=8c619fdf-defe-4116-968e-a0d1a27d4898 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 187508ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:32:53 | 耗时: 200.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[12/50] crag-fin-012 (crag-finance) [?]
+  Q: what were tesla's quarerly reported earnings per share for the fiscal year 2022?
+  开始: 12:29:51
+    [INIT] session=c9539145-0ac4-4390-81bd-cd9a0521b951 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 182942ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:33:08 | 耗时: 196.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[13/50] crag-fin-013 (crag-finance) [?]
+  Q: i'm looking for the p/e ratio of dks. would you happen to know what it is?
+  开始: 12:29:56
+    [INIT] session=7ffeff97-5754-4567-8ad0-83f7aabd0832 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 188754ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:33:19 | 耗时: 203.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[14/50] crag-fin-014 (crag-finance) [?]
+  Q: what was the volume of trading for colm on the most recent day that the market was open for trading?
+  开始: 12:30:06
+    [INIT] session=b76ccde2-14a2-497e-8599-955220eb781c model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 181519ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:33:21 | 耗时: 195.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[15/50] crag-fin-015 (crag-finance) [?]
+  Q: which companies had the three largest funding rounds of 2023?
+  开始: 12:30:19
+    [INIT] session=d1c4cd57-b342-4402-8232-8cc845516808 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 184358ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:33:36 | 耗时: 197.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[16/50] crag-fin-016 (crag-finance) [?]
+  Q: which company had the higher debt-to-equity ratio in 2023 between meta and microsoft?
+  开始: 12:32:53
+    [INIT] session=89a91df9-7160-49ee-9436-b4f568cc69b5 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 187534ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:36:13 | 耗时: 200.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[17/50] crag-fin-017 (crag-finance) [?]
+  Q: what's auph's earnings per share?
+  开始: 12:33:08
+    [INIT] session=7ce10df0-1346-4965-b5c9-a03505a288d2 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 185687ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:36:27 | 耗时: 199.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[18/50] crag-fin-018 (crag-finance) [?]
+  Q: what were the low and high prices of leco on the most recent trading day?
+  开始: 12:33:19
+    [INIT] session=21847fc7-efef-4048-ac20-330a06ca9390 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 184178ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:36:38 | 耗时: 198.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[19/50] crag-fin-019 (crag-finance) [?]
+  Q: how do the historical market capitalizations of coca-cola and pepsico  compare over the past decade?
+  开始: 12:33:21
+    [INIT] session=d8734e6d-4bd7-46b1-94f4-8f3346dcab08 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 183018ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:36:38 | 耗时: 197.1s
+--------------------------------------------------
+==============================
+============================================================
+[20/50] crag-fin-020 (crag-finance) [?]
+  Q: what are the different sectors of the european market?
+  开始: 12:33:36
+    [INIT] session=1ac5d902-c0ec-4ec5-9aab-2a2aebd8830b model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 187643ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:36:57 | 耗时: 200.9s
+-------------------------------------------
+=====================================
+============================================================
+[21/50] crag-fin-021 (crag-finance) [?]
+  Q: can you provide me with the most recent stock price of curo today?
+  开始: 12:36:13
+    [INIT] session=c2ce264a-8fa4-4a82-aea4-f96592abff62 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 190468ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:39:37 | 耗时: 203.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[24/50] crag-fin-024 (crag-finance) [?]
+  Q: which company distribute more dividends this year, muj or  tcbio?
+  开始: 12:36:38
+    [INIT] session=7305ad94-1b3d-4242-b69c-7c240548e153 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 184516ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:39:57 | 耗时: 198.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[23/50] crag-fin-023 (crag-finance) [?]
+  Q: how much do i pay in interest this month on a $2,000 credit card balance that has a simple annual interest rate is 14.99% per annum?
+  开始: 12:36:38
+    [INIT] session=58e26740-9bea-4d84-b12e-bc549643e46a model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 187016ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:39:59 | 耗时: 201.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[22/50] crag-fin-022 (crag-finance) [?]
+  Q: is eli lilly and company's stock price up from its yearly open?
+  开始: 12:36:27
+    [INIT] session=331e2f3c-9c0a-44e4-97e1-fde34af1ac90 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 198305ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+E
+============================================================
+[25/100] redis-ops-015 (redis-ops) [?]
+  Q: How to use Redis Lua scripting with EVAL com
+============================================================
+[25/50] crag-fin-025 (crag-finance) [?]
+  Q: what was sfwl's closing stock price on the most recent friday?
+  开始: 12:36:57
+    [INIT] session=6f2b0621-ea42-44db-a55c-b314128c6e6e model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 185324ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (e
+============================================================
+[26/100] redis-so-001 (redis-so) [?]
+  Q: My Redis is using too much memory, maxmemory is set but keys
+============================================================
+[26/50] crag-fin-026 (crag-finance) [?]
+  Q: which company has a higher return on assets, visa or mastercard?
+  开始: 12:39:37
+    [INIT] session=f7ce4b72-a71c-4944-81ae-4fd005856962 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 183381ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:42:54 | 耗时: 196.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[27/50] crag-fin-027 (crag-finance) [?]
+  Q: what's the price-to-earnings ratio of ovbc as of now?
+  开始: 12:39:57
+    [INIT] session=b124a527-1a2f-41bc-9247-b215f4d5e273 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 179569ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:43:11 | 耗时: 194.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[29/50] crag-fin-029 (crag-finance) [?]
+  Q: what's the closing stock price of hooker furnishings corporation on the last trading day?
+  开始: 12:40:00
+    [INIT] session=eddfe0d9-5024-4af7-9779-4b16934c012f model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 183388ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:43:18 | 耗时: 198.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[28/50] crag-fin-028 (crag-finance) [?]
+  Q: how much did funko open at today?
+  开始: 12:39:59
+    [INIT] session=52567b26-cb8d-4d7d-810f-d26ce4cd9c32 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 189015ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:43:23 | 耗时: 203.7s
+------------------
+============================================================
+[
+============================================================
+[30/50] crag-fin-030 (crag-finance) [?]
+  Q: what is the total number of dividends that tnl has paid out in 2023?
+  开始: 12:40:16
+    [INIT] session=0f4a76cb-1f33-4f6a-9754-a2fa84843fb2 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 184591ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:43:34 | 耗时: 198.0s
+-------------------------------
+=================================================
+============================================================
+[31/50] crag-fin-031 (crag-finance) [?]
+  Q: what is the price-to-earnings ratio of pmtu
+  开始: 12:42:54
+    [INIT] session=c3683b55-b26d-461a-94c7-b122c2f8e61d model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 192590ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:46:20 | 耗时: 205.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[32/50] crag-fin-032 (crag-finance) [?]
+  Q: what is treasury yield?
+  开始: 12:43:11
+    [INIT] session=361f87dc-761e-41b2-aeda-7aa9632e547a model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 188832ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:46:33 | 耗时: 202.5s
+--------------------------------------------------------------------------------
+
+======
+============================================================
+[33/100] redis-so-008 (redis-so) [?]
+  Q: What is the Redis RESP protocol? How does client-server communication work?
+  开始: 12:43:06
+    [INIT] session=89adaee4-ba71-4dae-ad38-55c375de9334 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 196990ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:46:36 | 耗时: 210.5s
+---------------------------
+============================================================
+[34/50] crag-fin-034 (crag-finance) [?]
+  Q: which five states have successfully implemented universal healthcare program for all their residents?
+  开始: 12:43:23
+    [INIT] session=31ee7be6-8319-4943-b635-f2a56eb16bd5 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 186590ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:46:43 | 耗时: 200.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[35/50] crag-fin-035 (crag-finance) [?]
+  Q: on the day that cgi last paid dividends, what was the closing stock price?
+  开始: 12:43:34
+    [INIT] session=35e674b0-84c6-4160-982b-84716cc78378 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 187304ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:46:55 | 耗时: 200.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[36/50] crag-fin-036 (crag-finance) [?]
+  Q: what was rmco's open price this past friday?
+  开始: 12:46:20
+    [INIT] session=623084e7-5101-4f48-a2bb-d628aa20f46a model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 181236ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:49:34 | 耗时: 194.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[37/50] crag-fin-037 (crag-finance) [?]
+  Q: what are the five types of financial markets?
+  开始: 12:46:33
+    [INIT] session=acbd217d-fcd1-4daf-8dfa-8a544908d335 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 189816ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:49:57 | 耗时: 203.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[38/50] crag-fin-038 (crag-finance) [?]
+  Q: on average, what was the daily high stock price of xpev over the past week?
+  开始: 12:46:35
+    [INIT] session=266b8891-39c5-46fa-a64c-4ede16fa8758 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 189037ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:49:59 | 耗时: 203.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[39/50] crag-fin-039 (crag-finance) [?]
+  Q: what's the open price for intellicheck today?
+  开始: 12:46:43
+    [INIT] session=86114d40-be2a-4915-9fa0-d54b3e6c2034 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 189519ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:50:07 | 耗时: 203.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[40/50] crag-fin-040 (crag-f
+============================================================
+[40/100] redis-so-015 (redis-so) [?]
+  Q: How to install Redis Stack on Ubuntu with apt?
+  开始: 12:46:54
+    [INIT] session=9debcfa6-b1c4-4654-972d-65d10fe9ad49 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 197100ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:50:24 | 耗时: 210.4s
+------------------------------
+============================================================
+[41/50] crag-fin-041 (crag-finance) [?]
+  Q: what's the trading volume of mgrm on the last trading day?
+  开始: 12:49:34
+    [INIT] session=cbe942d1-0f73-4e30-a68d-9882a94f7049 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 180469ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:52:48 | 耗时: 193.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[42/50] crag-fin-042 (crag-finance) [?]
+  Q: which company has a higher debt-to-equity ratio, autodesk or cdw?
+  开始: 12:49:57
+    [INIT] session=691bafba-f61a-427d-a49c-43e06601cba1 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 180567ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:53:11 | 耗时: 194.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[43/50] crag-fin-043 (crag-finance) [?]
+  Q: which day did eqix last distribute dividends to its shareholders?
+  开始: 12:49:59
+    [INIT] session=b5e9d4f1-9472-4ed9-972f-cda8f9856587 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 192759ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:53:26 | 耗时: 206.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[44/50] crag-fin-044 (crag-finance) [?]
+  Q: what is the most recent date that nml paid dividends to its shareholders?
+  开始: 12:50:07
+    [INIT] session=db4f85f1-13d8-45b3-93b7-4a1648a5c003 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 185430ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:53:26 | 耗时: 199.3s
+---------------------------------------------------------------------
+============================================================
+[45/100] llm-rag-005 (llm-rag) [?]
+  Q: What is Vision RAG? How to do RAG with images?
+  开始: 12:50:24
+    [INIT] session=0b486499-41f7-4514-8ca7-be18e215f2ef model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 186031ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:53:43 | 耗时: 199.2s
+--------------------------------------------------------------------------------
+
+===============
+============================================================
+[46/50] crag-fin-046 (crag-finance) [?]
+  Q: what is the price of apple stock when they split the stock for the 10th time
+  开始: 12:52:48
+    [INIT] session=43835d1f-e09d-47cf-b74f-8f4160757f74 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 175160ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:55:57 | 耗时: 188.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[48/50] crag-fin-048 (crag-finance) [?]
+  Q: which five states had successfully implemented an hourly minimum wage of $18 or higher in 2023?
+  开始: 12:53:26
+    [INIT] session=1573d6ab-68d1-4e0e-9373-bfb6bc0f4b4d model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 184232ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:56:43 | 耗时: 197.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[47/50] crag-fin-047 (crag-finance) [?]
+  Q: on the last trading day, what were the daily low and high of nuw?
+  开始: 12:53:11
+    [INIT] session=261f2020-4e4a-4d95-9bbb-7a44ca28d69c model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 198422ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:56:44 | 耗时: 212.2s
+--------------------------------------------------------------------------------
+
+============================================================
+[49/50] crag-fin-049 (crag-finance) [?]
+  Q: what was the total value of all mergers and acquisitions (m&a) in the healthcare sector in 2018?
+  开始: 12:53:26
+    [INIT] session=e164184f-2cda-4f3b-afd9-dbb49f637f5c model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 193629ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Co
+============================================================
+[50/100] llm-rag-010 (llm-rag) [?]
+  Q: How to build a chat app for research papers?
+  开始: 12:53:43
+    [INIT] session=9afbdc6e-ec26-4e78-8a92-126d110df8a4 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 191580ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:57:08 | 耗时: 204.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[51/100] llm-rag-011 (llm-rag) [?]
+  Q: How to chat with a GitHub repository using RAG?
+  开始: 12:54:54
+    [INIT] session=4929230e-320b-4474-99fd-e59dfb5f9ace model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 183443ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:58:11 | 耗时: 196.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[52/100] llm-rag-012 (llm-rag) [?]
+  Q: What is a streaming AI chatbot and how to build one?
+  开始: 12:55:54
+    [INIT] session=80fccd9b-31ac-4e16-b6e0-97827de3af3d model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 188949ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:59:16 | 耗时: 202.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[53/100] llm-agent-001 (llm-agent) [?]
+  Q: How to build a multi-agent finance team with AI?
+  开始: 12:56:38
+    [INIT] session=05f2efac-3471-432f-9525-6b0667804bc0 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 185020ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 12:59:56 | 耗时: 198.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[54/100] llm-agent-002 (llm-agent) [?]
+  Q: What is an AI recruitment agent team? How does it work?
+  开始: 12:56:41
+    [INIT] session=c802471a-18fa-45f8-8b41-cae4655422b0 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 186197ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:00:01 | 耗时: 199.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[55/100] llm-agent-003 (llm-agent) [?]
+  Q: How to build an AI travel planner with multiple agents?
+  开始: 12:57:08
+    [INIT] session=da33c139-3f97-47c8-8780-3318e9481abb model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 186931ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:00:28 | 耗时: 200.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[56/100] llm-agent-004 (llm-agent) [?]
+  Q: AI agent that can play chess — how is it built?
+  开始: 12:58:11
+    [INIT] session=bca43bf2-e21c-4a43-88a8-945795de18f2 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 179100ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:01:23 | 耗时: 192.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[57/100] llm-agent-005 (llm-agent) [?]
+  Q: How to build an AI legal agent team for document review?
+  开始: 12:59:16
+    [INIT] session=fab0de35-b9bd-4561-b748-dbc74e8041ad model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 190350ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:02:40 | 耗时: 203.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[59/100] llm-agent-007 (llm-agent) [?]
+  Q: How to build a competitor intelligence agent with AI?
+  开始: 13:00:01
+    [INIT] session=98a3cbb9-98fb-40cc-b67b-bedb0182af3f model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 183673ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:03:18 | 耗时: 197.2s
+--------------------------------------------------------------------------------
+
+============================================================
+[58/100] llm-agent-006 (llm-agent) [?]
+  Q: What is an AI SEO audit team and how does it analyze websites?
+  开始: 12:59:56
+    [INIT] session=a7ade028-9713-415b-9d87-3171fb4e3542 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 190854ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:03:21 | 耗时: 204.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[60/100] llm-agent-008 (llm-agent) [?]
+  Q: AI agent for web scraping — what tools does it use?
+  开始: 13:00:28
+    [INIT] session=a37735ab-c482-45c4-b235-3a8e822ad3a1 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 183625ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:03:45 | 耗时: 196.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[61/100] llm-agent-009 (llm-agent) [?]
+  Q: How to fine-tune Llama 3.2 for a specific task?
+  开始: 13:01:23
+    [INIT] session=0f6e6557-17d4-48ea-8a42-bc3a0ac4666e model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 189831ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:04:47 | 耗时: 203.2s
+--------------------------------------------------------------------------------
+
+============================================================
+[62/100] llm-agent-010 (llm-agent) [?]
+  Q: How to add persistent memory to an LLM application?
+  开始: 13:02:40
+    [INIT] session=e91899a0-010a-45b1-9de4-4b87ca68996d model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 189788ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:06:03 | 耗时: 203.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[64/100] llm-agent-012 (llm-agent) [?]
+  Q: What is an AI VC due diligence agent team?
+  开始: 13:03:21
+    [INIT] session=5b64d077-b155-4ef2-99d9-258ce4550253 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 180342ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:06:34 | 耗时: 193.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[63/100] llm-agent-011 (llm-agent) [?]
+  Q: How to build a voice RAG agent using OpenAI SDK?
+  开始: 13:03:18
+    [INIT] session=73e591fa-e5bb-4c28-a983-152acf4e53d0 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 192793ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:06:44 | 耗时: 206.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[65/100] llm-agent-013 (llm-agent) [?]
+  Q: How to build an AI teaching agent team for education?
+  开始: 13:03:45
+    [INIT] session=29a1954b-594d-48fa-a594-737a9ed6fa48 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 188149ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:07:06 | 耗时: 201.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[66/100] llm-fw-001 (llm-framework) [?]
+  Q: OpenAI Agents SDK crash course — how to get started?
+  开始: 13:04:47
+    [INIT] session=f457669c-a2b1-4457-a5b0-70be285941ee model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 179097ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:07:59 | 耗时: 192.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[67/100] llm-fw-002 (llm-framework) [?]
+  Q: Google ADK crash course for building AI agents
+  开始: 13:06:03
+    [INIT] session=ac3a48c9-4752-4e5a-8898-e1b74b533e5b model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 198308ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:09:34 | 耗时: 211.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[68/100] llm-fw-003 (llm-framework) [?]
+  Q: How to build a multimodal AI agent?
+  开始: 13:06:34
+    [INIT] session=7f9fa418-4ab6-4c49-94f5-1fd70b174e81 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 185052ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:09:52 | 耗时: 198.2s
+--------------------------------------------------------------------------------
+
+============================================================
+[69/100] llm-fw-004 (llm-framework) [?]
+  Q: How to build an AI code reviewer agent?
+  开始: 13:06:44
+    [INIT] session=7aa5e583-120d-4680-b635-54c4e5e27294 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 184753ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:10:03 | 耗时: 198.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[70/100] llm-fw-005 (llm-framework) [?]
+  Q: What is an AI customer support voice agent?
+  开始: 13:07:06
+    [INIT] session=5318308c-f670-4c6b-aa05-ac983c6a663c model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 185453ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:10:25 | 耗时: 199.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[71/100] llm-fw-006 (llm-framework) [?]
+  Q: How to build a resume job matcher with AI?
+  开始: 13:07:59
+    [INIT] session=0c0bda4a-1bcb-441e-8e8f-ceb91225ceec model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 196317ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:11:29 | 耗时: 209.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[72/100] llm-fw-007 (llm-framework) [?]
+  Q: AI real estate agent team — how does it analyze properties?
+  开始: 13:09:34
+    [INIT] session=00258b1e-24c3-4802-bf75-c1c0b59e285d model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 185748ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:12:54 | 耗时: 199.1s
+--------------------------------------------------------------------------------
+
+============================================================
+[73/100] llm-fw-008 (llm-framework) [?]
+  Q: How to build an AI sales intelligence agent?
+  开始: 13:09:52
+    [INIT] session=c78e7b6e-9a4a-4d42-b5c0-8e4edc2e1f4c model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 183600ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:13:09 | 耗时: 196.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[74/100] llm-fw-009 (llm-framework) [?]
+  Q: What is an AI game design agent team?
+  开始: 13:10:03
+    [INIT] session=40648837-4427-468e-a2b2-efe89ca30be6 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 184778ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:13:21 | 耗时: 198.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[75/100] llm-fw-010 (llm-framework) [?]
+  Q: How to build an AI services agency with multiple agents?
+  开始: 13:10:25
+    [INIT] session=e269a5d1-e4a5-4dd0-a14e-57a600b23a6c model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 180243ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:13:39 | 耗时: 193.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[76/100] local-001 (redis-failover) [?]
+  Q: READONLY You can't write against a read only replica 这个报错怎么解决
+  开始: 13:11:29
+    [INIT] session=6818b7b2-288f-4a07-9562-874cfa1350fc model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 188900ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:14:51 | 耗时: 202.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[77/100] local-002 (k8s-crashloop) [?]
+  Q: kubectl describe pod 显示 OOMKilled 怎么办
+  开始: 13:12:54
+    [INIT] session=7d8e7dee-8e8e-4965-b1b3-145c2470741e model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 193317ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:16:20 | 耗时: 206.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[78/100] local-003 (api-auth) [?]
+  Q: API 返回 401 TOKEN_EXPIRED，前端该怎么处理
+  开始: 13:13:09
+    [INIT] session=02eae6d7-f4b0-457f-8fa9-24c42bb70854 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 185151ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:16:28 | 耗时: 198.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[79/100] local-004 (redis-failover) [?]
+  Q: redis-cli SENTINEL get-master-addr-by-name 命令返回什么
+  开始: 13:13:21
+    [INIT] session=2e7b6c77-8676-48cc-a2dc-6bfb1e998bae model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 186032ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:16:40 | 耗时: 199.3s
+--------------------------------------------------------------------------------
+
+============================================================
+[80/100] local-005 (api-auth) [?]
+  Q: JWT RS256 签名验证流程是什么
+  开始: 13:13:39
+    [INIT] session=c8c9b25b-2dd5-4df7-bd84-7057fc74dcc4 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 194321ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:17:07 | 耗时: 207.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[81/100] local-006 (redis-failover) [?]
+  Q: 线上 Redis 突然大量写入失败，错误日志一直刷屏，应用都快挂了
+  开始: 13:14:51
+    [INIT] session=a35db78c-245f-4bb4-93b9-10222f547a48 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 179960ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:18:04 | 耗时: 193.2s
+--------------------------------------------------------------------------------
+
+============================================================
+[82/100] local-007 (k8s-crashloop) [?]
+  Q: 我的 pod 一直在 restart，已经重启了 50 多次了
+  开始: 13:16:20
+    [INIT] session=78ef2a38-2c14-4eb4-80c4-1b25a31e0e50 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 188100ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:19:41 | 耗时: 201.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[83/100] local-008 (api-auth) [?]
+  Q: 用户登录后 token 过一会就失效了，要重新登录很烦
+  开始: 13:16:28
+    [INIT] session=b3415702-ce0c-48c0-9b91-c96f0e1fce4f model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 183206ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:19:44 | 耗时: 196.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[84/100] local-009 (redis-failover) [?]
+  Q: How to manually trigger Redis Sentinel failover?
+  开始: 13:16:40
+    [INIT] session=1a418ea4-d7f0-42c4-b9a2-e38d9557376d model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 184107ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:19:57 | 耗时: 197.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[85/100] local-010 (k8s-crashloop) [?]
+  Q: Pod stuck in CrashLoopBackOff with exit code 137
+  开始: 13:17:07
+    [INIT] session=007e8732-2c3c-431f-9ffc-b154fc1db1aa model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 188883ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:20:29 | 耗时: 202.2s
+--------------------------------------------------------------------------------
+
+============================================================
+[86/100] local-011 (api-auth) [?]
+  Q: OAuth 2.0 authorization code flow 怎么实现
+  开始: 13:18:04
+    [INIT] session=b29d0647-0c1e-4b61-ae2e-da1a52bc0b38 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 189195ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:21:27 | 耗时: 202.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[87/100] local-012 (redis-failover) [?]
+  Q: Redis 主从切换后客户端怎么自动重连？
+  开始: 13:19:41
+    [INIT] session=cc7d5efe-02ea-4be2-aab6-d32aa5449ad4 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 184099ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:22:59 | 耗时: 197.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[88/100] local-013 (k8s-crashloop) [?]
+  Q: Container keeps getting killed, how to check resource limits?
+  开始: 13:19:44
+    [INIT] session=cf012737-5ba0-4c86-aa41-6640b27358db model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 186173ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:23:04 | 耗时: 199.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[89/100] local-014 (api-auth) [?]
+  Q: access token 和 refresh token 的区别是什么？
+  开始: 13:19:57
+    [INIT] session=73c815bb-9d9d-48e5-bb36-66e5d817c7a7 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 186361ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:23:17 | 耗时: 199.5s
+--------------------------------------------------------------------------------
+
+============================================================
+[90/100] local-015 (redis-failover) [?]
+  Q: Redis failover 后数据会丢失吗？怎么保证数据一致性？
+  开始: 13:20:29
+    [INIT] session=da3e5a85-3b97-4b92-a38a-d52060d3aaac model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 183643ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:23:46 | 耗时: 197.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[91/100] notfound-001 (notfound) [?]
+  Q: How to configure MongoDB sharding with mongos router?
+  开始: 13:21:27
+    [INIT] session=ab96bb66-2d59-4c83-821b-5e83889c0730 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 190750ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:24:51 | 耗时: 203.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[92/100] notfound-002 (notfound) [?]
+  Q: Kafka consumer group rebalancing 怎么优化？
+  开始: 13:22:59
+    [INIT] session=715991c7-7592-44af-8a70-ed285e2e0c01 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 188353ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:26:21 | 耗时: 201.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[93/100] notfound-003 (notfound) [?]
+  Q: How to set up Prometheus alerting rules for CPU usage?
+  开始: 13:23:04
+    [INIT] session=950a737f-54e2-4ae2-a2f8-c3f65edf2ea3 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 189363ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:26:27 | 耗时: 202.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[94/100] notfound-004 (notfound) [?]
+  Q: Elasticsearch index mapping 怎么设计？
+  开始: 13:23:17
+    [INIT] session=f66155bb-1a0a-4e1a-ad80-c3f7d543b312 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 184473ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:26:35 | 耗时: 197.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[95/100] notfound-005 (notfound) [?]
+  Q: How to configure Nginx reverse proxy with load balancing?
+  开始: 13:23:46
+    [INIT] session=442a88f9-5b76-48c6-810e-7d608cc2aee9 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 180222ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:27:00 | 耗时: 193.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[96/100] notfound-006 (notfound) [?]
+  Q: PostgreSQL VACUUM 和 ANALYZE 什么时候需要手动执行？
+  开始: 13:24:51
+    [INIT] session=27378265-c837-4b4e-9e4b-08630706530d model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 188866ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:28:13 | 耗时: 202.0s
+--------------------------------------------------------------------------------
+
+============================================================
+[97/100] notfound-007 (notfound) [?]
+  Q: How to deploy a Spring Boot application to AWS ECS?
+  开始: 13:26:21
+    [INIT] session=b6027a7c-efc6-4d96-9e10-58539e65d7db model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 191099ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:29:45 | 耗时: 204.4s
+--------------------------------------------------------------------------------
+
+============================================================
+[99/100] notfound-009 (notfound) [?]
+  Q: How to implement circuit breaker pattern with Hystrix?
+  开始: 13:26:35
+    [INIT] session=4a03c0aa-af30-4818-9cce-efd8923dde48 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 180406ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:29:48 | 耗时: 193.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[98/100] notfound-008 (notfound) [?]
+  Q: RabbitMQ dead letter queue 怎么配置？
+  开始: 13:26:27
+    [INIT] session=9312f63e-f91b-4b96-8238-79ae41e06447 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 189588ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:29:49 | 耗时: 202.8s
+--------------------------------------------------------------------------------
+
+============================================================
+[100/100] notfound-010 (notfound) [?]
+  Q: Terraform state management best practices for team collaboration
+  开始: 13:27:00
+    [INIT] session=6f223bc3-7046-43a1-887b-546da9d31348 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 429 已达到周费用限制 ($280)且加油包已用完
+    [RESULT] 37 chars | 1 turns | 189362ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 13:30:22 | 耗时: 202.7s
+--------------------------------------------------------------------------------
+
+================================================================================
+📊 总结: ✅0 ❌0 ⚠️100 / 100 (0.0%)
+⏱️  总耗时: 24304.8s | 平均: 24304.8s
+💰 总费用: $0.0000
+
+📈 按查询类型:
+  ❌ unknown: 0/100 (0%)
+
+📋 按 category:
+  ❌ api-auth: 0/5 (0%)
+  ❌ k8s-crashloop: 0/4 (0%)
+  ❌ llm-agent: 0/13 (0%)
+  ❌ llm-framework: 0/10 (0%)
+  ❌ llm-rag: 0/12 (0%)
+  ❌ notfound: 0/10 (0%)
+  ❌ redis-data-types: 0/10 (0%)
+  ❌ redis-failover: 0/6 (0%)
+  ❌ redis-ops: 0/15 (0%)
+  ❌ redis-so: 0/15 (0%)
+
+📈 按数据源:
+  ❌ 本地 docs/ (Grep/Glob/Read): 0/15 (0%)
+  ❌ 未收录 (应拒答): 0/10 (0%)
+  ❌ Qdrant 索引 (MCP hybrid_search): 0/75 (0%)
+
+📁 汇总: /home/shenzt/ws/knowledge-base-search/eval/agentic_rag_v5_20260219_120835.json
+📋 日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260219_120835.log
+📝 详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260219_120835_detail.jsonl

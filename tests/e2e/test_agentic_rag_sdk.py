@@ -70,6 +70,31 @@ USE_JUDGE = os.environ.get("USE_JUDGE", "0") == "1"
 EVAL_CONCURRENCY = int(os.environ.get("EVAL_CONCURRENCY", "1"))
 
 if USE_MCP:
+    # 不使用 setting_sources=["project"]，因为它会加载 .mcp.json 并覆盖 allowed_tools
+    # 改用 system_prompt 注入关键指令 + 手动配置 MCP server
+    SEARCH_SYSTEM_PROMPT = """你是一个知识库检索助手。用户会用 /search 命令查询知识库。
+
+知识库数据源（Qdrant 索引，2662 chunks）：
+- Redis 官方文档 (234 docs): Data Types, Management, Security, Optimization, Develop, Install
+- awesome-llm-apps (207 docs): RAG Tutorials, AI Agents, Chat with X, Multi-Agent, LLM Frameworks
+- 本地 docs/ (21 docs): 项目 runbook + API 文档
+- RAGBench techqa (245 docs): IBM 技术文档 QA
+- CRAG finance (121 docs): 金融领域 QA
+
+核心流程：搜索 → 评估 → 扩展 → 回答
+
+1. 初始检索：使用 hybrid_search 语义检索 + Grep 关键词搜索（可并行）
+2. 评估 chunk 充分性：chunk 是否包含具体步骤/命令/配置/代码？
+3. 扩展上下文：如果 chunk 不充分，用 Read(path) 读取完整文件
+4. 基于证据回答，必须带引用 [来源: docs/xxx.md]
+
+⚠️ Hard Grounding（最重要的规则）：
+- 你的回答必须 100% 基于检索到的文档内容，逐字逐句有据可查
+- 严禁用你自己的训练知识补充命令、配置、代码示例、参数说明、最佳实践
+- 如果文档中完全没有相关信息，只回答"❌ 未找到相关文档"
+- 宁可回答不完整，也不要编造任何细节
+- 回答语言跟随查询语言（中文问中文答，英文问英文答）
+"""
     BASE_OPTIONS = dict(
         allowed_tools=[
             "Read", "Grep", "Glob",
@@ -77,6 +102,7 @@ if USE_MCP:
             "mcp__knowledge-base__keyword_search",
             "mcp__knowledge-base__index_status",
         ],
+        disallowed_tools=["Bash", "Write", "Edit", "NotebookEdit", "Task"],
         mcp_servers={
             "knowledge-base": {
                 "command": str(PROJECT_ROOT / ".venv" / "bin" / "python"),
@@ -87,7 +113,7 @@ if USE_MCP:
                 },
             }
         },
-        setting_sources=["project"],
+        system_prompt=SEARCH_SYSTEM_PROMPT,
         permission_mode="bypassPermissions",
         cwd=str(PROJECT_ROOT),
         max_turns=15,
@@ -97,7 +123,8 @@ else:
     # 注意：不能用 setting_sources=["project"]，否则会加载 .mcp.json 启动 MCP server
     # 改用 system_prompt 注入 CLAUDE.md 和 search skill 的关键指令
     BASE_OPTIONS = dict(
-        allowed_tools=["Read", "Grep", "Glob", "Bash"],
+        allowed_tools=["Read", "Grep", "Glob"],
+        disallowed_tools=["Bash", "Write", "Edit", "NotebookEdit", "Task"],
         permission_mode="bypassPermissions",
         cwd=str(PROJECT_ROOT),
         max_turns=15,
@@ -363,7 +390,7 @@ async def run_single_case(i: int, tc: Dict, sem: asyncio.Semaphore,
         clog(f"  开始: {datetime.now().strftime('%H:%M:%S')}")
 
         # 每个用例独立 session，不复用
-        prompt = f"/search {tc['query']}" if USE_MCP else f"请在 docs/ 目录中检索并回答: {tc['query']}"
+        prompt = f"请检索知识库并回答: {tc['query']}"
 
         # run_query 内部的实时日志用 None（不写文件），靠 case_log 缓冲
         import io
