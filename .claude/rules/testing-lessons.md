@@ -101,6 +101,21 @@
 | CRAG | R2 | - | - | 429 | - | - | 周费用限额 $280 |
 | v5 | R12 | - | - | 429 | - | - | 周费用限额 $280 |
 
+#### GLM-5 via claude-code-router 评测（2026-02-19）
+
+| Dataset | Model | Gate | Faithfulness | Errors | Avg Turns | Avg Time | 备注 |
+|---------|-------|------|-------------|--------|-----------|----------|------|
+| RAGBench | Claude Sonnet | 48/50 (96%) | 0.47 | 0 | 5.1 | 440s | baseline |
+| RAGBench | GLM-5 | 50/50 (100%) | 0.54 | 0 | 8.2 | 610s | ✅ 更高 gate + faithfulness |
+
+GLM-5 vs Claude Sonnet 关键差异：
+- Gate: GLM-5 100% vs Claude 96% — GLM-5 更严格遵循 grounding 规则
+- Faithfulness: GLM-5 0.54 vs Claude 0.47 — GLM-5 回答更忠实于文档
+- Turns: GLM-5 8.2 vs Claude 5.1 — GLM-5 做更多轮检索，更彻底
+- Speed: GLM-5 610s vs Claude 440s — GLM-5 慢 ~40%（更多轮次 + API 延迟）
+- Answer: GLM-5 1533 chars vs Claude 1020 chars — GLM-5 回答更详细
+- Cost: GLM-5 ~$7.19 vs Claude $4.80（GLM-5 单价低但 token 用量多 ~1.6x）
+
 ### 评测经验教训
 
 ## 教训 6：eval_module 必须正确解析 MCP 工具结果
@@ -228,3 +243,33 @@
 - 同一个评测内的并发（EVAL_CONCURRENCY=5）是安全的，因为共享同一个 MCP server 进程
 - 如果需要跑多个 dataset，串行执行或确保日志文件名包含 dataset 标识
 - 注意 API 费用累积：5 并发 × 2 个 dataset = 10 个并发 session，容易触发费用限额
+
+## 教训 17：claude-code-router 模型替换 — GLM-5 vs Claude Sonnet Agent 能力对比
+
+**背景**：通过 claude-code-router 将 Agent SDK 的 Claude API 调用代理到 GLM-5（智谱 744B MoE），评测 RAGBench techqa 50 cases。
+
+**配置**：
+- Router: `ccr start`（本地代理 http://127.0.0.1:3456）
+- Provider: zhipu, api_base_url=https://open.bigmodel.cn/api/paas/v4/chat/completions
+- Transformer: `deepseek`（处理 reasoning_content）+ `tooluse`（优化 tool_choice）
+- 评测脚本: `USE_ROUTER=1` 设置 `ANTHROPIC_BASE_URL` 走 router
+
+**结果**：
+- GLM-5: 50/50 (100%) gate, faithfulness 0.54, 0 errors
+- Claude: 48/50 (96%) gate, faithfulness 0.47, 0 errors
+- GLM-5 在 gate pass 和 faithfulness 上都优于 Claude Sonnet
+
+**关键差异**：
+1. **工具调用策略**：GLM-5 平均 8.2 turns vs Claude 5.1 turns — GLM-5 更倾向于多轮检索确认
+2. **Grounding 遵循度**：GLM-5 更严格遵循 Hard Grounding 规则，不补充训练知识
+3. **速度**：GLM-5 610s/case vs Claude 440s/case — 慢 40%（更多轮次 + API 延迟）
+4. **回答详细度**：GLM-5 1533 chars vs Claude 1020 chars — 更详细但更忠实
+5. **路径幻觉**：GLM-5 偶尔在 Grep 中使用文档内容里的路径（如 `/Users/kenneth/...`），但能自我纠正
+6. **成本**：GLM-5 单价低（$1/$3.2 per 1M tokens vs Claude $3/$15），但 token 用量多 ~1.6x
+
+**规则**：
+- claude-code-router 可以无缝替换 Agent 模型，只需设置 `ANTHROPIC_BASE_URL`
+- GLM-5 适合需要高 faithfulness 的 RAG 场景（严格 grounding）
+- Claude Sonnet 适合需要快速响应的场景（更少 turns，更快）
+- 评测时 `USE_ROUTER=1` 不影响当前 Claude Code session（环境变量隔离）
+- Router config 在 `~/.claude-code-router/config.json`，不要提交到 git
