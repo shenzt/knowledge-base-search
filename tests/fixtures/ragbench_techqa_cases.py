@@ -50,7 +50,7 @@ RAGBENCH_TECHQA_CASES = [
       "Collector"
     ],
     "gold_answer": "Microsoft Edge is supported starting with IBM Content Collector 4.0.1 Fix Pack 2 according to the provided context.",
-    "gold_ragas_faithfulness": null
+    "gold_ragas_faithfulness": None
   },
   {
     "id": "ragbench-techqa-004",
@@ -66,7 +66,7 @@ RAGBENCH_TECHQA_CASES = [
       "provided"
     ],
     "gold_answer": "IBM Business Process Manager is not mentioned in the provided context.",
-    "gold_ragas_faithfulness": null
+    "gold_ragas_faithfulness": None
   },
   {
     "id": "ragbench-techqa-005",
@@ -290,7 +290,7 @@ RAGBENCH_TECHQA_CASES = [
       "information"
     ],
     "gold_answer": "Based on the context provided, there is no specific information regarding a security bulletin related to IBM WebSphere MQ being affected by a privilege escalation vulnerability (CVE-2017-1612). The context only discusses security bulletins related to vulnerabilities affecting IBM WebSphere Application Server (WAS) in different product configurations. \n\nTo get more information about a potential security bulletin related to IBM WebSphere MQ and CVE-2017-1612, you may need to refer directly to IBM's official security bulletins, notifications, or contact their support team for specific information on this topic.",
-    "gold_ragas_faithfulness": null
+    "gold_ragas_faithfulness": None
   },
   {
     "id": "ragbench-techqa-019",

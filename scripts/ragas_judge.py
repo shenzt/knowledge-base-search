@@ -23,7 +23,7 @@ def _get_ragas_llm():
     from ragas.llms import LangchainLLMWrapper
 
     provider = os.environ.get("JUDGE_PROVIDER", "openai")
-    model = os.environ.get("JUDGE_MODEL", "deepseek-reasoner")
+    model = os.environ.get("JUDGE_MODEL", "deepseek-chat")
     base_url = os.environ.get("JUDGE_BASE_URL", "https://api.deepseek.com")
     api_key = (os.environ.get("JUDGE_API_KEY")
                or os.environ.get("DEEPSEEK_API_KEY")
@@ -56,10 +56,11 @@ def _get_ragas_embeddings():
     """RAGAS answer_relevancy 需要 embedding model。
 
     默认用 OpenAI text-embedding-3-small。
-    如果没有 OPENAI_API_KEY，跳过 answer_relevancy。
+    如果没有有效的 OPENAI_API_KEY，跳过 answer_relevancy。
     """
-    api_key = os.environ.get("OPENAI_API_KEY", "")
-    if not api_key:
+    api_key = os.environ.get("RAGAS_OPENAI_API_KEY", "") or os.environ.get("OPENAI_API_KEY", "")
+    # 排除非 OpenAI key（如 Claude key cr_*, Anthropic key sk-ant-*）
+    if not api_key or api_key.startswith(("cr_", "sk-ant-")):
         return None
 
     from ragas.embeddings import LangchainEmbeddingsWrapper

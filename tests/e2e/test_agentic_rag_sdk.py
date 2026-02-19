@@ -6,6 +6,7 @@
 
 环境变量:
   EVAL_DATASET=v5|ragbench|crag|all  选择数据集（默认 v5）
+  EVAL_CONCURRENCY=N                 并发数（默认 1，建议 3-5）
 """
 
 import asyncio
@@ -13,6 +14,7 @@ import json
 import os
 import sys
 import time
+import threading
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -64,11 +66,13 @@ for _tc in TEST_CASES:
 USE_MCP = os.environ.get("USE_MCP", "0") == "1"
 # 是否启用 LLM-as-Judge（对 Gate 通过的用例做质量打分）
 USE_JUDGE = os.environ.get("USE_JUDGE", "0") == "1"
+# 并发数（默认 1 = 串行，建议 3-5）
+EVAL_CONCURRENCY = int(os.environ.get("EVAL_CONCURRENCY", "1"))
 
 if USE_MCP:
     BASE_OPTIONS = dict(
         allowed_tools=[
-            "Read", "Grep", "Glob", "Bash",
+            "Read", "Grep", "Glob",
             "mcp__knowledge-base__hybrid_search",
             "mcp__knowledge-base__keyword_search",
             "mcp__knowledge-base__index_status",
@@ -341,6 +345,144 @@ def evaluate(tc: Dict, result: Dict) -> Dict:
     return ev
 
 
+async def run_single_case(i: int, tc: Dict, sem: asyncio.Semaphore,
+                          results_slot: list, log_lock: threading.Lock,
+                          lf, df) -> None:
+    """执行单个测试用例（并发安全）。"""
+    async with sem:
+        case_log = []  # 缓冲日志，完成后一次性写入
+
+        def clog(msg):
+            case_log.append(msg)
+
+        clog(f"\n{'='*60}")
+        clog(f"[{i}/{len(TEST_CASES)}] {tc['id']} ({tc['category']}) [{tc.get('type', '?')}]")
+        clog(f"  Q: {tc['query']}")
+        if tc.get("note"):
+            clog(f"  💡 {tc['note']}")
+        clog(f"  开始: {datetime.now().strftime('%H:%M:%S')}")
+
+        # 每个用例独立 session，不复用
+        prompt = f"/search {tc['query']}" if USE_MCP else f"请在 docs/ 目录中检索并回答: {tc['query']}"
+
+        # run_query 内部的实时日志用 None（不写文件），靠 case_log 缓冲
+        import io
+        buf = io.StringIO()
+
+        class BufWriter:
+            def write(self, s): buf.write(s)
+            def flush(self): pass
+
+        result = await run_query(prompt, None, BufWriter())
+
+        # 追加 run_query 的详细日志
+        detail_lines = buf.getvalue()
+        if detail_lines:
+            case_log.append(detail_lines.rstrip())
+
+        elapsed = result.get("elapsed", 0)
+        ev = evaluate(tc, result)
+
+        if result["status"] == "error":
+            clog(f"  ❌ 错误: {result.get('error', '')[:80]}")
+            status = "error"
+        elif ev["passed"]:
+            ans_len = len(result.get("answer", ""))
+            quality = ev.get("quality", {})
+            tools = quality.get("tools_used", [])
+            cite = "引用✅" if quality.get("has_citation") else "引用❌"
+            correct_doc = quality.get("correct_doc")
+            doc_tag = "文档✅" if correct_doc else ("文档❌" if correct_doc is False else "")
+            ctx_count = quality.get("contexts_count", 0)
+            kw = quality.get("keywords", [])
+            clog(f"  ✅ 通过 | {ans_len}字符 | {elapsed:.1f}s | ${result.get('cost_usd', 0):.4f} | {cite} {doc_tag} | ctx:{ctx_count}")
+            if tools:
+                clog(f"  🔧 工具: {', '.join(tools)}")
+            if quality.get("retrieved_paths"):
+                clog(f"  📄 检索: {', '.join(quality['retrieved_paths'][:5])}")
+            if kw:
+                clog(f"  🔑 关键词: {', '.join(kw)}")
+            if quality.get("judge_score") is not None:
+                js = quality["judge_score"]
+                ff = quality.get("faithfulness", "?")
+                rr = quality.get("relevancy", "?")
+                clog(f"  🧑‍⚖️ Judge: score={js} faith={ff} rel={rr}")
+            status = "passed"
+        else:
+            clog(f"  ❌ 失败: {'; '.join(ev['reasons'])}")
+            status = "failed"
+
+        ans_preview = result.get("answer", "")[:500]
+        if ans_preview:
+            clog(f"  📝 答案: {ans_preview}{'...' if len(result.get('answer',''))>500 else ''}")
+        clog(f"  结束: {datetime.now().strftime('%H:%M:%S')} | 耗时: {elapsed:.1f}s")
+        clog("-" * 80)
+
+        # 构建结果
+        gate = ev.get("gate", {})
+        quality = ev.get("quality", {})
+        detail_record = {
+            "test_id": tc["id"],
+            "category": tc["category"],
+            "type": tc.get("type", "unknown"),
+            "source": tc.get("source", "unknown"),
+            "query": tc["query"],
+            "status": status,
+            "elapsed_seconds": elapsed,
+            "cost_usd": result.get("cost_usd", 0),
+            "num_turns": result.get("num_turns", 0),
+            "answer_length": len(result.get("answer", "")),
+            "answer": result.get("answer", ""),
+            "tools_used": quality.get("tools_used", []),
+            "retrieved_paths": quality.get("retrieved_paths", []),
+            "contexts_count": quality.get("contexts_count", 0),
+            "has_citation": quality.get("has_citation", False),
+            "correct_doc": quality.get("correct_doc"),
+            "matched_keywords": quality.get("keywords", []),
+            "gate_passed": gate.get("passed"),
+            "gate_checks": gate.get("checks", {}),
+            "failure_reasons": ev.get("reasons", []),
+            "judge_score": quality.get("judge_score"),
+            "faithfulness": quality.get("faithfulness"),
+            "relevancy": quality.get("relevancy"),
+            "judge": quality.get("judge"),
+            "messages": result.get("messages_log", []),
+        }
+
+        summary_record = {
+            "test_id": tc["id"], "category": tc["category"],
+            "type": tc.get("type", "unknown"),
+            "source": tc.get("source", "unknown"),
+            "query": tc["query"],
+            "status": status, "elapsed_seconds": elapsed,
+            "cost_usd": result.get("cost_usd", 0),
+            "num_turns": result.get("num_turns", 0),
+            "answer_length": len(result.get("answer", "")),
+            "tools_used": quality.get("tools_used", []),
+            "retrieved_paths": quality.get("retrieved_paths", []),
+            "contexts_count": quality.get("contexts_count", 0),
+            "has_citation": quality.get("has_citation", False),
+            "correct_doc": quality.get("correct_doc"),
+            "matched_keywords": quality.get("keywords", []),
+            "gate_passed": gate.get("passed"),
+            "failure_reasons": ev.get("reasons", []),
+            "answer_preview": result.get("answer", "")[:300],
+            "judge_score": quality.get("judge_score"),
+            "faithfulness": quality.get("faithfulness"),
+            "relevancy": quality.get("relevancy"),
+        }
+
+        # 线程安全写入日志和结果
+        with log_lock:
+            for line in case_log:
+                log(line, lf)
+            df.write(json.dumps(detail_record, ensure_ascii=False) + "\n")
+            df.flush()
+
+        # 存入对应 slot（保持顺序）
+        results_slot[i - 1] = summary_record
+
+
 async def main():
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     log_dir = PROJECT_ROOT / "eval" / "logs"
@@ -358,6 +500,7 @@ async def main():
         log("=" * 80, lf)
         log(f"用例: {len(TEST_CASES)} | 时间: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", lf)
         log(f"模式: {mode}", lf)
+        log(f"并发: {EVAL_CONCURRENCY}", lf)
         log(f"KB commit: {kb_commit_header}", lf)
         log(f"评估: eval_module (Gate 门禁 + 质量检查)", lf)
         log(f"策略: Claude 自主选择检索策略 (Grep/Glob/Read{' + MCP hybrid_search' if USE_MCP else ''})", lf)
@@ -365,127 +508,25 @@ async def main():
         log(f"详细: {detail_path}", lf)
         log("", lf)
 
-        results = []
-        passed = failed = errors = 0
-        total_time = total_cost = 0.0
-        # 不复用 session — 每个用例独立 session，确保 Agent 每次都执行工具调用
-        # 复用 session 会导致 Claude 从上下文记忆回答，跳过检索，extract_contexts() 为空
+        # 预分配结果 slot（保持顺序）
+        results_slot = [None] * len(TEST_CASES)
+        sem = asyncio.Semaphore(EVAL_CONCURRENCY)
+        log_lock = threading.Lock()
 
-        for i, tc in enumerate(TEST_CASES, 1):
-            log(f"\n{'='*60}", lf)
-            log(f"[{i}/{len(TEST_CASES)}] {tc['id']} ({tc['category']}) [{tc.get('type', '?')}]", lf)
-            log(f"  Q: {tc['query']}", lf)
-            if tc.get("note"):
-                log(f"  💡 {tc['note']}", lf)
-            if i == 1 and USE_MCP:
-                log(f"  ⏳ 首次查询，加载 MCP server (BGE-M3)...", lf)
-            log(f"  开始: {datetime.now().strftime('%H:%M:%S')}", lf)
+        # 并发执行所有用例
+        tasks = [
+            run_single_case(i, tc, sem, results_slot, log_lock, lf, df)
+            for i, tc in enumerate(TEST_CASES, 1)
+        ]
+        await asyncio.gather(*tasks)
 
-            # 如果有 MCP + skills，用 /search；否则直接提问
-            prompt = f"/search {tc['query']}" if USE_MCP else f"请在 docs/ 目录中检索并回答: {tc['query']}"
-            result = await run_query(prompt, None, lf)  # None = 每次新 session
-
-            elapsed = result.get("elapsed", 0)
-            total_time += elapsed
-            total_cost += result.get("cost_usd", 0)
-
-            ev = evaluate(tc, result)
-
-            if result["status"] == "error":
-                log(f"  ❌ 错误: {result.get('error', '')[:80]}", lf)
-                errors += 1
-                status = "error"
-            elif ev["passed"]:
-                ans_len = len(result.get("answer", ""))
-                quality = ev.get("quality", {})
-                tools = quality.get("tools_used", [])
-                cite = "引用✅" if quality.get("has_citation") else "引用❌"
-                correct_doc = quality.get("correct_doc")
-                doc_tag = "文档✅" if correct_doc else ("文档❌" if correct_doc is False else "")
-                ctx_count = quality.get("contexts_count", 0)
-                kw = quality.get("keywords", [])
-                log(f"  ✅ 通过 | {ans_len}字符 | {elapsed:.1f}s | ${result.get('cost_usd', 0):.4f} | {cite} {doc_tag} | ctx:{ctx_count}", lf)
-                if tools:
-                    log(f"  🔧 工具: {', '.join(tools)}", lf)
-                if quality.get("retrieved_paths"):
-                    log(f"  📄 检索: {', '.join(quality['retrieved_paths'][:5])}", lf)
-                if kw:
-                    log(f"  🔑 关键词: {', '.join(kw)}", lf)
-                if quality.get("judge_score") is not None:
-                    js = quality["judge_score"]
-                    ff = quality.get("faithfulness", "?")
-                    rr = quality.get("relevancy", "?")
-                    log(f"  🧑‍⚖️ Judge: score={js} faith={ff} rel={rr}", lf)
-                passed += 1
-                status = "passed"
-            else:
-                log(f"  ❌ 失败: {'; '.join(ev['reasons'])}", lf)
-                failed += 1
-                status = "failed"
-
-            # 输出答案预览（通过和失败都输出）
-            ans_preview = result.get("answer", "")[:500]
-            if ans_preview:
-                log(f"  📝 答案: {ans_preview}{'...' if len(result.get('answer',''))>500 else ''}", lf)
-
-            log(f"  结束: {datetime.now().strftime('%H:%M:%S')} | 耗时: {elapsed:.1f}s", lf)
-
-            # 写入详细 JSONL（每个 query 一行，包含完整消息日志）
-            gate = ev.get("gate", {})
-            quality = ev.get("quality", {})
-            detail_record = {
-                "test_id": tc["id"],
-                "category": tc["category"],
-                "type": tc.get("type", "unknown"),
-                "source": tc.get("source", "unknown"),
-                "query": tc["query"],
-                "status": status,
-                "elapsed_seconds": elapsed,
-                "cost_usd": result.get("cost_usd", 0),
-                "num_turns": result.get("num_turns", 0),
-                "answer_length": len(result.get("answer", "")),
-                "answer": result.get("answer", ""),
-                "tools_used": quality.get("tools_used", []),
-                "retrieved_paths": quality.get("retrieved_paths", []),
-                "contexts_count": quality.get("contexts_count", 0),
-                "has_citation": quality.get("has_citation", False),
-                "correct_doc": quality.get("correct_doc"),
-                "matched_keywords": quality.get("keywords", []),
-                "gate_passed": gate.get("passed"),
-                "gate_checks": gate.get("checks", {}),
-                "failure_reasons": ev.get("reasons", []),
-                "judge_score": quality.get("judge_score"),
-                "faithfulness": quality.get("faithfulness"),
-                "relevancy": quality.get("relevancy"),
-                "judge": quality.get("judge"),
-                "messages": result.get("messages_log", []),
-            }
-            df.write(json.dumps(detail_record, ensure_ascii=False) + "\n")
-            df.flush()
-
-            results.append({
-                "test_id": tc["id"], "category": tc["category"],
-                "type": tc.get("type", "unknown"),
-                "source": tc.get("source", "unknown"),
-                "query": tc["query"],
-                "status": status, "elapsed_seconds": elapsed,
-                "cost_usd": result.get("cost_usd", 0),
-                "num_turns": result.get("num_turns", 0),
-                "answer_length": len(result.get("answer", "")),
-                "tools_used": quality.get("tools_used", []),
-                "retrieved_paths": quality.get("retrieved_paths", []),
-                "contexts_count": quality.get("contexts_count", 0),
-                "has_citation": quality.get("has_citation", False),
-                "correct_doc": quality.get("correct_doc"),
-                "matched_keywords": quality.get("keywords", []),
-                "gate_passed": gate.get("passed"),
-                "failure_reasons": ev.get("reasons", []),
-                "answer_preview": result.get("answer", "")[:300],
-                "judge_score": quality.get("judge_score"),
-                "faithfulness": quality.get("faithfulness"),
-                "relevancy": quality.get("relevancy"),
-            })
-            log("-" * 80, lf)
+        # 收集结果
+        results = [r for r in results_slot if r is not None]
+        passed = sum(1 for r in results if r["status"] == "passed")
+        failed = sum(1 for r in results if r["status"] == "failed")
+        errors = sum(1 for r in results if r["status"] == "error")
+        total_time = sum(r["elapsed_seconds"] for r in results)
+        total_cost = sum(r["cost_usd"] for r in results)
 
         # 总结
         total = len(TEST_CASES)
@@ -496,8 +537,8 @@ async def main():
 
         # 按查询类型统计
         type_stats = {}
-        for i2, r in enumerate(results):
-            qtype = TEST_CASES[i2].get("type", "unknown")
+        for r in results:
+            qtype = r.get("type", "unknown")
             type_stats.setdefault(qtype, {"t": 0, "p": 0})
             type_stats[qtype]["t"] += 1
             if r["status"] == "passed": type_stats[qtype]["p"] += 1
@@ -532,8 +573,8 @@ async def main():
 
         # 按数据源统计
         source_stats = {}
-        for i2, r in enumerate(results):
-            src = TEST_CASES[i2].get("source", "unknown")
+        for r in results:
+            src = r.get("source", "unknown")
             source_stats.setdefault(src, {"t": 0, "p": 0})
             source_stats[src]["t"] += 1
             if r["status"] == "passed": source_stats[src]["p"] += 1
