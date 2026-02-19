@@ -107,6 +107,8 @@
 |---------|-------|------|-------------|--------|-----------|----------|------|
 | RAGBench | Claude Sonnet | 48/50 (96%) | 0.47 | 0 | 5.1 | 440s | baseline |
 | RAGBench | GLM-5 | 50/50 (100%) | 0.54 | 0 | 8.2 | 610s | ✅ 更高 gate + faithfulness |
+| CRAG | GLM-5 | 48/50 (96%) | 0.62 | 0 | 7.7 | 504s | 2 failures: 空答案 |
+| v5 | GLM-5 (partial) | 43/43 (100%) | 0.44 | 57 | 5.4 | - | 57 cases hit 429 余额不足 |
 
 GLM-5 vs Claude Sonnet 关键差异：
 - Gate: GLM-5 100% vs Claude 96% — GLM-5 更严格遵循 grounding 规则
