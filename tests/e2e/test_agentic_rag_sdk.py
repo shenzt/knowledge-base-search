@@ -128,10 +128,36 @@ if USE_MCP:
 
 核心流程：搜索 → 评估 → 扩展 → 回答
 
-1. 初始检索：使用 hybrid_search 语义检索 + Grep 关键词搜索（可并行）
-2. 评估 chunk 充分性：chunk 是否包含具体步骤/命令/配置/代码？
-3. 扩展上下文：如果 chunk 不充分，用 Read(path) 读取完整文件
-4. 基于证据回答，必须带引用 [来源: docs/xxx.md]
+⚠️ 检索策略（最重要 — 必须同时使用两种工具）：
+每次检索必须同时并行发起：
+  a) hybrid_search(query="...", top_k=5) — 语义检索，覆盖 Qdrant 全部索引
+  b) Grep(pattern="...", path="docs/runbook/") 或 Grep(pattern="...", path="docs/api/") — 关键词搜索本地文档
+两个工具互补：hybrid_search 找 Qdrant 索引中的文档，Grep 找本地 docs/ 下的文档。缺一不可。
+
+⚠️ Grep 目录选择规则（关键）：
+docs/ 目录下包含多个子目录，你必须根据问题类型选择正确的子目录：
+- Redis/K8s 运维问题 → Grep(path="docs/runbook/")
+- API/认证/OAuth 问题 → Grep(path="docs/api/")
+- 项目设计/架构问题 → Grep(path="docs/") （仅在上述子目录都不匹配时）
+- 严禁 Grep(path="docs/ragbench-techqa/") 或 Grep(path="docs/crag-finance/") — 这些是评测数据集，不是知识库
+- 严禁 Grep(path=".") — 会扫描整个仓库
+
+正确示例:
+  Grep(pattern="Sentinel failover", path="docs/runbook/")
+  Grep(pattern="OAuth JWT", path="docs/api/")
+错误示例:
+  Grep(pattern="Sentinel", path="docs/")  ← 会命中 ragbench/crag 噪声文件
+  Grep(pattern="Sentinel", path=".")  ← 扫描整个仓库
+
+⚠️ hybrid_search 返回路径的使用：
+hybrid_search 返回的 path 字段指向实际文档位置（如 ../my-agent-kb/docs/redis-docs/xxx.md）。
+- 用 Read(file_path=path) 读取完整文档
+- 如果想在同目录下 Grep 更多内容，从 path 中提取目录：如 path 为 "../my-agent-kb/docs/redis-docs/develop/data-types/streams.md"，则 Grep(path="../my-agent-kb/docs/redis-docs/develop/data-types/")
+
+评估与回答：
+1. 评估 chunk 充分性：chunk 是否包含具体步骤/命令/配置/代码？
+2. 扩展上下文：如果 chunk 不充分，用 Read(path) 读取完整文件
+3. 基于证据回答，必须带引用 [来源: docs/xxx.md]
 
 ⚠️ Hard Grounding（最重要的规则）：
 - 你的回答必须 100% 基于检索到的文档内容，逐字逐句有据可查
@@ -141,16 +167,15 @@ if USE_MCP:
 - 回答语言跟随查询语言（中文问中文答，英文问英文答）
 
 ⚠️ 工具使用约束（违反将导致评测失败）：
-- Grep 必须指定 path 参数为 "docs/"。正确: Grep(pattern="xxx", path="docs/")。错误: Grep(pattern="xxx", path=".") 或 Grep(pattern="xxx")（无 path）
-- Glob 必须指定 path 参数为 "docs/"。正确: Glob(pattern="**/*.md", path="docs/")
-- 严禁扫描以下目录: eval/、.claude/、.git/、scripts/、tests/、node_modules/
+- Grep/Glob 的 path 必须是具体子目录（docs/runbook/、docs/api/），不要用 docs/ 根目录
+- 严禁扫描: eval/、.claude/、.git/、scripts/、tests/、node_modules/、docs/ragbench-techqa/、docs/crag-finance/
 - Read 路径：只能使用 hybrid_search 返回的 path 字段或 Grep/Glob 命中的路径。严禁猜测绝对路径
-- Read 失败时：用 Glob(pattern="**/*.md", path="docs/") 搜索，不要编造路径
+- Read 失败时：用 Glob(pattern="**/*.md", path="docs/runbook/") 搜索，不要编造路径
 - 如果所有 Read 都失败：声明证据不足，不要假装读到了文档
 """
     BASE_OPTIONS = dict(
         allowed_tools=[
-            "Read", "Grep", "Glob",
+            "Read", "Grep", "Glob", "Skill",
             "mcp__knowledge-base__hybrid_search",
             "mcp__knowledge-base__keyword_search",
             "mcp__knowledge-base__index_status",

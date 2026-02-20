@@ -1,8 +1,8 @@
 ---
 name: search
-description: 从知识库检索文档并回答问题。Agent 自主选择最佳检索策略。
+description: 从知识库检索文档并回答问题。同时使用 hybrid_search 语义检索 + Grep 关键词搜索。
 argument-hint: <查询内容> [--scope runbook|api] [--top-k 5]
-allowed-tools: Read, Grep, Glob, Bash
+allowed-tools: Read, Grep, Glob, mcp__knowledge-base__hybrid_search, mcp__knowledge-base__keyword_search
 ---
 
 # 知识库检索 (Agentic Search)
@@ -12,23 +12,33 @@ allowed-tools: Read, Grep, Glob, Bash
 ## 环境约束
 
 - 当前工作目录：项目根目录（`/home/shenzt/ws/knowledge-base-search`）
-- Grep/Glob 搜索范围：**仅限** `docs/` 和 `tests/fixtures/kb-sources/` 目录
-- **严禁** Grep/Glob 扫描以下目录：`eval/`、`.claude/`、`.git/`、`.preprocess/`、`scripts/`、`node_modules/`
+- Grep/Glob 搜索范围：**仅限** `docs/runbook/`、`docs/api/`、`docs/guides/` 子目录
+- **严禁** Grep/Glob 扫描：`docs/ragbench-techqa/`、`docs/crag-finance/`、`eval/`、`.claude/`、`.git/`、`.preprocess/`、`scripts/`、`node_modules/`
 - Read 路径约束：**只能使用** hybrid_search/keyword_search 返回的 `path` 字段，或 Grep/Glob 命中的路径。**严禁猜测或捏造绝对路径**
 
 ## 核心流程：搜索 → 评估 → 扩展 → 回答
 
-### Step 1: 初始检索
+### Step 1: 初始检索（必须并行，1:1）
 
-根据查询特征选择工具（可并行）：
+**每次检索必须同时发起两个工具调用（并行）：**
 
-| 查询类型 | 工具 | top_k |
-|---------|------|-------|
-| 精确报错/命令/配置项 | `Grep` (path: `docs/`) | - |
-| 语义/概念/模糊描述 | `hybrid_search` | 5 |
-| 对比/区别/选型 | `hybrid_search` | 8-10 |
-| 操作指南/排障步骤 | `hybrid_search` + `Grep` (path: `docs/`) 并行 | 5 |
-| 同时有精确和语义成分 | **并行** Grep (path: `docs/`) + hybrid_search | 5 |
+```
+# 并行调用 — 两个必须同时发起
+hybrid_search(query="<用户问题>", top_k=5)     # 语义检索 Qdrant 索引
+Grep(pattern="<关键词>", path="docs/runbook/")  # 关键词搜索本地文档
+```
+
+| 问题类型 | hybrid_search | Grep path |
+|---------|--------------|-----------|
+| Redis 运维/故障 | ✅ | `docs/runbook/` |
+| API/认证/OAuth | ✅ | `docs/api/` |
+| K8s/容器问题 | ✅ | `docs/runbook/` |
+| LLM/AI Agent | ✅ | 无需 Grep（内容在 Qdrant 索引中） |
+| 其他 | ✅ | `docs/guides/` |
+
+**禁止**：先 Grep 再决定是否 hybrid_search（串行 fallback，低效）
+**禁止**：只用 Grep 不用 hybrid_search（会错过 Qdrant 索引中的大量文档）
+**禁止**：Grep(path="docs/") — 会命中 ragbench-techqa/crag-finance 噪声文件
 
 ### Step 2: 评估 chunk 充分性（关键步骤，不可跳过）
 
@@ -62,10 +72,11 @@ allowed-tools: Read, Grep, Glob, Bash
 - **本地 docs/ 结果** → 用 `Read` 读取 Grep 命中的文件
 - **首次结果不相关** → 换个查询词/角度重新 hybrid_search
 - **多个相关文档** → 读取多个 path，综合回答
+- **想在同目录下找更多** → 从 hybrid_search 返回的 path 提取目录，用 Grep 在该目录下搜索
 
 **路径规则**（严格执行）：
 - Read 的 file_path **必须**来自工具返回值（hybrid_search 的 path、Grep/Glob 的匹配路径）
-- 如果 Read 报 "File does not exist"，用 `Glob` 搜索文件名（如 `Glob(pattern="**/filename.md")`）
+- 如果 Read 报 "File does not exist"，用 `Glob` 搜索文件名（如 `Glob(pattern="**/filename.md", path="docs/")`）
 - **严禁**猜测绝对路径（如 `/Users/xxx/...`、`/home/xxx/...`）— 这会浪费 turn 且必定失败
 
 **Read 失败的处理**（evidence gate）：
@@ -89,8 +100,8 @@ allowed-tools: Read, Grep, Glob, Bash
 
 ## 检索范围
 
-- 本地 `docs/` 目录：Grep/Glob/Read 可达
-- Qdrant 索引：MCP hybrid_search / keyword_search 可达
+- 本地 `docs/runbook/`、`docs/api/`、`docs/guides/` 目录：Grep/Glob/Read 可达
+- Qdrant 索引：MCP hybrid_search / keyword_search 可达（覆盖 Redis、LLM Apps、RAGBench、CRAG 等全部文档）
 - 外部 KB 文档：通过 hybrid_search 返回的 path 字段，用 Read 可达
 
 ## 文档质量检查
@@ -106,7 +117,9 @@ allowed-tools: Read, Grep, Glob, Bash
 - ❌ 不要在没有检索的情况下凭记忆回答
 - ❌ 不要返回没有引用的答案
 - ❌ 不要先 Grep 再决定是否 hybrid_search（这是串行 fallback，低效）
+- ❌ 不要只用 Grep 不用 hybrid_search（大部分文档在 Qdrant 索引中，Grep 只能搜本地 docs/ 子目录）
+- ❌ 不要 Grep(path="docs/") — 会命中 ragbench-techqa/crag-finance 噪声文件，必须指定子目录
 - ❌ 不要因为"用户可能需要"就编造文档中没有的细节——承认不完整比编造更好
 - ❌ **不要猜测文件路径** — Read 的路径必须来自工具返回值，不要编造 `/Users/xxx/` 或 `/home/xxx/` 路径
-- ❌ **不要 Grep 扫描 eval/、.git/、scripts/ 目录** — 这些不是知识库内容，会污染结果并浪费时间
+- ❌ **不要 Grep 扫描 eval/、.git/、scripts/、docs/ragbench-techqa/、docs/crag-finance/ 目录** — 这些不是知识库内容
 - ❌ **不要在 Read 全部失败后仍声称"基于文档回答"** — 如果没有成功读取到任何文档，必须声明证据不足
