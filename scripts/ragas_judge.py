@@ -192,26 +192,98 @@ def ragas_judge(
         }
 
 
+def _unescape_sdk_str(s: str) -> str:
+    """清理从 SDK str() 序列化中提取的文本片段。"""
+    s = s.replace('\\\n', '\n')
+    s = s.replace('\\\\"', '"')
+    s = s.replace("\\\\'", "'")
+    s = s.replace('\\\\', '\\')
+    return s
+
+
 def _extract_context_texts(contexts: list[dict]) -> list[str]:
-    """从 extract_contexts() 的结构化输出中提取纯文本。"""
+    """从 extract_contexts() 的结构化输出中提取纯文本。
+
+    处理多种格式:
+    - MCP hybrid_search: {"result":"[{\"text\":\"...\"}]"} (双层 JSON, 经过 str() 转义)
+    - Grep: "Found N files\npath1\npath2" 或匹配内容
+    - Read: 文件全文内容
+    """
+    import json as _json
     texts = []
     for c in contexts[:10]:
-        # contexts 可能有不同结构
+        tool = c.get("tool", "")
         result = c.get("result", "")
-        if isinstance(result, str) and result:
-            # MCP hybrid_search 返回的是 JSON 字符串
-            try:
-                import json
-                parsed = json.loads(result)
-                if isinstance(parsed, list):
-                    for item in parsed[:5]:
-                        text = item.get("text", "")
-                        if text:
-                            texts.append(text[:2000])
-                    continue
-            except (json.JSONDecodeError, TypeError):
-                pass
+
+        # Read 结果优先处理（完整文档内容）
+        if tool == "Read" and result:
+            texts.append(str(result)[:5000])
+            continue
+
+        if not isinstance(result, str) or not result:
+            continue
+
+        # 尝试解析 MCP JSON 结果
+        if result.startswith("{"):
+            extracted = _extract_mcp_texts(result)
+            if extracted:
+                texts.extend(extracted[:5])
+                continue
+
+        # Grep/Glob 结果或其他纯文本
+        if result and not result.startswith("{"):
             texts.append(result[:2000])
-        elif c.get("tool") == "Read" and result:
-            texts.append(result[:3000])
+
     return texts
+
+
+def _extract_mcp_texts(result: str) -> list[str] | None:
+    """从 MCP 工具返回的 JSON 结果中提取 text 字段。
+
+    处理多层 JSON 转义（SDK str() 序列化导致）。
+    优先尝试 json.loads，失败时用 regex 提取。
+    """
+    import json as _json
+    import re
+
+    # 尝试 1: 直接 json.loads（无额外转义时）
+    try:
+        parsed = _json.loads(result)
+        items = None
+        if isinstance(parsed, list):
+            items = parsed
+        elif isinstance(parsed, dict) and "result" in parsed:
+            inner = parsed["result"]
+            if isinstance(inner, list):
+                items = inner
+            elif isinstance(inner, str):
+                try:
+                    items = _json.loads(inner)
+                except _json.JSONDecodeError:
+                    pass
+        if isinstance(items, list):
+            return [item.get("text", "")[:2000] for item in items
+                    if isinstance(item, dict) and item.get("text")]
+    except (_json.JSONDecodeError, TypeError):
+        pass
+
+    # 尝试 2: regex 提取 "text" 字段值（处理多层转义的 fallback）
+    # 匹配模式: \\"text\\": \\"<content>\\" 或变体
+    pattern = r'\\\\?"text\\\\?"\s*:\s*\\\\?"((?:[^"\\]|\\\\?.)*?)\\\\?"'
+    matches = re.findall(pattern, result)
+    if matches:
+        texts = []
+        for m in matches:
+            t = _unescape_sdk_str(m)
+            if len(t) > 20:  # 跳过太短的片段
+                texts.append(t[:2000])
+        if texts:
+            return texts
+
+    # 尝试 3: 更宽松的 regex
+    pattern2 = r'"text"[^:]*:\s*"([^"]{20,}?)"'
+    matches2 = re.findall(pattern2, result)
+    if matches2:
+        return [_unescape_sdk_str(m)[:2000] for m in matches2]
+
+    return None
