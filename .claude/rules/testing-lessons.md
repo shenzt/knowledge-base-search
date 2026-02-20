@@ -101,6 +101,24 @@
 | CRAG | R2 | - | - | 429 | - | - | 周费用限额 $280 |
 | v5 | R12 | - | - | 429 | - | - | 周费用限额 $280 |
 
+#### Sonnet R15 + RAGAS 修复评测（2026-02-20）
+
+| Run | Model | Gate | Faith (raw) | Faith (corrected) | Rel | Cost | 备注 |
+|-----|-------|------|-------------|-------------------|-----|------|------|
+| R15 | Sonnet | 89/100 (89%) | 0.44 | ~0.72 | 0.93 | $6.71 | Grep scope fix, RAGAS context extraction fix 后 |
+
+R15 失败分析 (10 fail):
+- llm-agent: 5/13 fail (62%) — awesome-llm-apps 检索不到特定 README
+- llm-framework: 2/10 fail — agentic_rag, code-reviewer 路径不匹配
+- api-auth: 2/5 fail — authentication.md 空结果（本地文档未检索到）
+- notfound: 1/10 fail — 幻觉
+
+RAGAS context extraction bug 修复:
+- 根因: MCP hybrid_search 结果经 SDK str() 多层序列化，json.loads() 失败，RAGAS 拿到空/raw-JSON context
+- 修复: regex fallback 提取 text 字段 + _unescape_sdk_str()
+- 影响: 32 case re-scoring avg faith 0.343 → 0.626 (+0.283, +82%)
+- 所有历史 RAGAS faithfulness 分数都偏低（R11-R14, RAGBench R3, CRAG R1 等）
+
 #### GLM-5 via claude-code-router 评测（2026-02-19）
 
 | Dataset | Model | Gate | Faithfulness | Errors | Avg Turns | Avg Time | 备注 |
@@ -310,3 +328,41 @@ GLM-5 vs Claude Sonnet 关键差异：
 - 至少成功 Read 到 1 个相关文件，才能声称"基于文档回答"
 - 如果只有 chunk 片段（未 Read 完整文档），回答中必须声明"基于检索片段，可能不完整"
 - Read 全部失败 → 要么重试（换路径/换查询），要么明确声明证据不足
+
+## 教训 21：RAGAS faithfulness 被 MCP 结果序列化 bug 严重低估
+
+**问题**：所有使用 RAGAS faithfulness 的评测（R11-R15, RAGBench R3, CRAG, GLM-5 全部）的 faithfulness 分数都被严重低估。根因：`ragas_judge.py` 的 `_extract_context_texts()` 无法解析 MCP hybrid_search 返回的多层转义 JSON，导致 RAGAS 拿到空 context 或 raw JSON 字符串而非实际文档文本。
+
+**根因**：MCP 工具结果经过 SDK `str()` 序列化，产生多层转义：`\\n`（反斜杠+换行）、`\\\\"`（双反斜杠+引号）。`json.loads()` 无法解析这种格式，fallback 到返回空 context。RAGAS 在没有 context 的情况下评估 faithfulness，自然给出极低分。
+
+**修复**：
+- 重写 `_extract_mcp_texts()`：先尝试 `json.loads()`，失败时用 regex 提取 `"text"` 字段值
+- 添加 `_unescape_sdk_str()`：清理 SDK 序列化产生的转义字符
+- 增加 `max_tokens` 1024 → 4096：修复 `LLMDidNotFinishException`
+
+**影响**：32 case re-scoring 结果：
+- 平均 faithfulness: 0.343 → 0.626 (+0.283, +82%)
+- 最大改善: redis-ops-002 0.188 → 0.844 (+0.656)
+- 2 个 NaN（max_tokens 不足，已修复）
+- 2 个轻微下降（噪声范围内）
+
+**规则**：
+- 修改 RAGAS judge 后，必须用已有 detail.jsonl 做 re-scoring 验证
+- MCP 工具结果的序列化格式不稳定，context 提取必须有 regex fallback
+- 评测 faithfulness 异常低时，先检查 context 提取是否正常，再怀疑 Agent 质量
+
+## 教训 22：Grep scope 约束必须用显式参数示例
+
+**问题**：Sonnet R15 之前的评测中，system prompt 只写了"仅限 docs/ 目录"，但 Sonnet 仍然用 `Grep(path=".")` 扫描整个仓库（51/147 次调用），导致搜到 eval 日志、test fixtures 等非知识库内容，context 爆炸。
+
+**修复**：在 system prompt 中用显式正确/错误示例：
+```
+正确: Grep(pattern="xxx", path="docs/")
+错误: Grep(pattern="xxx", path=".") 或 Grep(pattern="xxx")（无 path）
+```
+
+**效果**：R15 中 101/107 Grep 调用使用 `path: "docs/"`，0 次 `path: "."`。
+
+**规则**：
+- 工具使用约束必须给出具体的正确/错误参数示例，不能只用自然语言描述
+- Qwen 3.5 能遵循模糊指令（0 次违规），但 Sonnet 需要显式示例
