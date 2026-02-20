@@ -138,8 +138,39 @@ Qwen 3.5 vs Sonnet R15 按 category 对比:
 - Qwen 在 Redis 类别大幅落后（ops 73% vs 100%, so 67% vs 100%）
 - Qwen 在 notfound (100%) 和 api-auth (100%) 上更好
 - Qwen 的 Grep 搜索返回大量 ragbench/crag 文件，污染了检索结果
-- api-auth: 2/5 fail — authentication.md 空结果（本地文档未检索到）
-- notfound: 1/10 fail — 幻觉
+
+#### GLM-5 R16 via claude-code-router 评测（2026-02-20）
+
+| Run | Model | Gate | Faithfulness | Relevancy | Errors | Cost | Avg Time | 备注 |
+|-----|-------|------|-------------|-----------|--------|------|----------|------|
+| R16 | GLM-5 | 55/100 (55%) | 0.77 | 0.86 | 15 | $28.73 | 497s | 最差 gate，最贵 |
+
+GLM-5 R16 按 category: redis-ops 2/15 (13%), llm-rag 4/12 (33%), llm-agent 5/13 (38%)
+
+#### DeepSeek V3 via claude-code-router 评测（2026-02-20）
+
+| Run | Model | Gate | Faithfulness | Errors | 备注 |
+|-----|-------|------|-------------|--------|------|
+| R1 (partial 24/100) | DeepSeek V3 | 11/21 (52%) | 0.86 | 0 | 评测中止：sessions stuck，Skill("search") 幻觉 |
+
+DeepSeek 问题: Agent 反复调用不存在的 `Skill({"skill": "search"})` 导致 turn 浪费，单 case 耗时 20+ min，24 sessions stuck。
+
+#### 四模型对比总结（2026-02-20，v5 100 cases，RAGAS fix 后）
+
+| Model | Gate | Faithfulness | Relevancy | Errors | Cost | Avg Time |
+|-------|------|-------------|-----------|--------|------|----------|
+| Claude Sonnet | 89/100 (89%) | ~0.72 | 0.93 | 1 | $6.71 | 347s |
+| Qwen 3.5 Plus | 74/100 (74%) | 0.80 | 0.80 | 1 | ~$0 | 295s |
+| GLM-5 | 55/100 (55%) | 0.77 | 0.86 | 15 | $28.73 | 497s |
+| DeepSeek V3 | ~52% (partial) | 0.86 | - | stuck | - | 20min+ |
+
+结论:
+- Sonnet 是最佳 Agent: gate 89% 大幅领先，检索能力最强，成本合理
+- 非 Sonnet 模型的共同问题: Grep 搜索 docs/ 返回大量 ragbench/crag 噪声文件，hybrid_search 利用不充分
+- Faithfulness 排序: DeepSeek (0.86) > Qwen (0.80) > GLM-5 (0.77) > Sonnet (0.72) — 但 Sonnet 的 0.72 是 corrected estimate
+- 成本效率: Qwen 最优（免费 + 74% gate），Sonnet 性价比最高（$6.71 + 89% gate）
+- GLM-5 全面落后: gate 最低、cost 最高、errors 最多
+- DeepSeek 不适合 Agent 场景: 不理解工具边界，反复调用不存在的 Skill
 
 RAGAS context extraction bug 修复:
 - 根因: MCP hybrid_search 结果经 SDK str() 多层序列化，json.loads() 失败，RAGAS 拿到空/raw-JSON context
