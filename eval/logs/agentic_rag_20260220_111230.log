@@ -1,0 +1,25 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 100 | 时间: 2026-02-20 11:12:30
+模式: MCP + Grep/Glob/Read
+模型: Claude (direct)
+并发: 5
+KB commit: 1c10bd0
+评估: eval_module (Gate 门禁 + 质量检查)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read + MCP hybrid_search)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260220_111230.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260220_111230_detail.jsonl
+
+
+============================================================
+[4/100] redis-dt-004 (redis-data-types) [?]
+  Q: When should I use Redis Hashes vs JSON?
+  开始: 11:12:30
+    [INIT] session=366eea29-a150-4eba-8735-d8b44192b9c9 model=claude-sonnet-4-5-20250929
+    [THINK] I'll search the knowledge base for information about Redis Hashes vs JSON.
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis Hashes vs JSON comparison when to use", "top_k": 10})
+    [TOOL] Grep({"-i": true, "output_mode": "files_with_matches", "path": ".", "pattern": "(hash|hashes).*(json|JSON)|JSON.*(hash|hashes)"})
+  ❌ 失败: 无检索结果; 未检索到期望文档 ['hashes.md', 'compare-data-types.md', 'json'] (实际: [])
+  结束: 11:21:04 | 耗时: 514.6s
+--------------------------------------------------------------------------------

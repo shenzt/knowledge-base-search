@@ -69,15 +69,50 @@ USE_JUDGE = os.environ.get("USE_JUDGE", "0") == "1"
 # 并发数（默认 1 = 串行，建议 3-5）
 EVAL_CONCURRENCY = int(os.environ.get("EVAL_CONCURRENCY", "1"))
 # Router 模式：通过 claude-code-router 代理到其他模型（如 GLM-5）
-# 用法: USE_ROUTER=1 （需要先 ccr start 启动 router）
+# 用法: USE_ROUTER=1 ROUTER_MODEL=glm-5 （需要先 ccr start 启动 router）
+# 支持模型: glm-5, qwen3.5-plus, deepseek-chat
 USE_ROUTER = os.environ.get("USE_ROUTER", "0") == "1"
 ROUTER_URL = os.environ.get("ROUTER_URL", "http://127.0.0.1:3456")
+ROUTER_MODEL = os.environ.get("ROUTER_MODEL", "")  # 空=使用 router 默认配置
+
+
+def _switch_router_model(model_name: str):
+    """动态切换 router 默认模型（修改 config.json + restart）。"""
+    import json as _json
+    config_path = os.path.expanduser("~/.claude-code-router/config.json")
+    try:
+        with open(config_path) as f:
+            config = _json.load(f)
+        # 找到包含该模型的 provider
+        provider_name = None
+        for p in config.get("Providers", []):
+            if model_name in p.get("models", []):
+                provider_name = p["name"]
+                break
+        if not provider_name:
+            print(f"⚠️ 模型 {model_name} 未在 router config 中找到，跳过切换")
+            return
+        route = f"{provider_name},{model_name}"
+        config["Router"]["default"] = route
+        config["Router"]["think"] = route
+        with open(config_path, "w") as f:
+            _json.dump(config, f, indent=2)
+        # Restart router
+        os.system("ccr restart > /dev/null 2>&1")
+        import time; time.sleep(3)
+        print(f"✅ Router 已切换到 {route}")
+    except Exception as e:
+        print(f"⚠️ Router 切换失败: {e}")
+
 
 if USE_ROUTER:
     # 设置环境变量让 Agent SDK 走 router 代理
     os.environ["ANTHROPIC_BASE_URL"] = ROUTER_URL
     os.environ["ANTHROPIC_AUTH_TOKEN"] = os.environ.get("ANTHROPIC_AUTH_TOKEN", "test")
     os.environ.setdefault("DISABLE_COST_WARNINGS", "true")
+    # 如果指定了模型，动态更新 router config
+    if ROUTER_MODEL:
+        _switch_router_model(ROUTER_MODEL)
 
 if USE_MCP:
     # 不使用 setting_sources=["project"]，因为它会加载 .mcp.json 并覆盖 allowed_tools
@@ -531,7 +566,7 @@ async def main():
          open(detail_path, "w", encoding="utf-8") as df:
 
         mode = "MCP + Grep/Glob/Read" if USE_MCP else "Grep/Glob/Read (无 MCP)"
-        model_info = f"via router → {ROUTER_URL}" if USE_ROUTER else "Claude (direct)"
+        model_info = f"via router → {ROUTER_MODEL or 'default'} ({ROUTER_URL})" if USE_ROUTER else "Claude (direct)"
         kb_commit_header = get_kb_commit()
         log("=" * 80, lf)
         log(f"🤖 Agentic RAG 测试 (Agent SDK)", lf)
@@ -682,7 +717,7 @@ async def main():
                 "total_time": total_time, "total_cost": total_cost,
                 "kb_commit": kb_commit,
                 "eval_module": "eval_module.py (gate + quality + judge)",
-                "model": f"router:{ROUTER_URL}" if USE_ROUTER else "claude-sonnet",
+                "model": ROUTER_MODEL if USE_ROUTER and ROUTER_MODEL else ("router:default" if USE_ROUTER else "claude-sonnet"),
                 "dataset": EVAL_DATASET,
                 "category_stats": {c: {"total": s["t"], "passed": s["p"]} for c, s in cats.items()},
                 "source_stats": {s: {"total": v["t"], "passed": v["p"]} for s, v in source_stats.items()},
