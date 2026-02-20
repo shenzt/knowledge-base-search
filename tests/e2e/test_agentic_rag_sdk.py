@@ -140,10 +140,12 @@ if USE_MCP:
 - 宁可回答不完整，也不要编造任何细节
 - 回答语言跟随查询语言（中文问中文答，英文问英文答）
 
-⚠️ 工具使用约束（必须遵守）：
-- Grep/Glob 搜索范围：仅限 docs/ 目录。严禁扫描 eval/、.claude/、.git/、scripts/、tests/ 目录
+⚠️ 工具使用约束（违反将导致评测失败）：
+- Grep 必须指定 path 参数为 "docs/"。正确: Grep(pattern="xxx", path="docs/")。错误: Grep(pattern="xxx", path=".") 或 Grep(pattern="xxx")（无 path）
+- Glob 必须指定 path 参数为 "docs/"。正确: Glob(pattern="**/*.md", path="docs/")
+- 严禁扫描以下目录: eval/、.claude/、.git/、scripts/、tests/、node_modules/
 - Read 路径：只能使用 hybrid_search 返回的 path 字段或 Grep/Glob 命中的路径。严禁猜测绝对路径
-- Read 失败时：用 Glob(pattern="**/filename.md") 搜索文件名，不要编造路径
+- Read 失败时：用 Glob(pattern="**/*.md", path="docs/") 搜索，不要编造路径
 - 如果所有 Read 都失败：声明证据不足，不要假装读到了文档
 """
     BASE_OPTIONS = dict(
