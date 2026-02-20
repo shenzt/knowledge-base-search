@@ -110,6 +110,34 @@
 R15 失败分析 (10 fail):
 - llm-agent: 5/13 fail (62%) — awesome-llm-apps 检索不到特定 README
 - llm-framework: 2/10 fail — agentic_rag, code-reviewer 路径不匹配
+
+#### Qwen 3.5 Plus via claude-code-router 评测（2026-02-20）
+
+| Run | Model | Gate | Faithfulness | Relevancy | Cost | Avg Time | 备注 |
+|-----|-------|------|-------------|-----------|------|----------|------|
+| R1 | Qwen 3.5 Plus | 74/100 (74%) | 0.80 | 0.80 | ~$0 | 294.5s | RAGAS fix 后，corrected faithfulness |
+
+Qwen 3.5 vs Sonnet R15 按 category 对比:
+
+| Category | Qwen 3.5 | Sonnet R15 | 差异 |
+|----------|----------|------------|------|
+| api-auth | 5/5 (100%) | 3/5 (60%) | Qwen +40% |
+| k8s-crashloop | 3/4 (75%) | 4/4 (100%) | Sonnet +25% |
+| llm-agent | 8/13 (62%) | 8/13 (62%) | 持平 |
+| llm-framework | 5/10 (50%) | 8/10 (80%) | Sonnet +30% |
+| llm-rag | 8/12 (67%) | 11/12 (92%) | Sonnet +25% |
+| notfound | 10/10 (100%) | 9/10 (90%) | Qwen +10% |
+| redis-data-types | 9/10 (90%) | 10/10 (100%) | Sonnet +10% |
+| redis-failover | 5/6 (83%) | 6/6 (100%) | Sonnet +17% |
+| redis-ops | 11/15 (73%) | 15/15 (100%) | Sonnet +27% |
+| redis-so | 10/15 (67%) | 15/15 (100%) | Sonnet +33% |
+
+关键发现:
+- Sonnet gate 89% vs Qwen 74% — Sonnet 在检索命中率上大幅领先
+- Qwen faithfulness 0.80 vs Sonnet ~0.72 — Qwen 回答更忠实于文档
+- Qwen 在 Redis 类别大幅落后（ops 73% vs 100%, so 67% vs 100%）
+- Qwen 在 notfound (100%) 和 api-auth (100%) 上更好
+- Qwen 的 Grep 搜索返回大量 ragbench/crag 文件，污染了检索结果
 - api-auth: 2/5 fail — authentication.md 空结果（本地文档未检索到）
 - notfound: 1/10 fail — 幻觉
 
