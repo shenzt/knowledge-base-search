@@ -36,7 +36,7 @@ def _get_ragas_llm():
             model=model,
             anthropic_api_key=anthropic_key,
             temperature=0,
-            max_tokens=1024,
+            max_tokens=4096,
         )
     else:
         # OpenAI-compatible (DeepSeek, GLM, etc.)
@@ -46,7 +46,7 @@ def _get_ragas_llm():
             base_url=base_url,
             api_key=api_key or "dummy",
             temperature=0,
-            max_tokens=1024,
+            max_tokens=4096,
         )
 
     return LangchainLLMWrapper(chat)
