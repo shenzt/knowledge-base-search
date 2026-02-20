@@ -110,6 +110,7 @@
 | CRAG | GLM-5 | 48/50 (96%) | 0.62 | 0 | 7.7 | 504s | 2 failures: 空答案 |
 | v5 | GLM-5 (partial) | 43/43 (100%) | 0.44 | 57 | 5.4 | - | 57 cases hit 429 余额不足 |
 | v5 | GLM-5 R13 | 88/99 (89%) | 0.49 | 2 | - | - | 1 case stuck, 9 fail (llm-fw 50%, redis-failover 50%) |
+| v5 | GLM-5 R14 | 93/98 (95%) | 0.49 | 2 | - | - | llm-fw 100%, notfound 100%, 2 stuck |
 
 GLM-5 vs Claude Sonnet 关键差异：
 - Gate: GLM-5 100% vs Claude 96% — GLM-5 更严格遵循 grounding 规则
@@ -276,3 +277,36 @@ GLM-5 vs Claude Sonnet 关键差异：
 - Claude Sonnet 适合需要快速响应的场景（更少 turns，更快）
 - 评测时 `USE_ROUTER=1` 不影响当前 Claude Code session（环境变量隔离）
 - Router config 在 `~/.claude-code-router/config.json`，不要提交到 git
+
+## 教训 18：Grep 搜索污染 — eval 日志被当作知识库内容
+
+**问题**：Agent 用 Grep 搜索关键词时，把 `eval/logs/` 下的评测日志也搜出来了（Found 137 files）。日志文件极大，Agent 尝试 Read 这些文件导致 context 爆炸和耗时暴增（单 case 1027s/17min）。Agent 甚至在回答中说"仅在 eval 日志中提及，非文档内容"。
+
+**修复**：在 search SKILL.md 中明确限制 Grep/Glob 搜索范围为 `docs/` 和 `tests/fixtures/kb-sources/`，严禁扫描 `eval/`、`.claude/`、`.git/`、`.preprocess/`、`scripts/`。
+
+**规则**：
+- Grep 必须指定 `path` 参数，不要全仓库扫描
+- 评测日志、脚本代码、git 历史不是知识库内容
+- 如果 Grep 返回 >50 个文件，说明 scope 太大，需要缩小
+
+## 教训 19：路径幻觉 — Agent 编造不存在的绝对路径
+
+**问题**：Agent 频繁编造绝对路径调用 Read（如 `/Users/junwei/...`、`/Users/huangmpaa/...`、`/mnt/data/...`），这些路径来自预训练数据中其他开发者的机器。每次失败浪费一个 tool call turn + ~$0.5。
+
+**修复**：在 search SKILL.md 中增加硬约束：Read 的 file_path 必须来自工具返回值（hybrid_search 的 path、Grep/Glob 的匹配路径），严禁猜测。Read 失败时用 Glob 搜索文件名。
+
+**规则**：
+- Read 路径只能来自：hybrid_search 返回的 path、Grep 命中的路径、Glob 匹配的路径
+- 严禁从文档内容中提取路径去 Read（文档里的路径是示例，不是本机路径）
+- Read 失败 → Glob 搜索文件名 → 再 Read，不要猜测其他路径
+
+## 教训 20：Read 失败后强行作答 — evidence gate 缺失
+
+**问题**：Agent 在 Read 失败、Glob 也找不到文件的情况下，仍然用 hybrid_search 返回的 chunk 片段拼凑答案并声称"Based on the retrieved documents..."。这导致 faithfulness 丢分。
+
+**修复**：在 search SKILL.md 中增加 evidence gate：如果核心 Read 操作全部失败，必须声明证据不足，不能假装读到了完整文档。
+
+**规则**：
+- 至少成功 Read 到 1 个相关文件，才能声称"基于文档回答"
+- 如果只有 chunk 片段（未 Read 完整文档），回答中必须声明"基于检索片段，可能不完整"
+- Read 全部失败 → 要么重试（换路径/换查询），要么明确声明证据不足
