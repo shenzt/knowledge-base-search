@@ -31,16 +31,49 @@ def html_to_markdown(html: str, max_len: int = 5000) -> str:
         # Fallback: 简单去标签
         text = re.sub(r'<[^>]+>', '', html)
 
-    # 清理
+    text = _clean_markdown(text, max_len)
+    return text
+
+
+def _clean_markdown(text: str, max_len: int = 5000) -> str:
+    """清理 Markdown 中残留的 JS/CSS/HTML 垃圾。"""
+    # 去除残留 JS 代码块
+    text = re.sub(r'```(?:javascript|js)?\n.*?```', '', text, flags=re.DOTALL)
+    # 去除内联 JS（window.xxx, function(), var xxx =, gtag, dataLayer）
+    text = re.sub(r'^.*(?:window\.\w+|function\s*\(|var\s+\w+\s*=|gtag\(|dataLayer|Munchkin|\.init\().*$',
+                  '', text, flags=re.MULTILINE)
+    # 去除 CSS 片段
+    text = re.sub(r'^.*(?:\.css\{|@media\s|@font-face|@keyframes|@import).*$',
+                  '', text, flags=re.MULTILINE)
+    # 去除 SVG/xmlns
+    text = re.sub(r'<svg[^>]*>.*?</svg>', '', text, flags=re.DOTALL)
+    text = re.sub(r'<[^>]*xmlns[^>]*>.*?</[^>]*>', '', text, flags=re.DOTALL)
+    # 去除 HTML 标签残留
+    text = re.sub(r'<(?:div|span|img|input|button|form|iframe|link|meta)[^>]*/?>', '', text)
+    # 去除空链接
+    text = re.sub(r'\[([^\]]*)\]\(\s*\)', r'\1', text)
+    # 去除 cookie/consent 段落
+    text = re.sub(r'^.*(?:cookie|consent|I Agree|Terms and Conditions|Skip to).*$',
+                  '', text, flags=re.MULTILINE | re.IGNORECASE)
+    # 清理多余空行
     text = re.sub(r'\n{3,}', '\n\n', text.strip())
     text = re.sub(r' +\n', '\n', text)
     text = re.sub(r'[ \t]{4,}', '  ', text)
-    # 去除空链接
-    text = re.sub(r'\[([^\]]*)\]\(\s*\)', r'\1', text)
 
     if len(text) > max_len:
         text = text[:max_len] + "\n\n...(truncated)"
     return text
+
+
+def _is_garbage(content: str) -> bool:
+    """检测内容是否主要是 JS/CSS 垃圾。"""
+    garbage_patterns = [
+        r'window\.\w+\s*=', r'function\s*\(', r'var\s+\w+\s*=',
+        r'\.css\{', r'@media\s', r'<svg', r'xmlns',
+        r'gtag\(', r'dataLayer', r'Munchkin',
+    ]
+    matches = sum(1 for p in garbage_patterns if re.search(p, content))
+    return matches >= 2
 
 
 def main():
@@ -88,12 +121,15 @@ def main():
             snippet = sr.get("page_snippet", "")
             html = sr.get("page_result", "")
 
-            # 优先用 HTML 转 Markdown，太大则只用 snippet
+            # 优先用 snippet（干净），HTML 仅在 snippet 不足时使用
+            content = ""
             if html and len(html) < 200000:
-                content = html_to_markdown(html, max_len=5000)
-            elif snippet:
+                md_content = html_to_markdown(html, max_len=5000)
+                if not _is_garbage(md_content) and len(md_content) > 100:
+                    content = md_content
+            if not content and snippet:
                 content = f"# {page_name}\n\n{snippet}"
-            else:
+            if not content:
                 continue
 
             if len(content) < 30:

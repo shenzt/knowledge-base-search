@@ -7,8 +7,6 @@ tags: [crag, finance]
 confidence: medium
 ---
 
-window.digitalData = {"pageInstanceID":"production:home:market-activity:nasdaq-52-week-hi-low","page":{"pageInfo":{"author":null,"breadcrumbs":["home","market-activity","nasdaq-52-week-hi-low"],"destinationURL":"https:\/\/www.nasdaq.com\/market-activity\/nasdaq-52-week-hi-low","entryURL":null,"lang":"en","onsiteSearchResults":null,"onsiteSearchTerm":null,"pageID":"home:market-activity:nasdaq-52-week-hi-low","pageName":"nasdaq-52-week-hi-low","pagePathLevel1":"market-activity","pagePathLevel2":"market-activity:nasdaq-52-week-hi-low","pagePathLevel3":null,"pagePathLevel4":null,"pagePathLevel5":null,"publisher":null,"articleTitle":null,"publisherTimestamp":null,"referringURL":null,"sysEnv":null,"timeStamp":1709130692,"refreshDisable":false,"disableVideoAds":false,"customPageName":null,"sponsoredContent":false,"nativeRefreshDisable":[],"platform":"rrp","user\_potential\_nplus":false,"user\_id":0,"user\_subscription\_status":"anonymous"},"category":{"eventType":null,"pageType":"market-activity-landing-page","videoType":null,"storyType":null,"primaryCategory":"market-activity","subCategory":null},"attributes":{"adDisplay":false,"assetClass":null,"businessUnit":null,"campaignParameters":null,"industry":null,"quoteSymbol":null,"region":null,"sponsored":false,"topic":null,"audience":null,"glossaryTerm":null},"additionalAttributes":{"pageType":"market-activity-landing-page","quoteSymbolList":null,"assetClass":null,"primaryTopic":null,"additionalTopics":null,"topicsList":[]}},"user":[{"segment":{"loginStatus":"guest","registrationStatus":"anonymous","cookieOptIn":true,"termsOptIn":false,"offersOptIn":false}}]};
-
 {
 "@context": "https://schema.org",
 "@graph": [
@@ -64,9 +62,8 @@ window.digitalData = {"pageInstanceID":"production:home:market-activity:nasdaq-5
 ]
 }
 
-(function () {
 function loadScript(tagSrc,client) {
-var scriptTag = document.createElement('script'),
+
 placeTag = document.getElementsByTagName("script")[0];
 scriptTag.async = true;
 scriptTag.type = "text/javascript";
@@ -76,13 +73,10 @@ scriptTag.setAttribute('data-ad-client', client);
 }
 placeTag.parentNode.insertBefore(scriptTag, placeTag);
 }
-var smartSrc = "https://ad.wsod.com/site/2caa62b3a3a0755e2cda9deea9070934/0.0.async/";
-var autoSrc = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js";
-var client = "ca-pub-1861191755926748";
+
 // Load the Smart Targets script
 loadScript(smartSrc,null);
-if (window.digitalData.page.category.pageType != 'article-page') {
-setTimeout(function () {
+
 if (typeof drupalSettings != "undefined") {
 const nplus = drupalSettings.user\_info.user\_nasdaq\_plus;
 if (!nplus) {
@@ -96,24 +90,20 @@ loadScript(autoSrc,client);
 
 // Initialize the prebid variables.
 // Initialize the google variables.
-var googletag = googletag || {};
+
 googletag.cmd = googletag.cmd || [];
 // Add a place to store the slot name variable.
 googletag.slots = googletag.slots || {};
 // Add a place to store slots that are queued/observed
 // These are slots that we already stored but waiting to be fetched
 googletag.slotsQueued = googletag.slotsQueued || {};
-window.adsList = window.adsList || [];
 
 //Load the APS JavaScript Library
-!function(a9,a,p,s,t,A,g){
+
 if(a[a9])return;
 function q(c,r){a[a9].\_Q.push([c,r])}
 a[a9]={
-init:function(){q("i",arguments)},
-fetchBids:function(){q("f",arguments)},
-setDisplayBids:function(){},
-targetingKeys:function(){return[]},\_Q:[]
+
 };
 A=p.createElement(s);
 A.async=!0;
@@ -122,23 +112,101 @@ g=p.getElementsByTagName(s)[0];
 g.parentNode.insertBefore(A,g)
 }("apstag",window,document,"script","//c.amazon-adsystem.com/aax2/apstag.js");
 //Initialize the Library
-apstag.init({
+
 pubID: '3444',
 adServer: 'googletag',
 bidTimeout: 800,
 deals: true
 });
 
-window.adsList.push({
 id: "js-dfp-tag-5Ts",
 name: "/3244/market-activity/ATF\_Leaderboard",
 size: [[320, 50], [728, 90], [970, 250]] // Handle fluid size
 });
-googletag.cmd.push(function() {
+
 // Start by defining breakpoints for this ad.
-var mapping = googletag.sizeMapping()
+
 .addSize([0, 0], [320, 50])
 .addSize([768, 0], [728, 90])
-.addSize([1200, 0], [[728, 90]
+.addSize([1200, 0], [[728, 90], [970, 250]])
+.build();
+googletag.slots["js-dfp-tag-5Ts"] = googletag.defineSlot("/3244/market-activity/ATF\_Leaderboard", [[320, 50], [728, 90], [970, 250]], "js-dfp-tag-5Ts")
+.addService(googletag.pubads())
+// Apply size mapping when there are breakpoints.
+.defineSizeMapping(mapping)
+;
+});
+
+id: "js-dfp-tag-Tts",
+name: "/3244/market-activity/ATF\_RightRailBox",
+size: [[300, 250], [300, 600]] // Handle fluid size
+});
+
+// Start by defining breakpoints for this ad.
+
+.addSize([1024, 0], [[300, 250], [300, 600]])
+.addSize([0, 0], [])
+.build();
+googletag.slots["js-dfp-tag-Tts"] = googletag.defineSlot("/3244/market-activity/ATF\_RightRailBox", [[300, 250], [300, 600]], "js-dfp-tag-Tts")
+.addService(googletag.pubads())
+// Apply size mapping when there are breakpoints.
+.defineSizeMapping(mapping)
+;
+});
+
+id: "js-dfp-tag-AWg",
+name: "/3244/market-activity/ATF\_FindASymbolRight\_1",
+size: [120, 60] // Handle fluid size
+});
+
+// Start by defining breakpoints for this ad.
+
+.addSize([1200, 0], [120, 60])
+.build();
+googletag.slots["js-dfp-tag-AWg"] = googletag.defineSlot("/3244/market-activity/ATF\_FindASymbolRight\_1", [120, 60], "js-dfp-tag-AWg")
+.addService(googletag.pubads())
+// Apply size mapping when there are breakpoints.
+.defineSizeMapping(mapping)
+;
+});
+
+id: "js-dfp-tag-JiQ",
+name: "/3244/market-activity/ATF\_FindASymbolLeft\_2",
+size: [120, 60] // Handle fluid size
+});
+
+// Start by defining breakpoints for this ad.
+
+.addSize([1200, 0], [120, 60])
+.build();
+googletag.slots["js-dfp-tag-JiQ"] = googletag.defineSlot("/3244/market-activity/ATF\_FindASymbolLeft\_2", [120, 60], "js-dfp-tag-JiQ")
+.addService(googletag.pubads())
+// Apply size mapping when there are breakpoints.
+.defineSizeMapping(mapping)
+;
+});
+
+id: "js-dfp-tag-i-M",
+name: "/3244/market-activity/ATF\_FindASymbolRight\_2",
+size: [120, 60] // Handle fluid size
+});
+
+// Start by defining breakpoints for this ad.
+
+.addSize([1200, 0], [120, 60])
+.build();
+googletag.slots["js-dfp-tag-i-M"] = googletag.defineSlot("/3244/market-activity/ATF\_FindASymbolRight\_2", [120, 60], "js-dfp-tag-i-M")
+.addService(googletag.pubads())
+// Apply size mapping when there are breakpoints.
+.defineSizeMapping(mapping)
+;
+});
+
+id: "js-dfp-tag-4aU",
+name: "/3244/market-activity/ATF\_FindASymbolLeft\_1",
+size: [120, 60] // Handle fluid size
+});
+
+// Start by defining breakp
 
 ...(truncated)

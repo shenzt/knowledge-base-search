@@ -55,22 +55,55 @@ def _get_ragas_llm():
 def _get_ragas_embeddings():
     """RAGAS answer_relevancy 需要 embedding model。
 
-    默认用 OpenAI text-embedding-3-small。
-    如果没有有效的 OPENAI_API_KEY，跳过 answer_relevancy。
+    优先使用本地 BGE-m3（零成本，与索引一致）。
+    设置 RAGAS_EMBEDDING=openai 可切换回 OpenAI。
     """
-    api_key = os.environ.get("RAGAS_OPENAI_API_KEY", "") or os.environ.get("OPENAI_API_KEY", "")
-    # 排除非 OpenAI key（如 Claude key cr_*, Anthropic key sk-ant-*）
-    if not api_key or api_key.startswith(("cr_", "sk-ant-")):
+    backend = os.environ.get("RAGAS_EMBEDDING", "bge-m3")
+
+    if backend == "openai":
+        api_key = os.environ.get("RAGAS_OPENAI_API_KEY", "") or os.environ.get("OPENAI_API_KEY", "")
+        if not api_key or api_key.startswith(("cr_", "sk-ant-")):
+            return None
+        from ragas.embeddings import LangchainEmbeddingsWrapper
+        from langchain_openai import OpenAIEmbeddings
+        return LangchainEmbeddingsWrapper(OpenAIEmbeddings(
+            model="text-embedding-3-small", openai_api_key=api_key,
+        ))
+
+    # 默认：本地 BGE-m3
+    try:
+        from ragas.embeddings import LangchainEmbeddingsWrapper
+        embeddings = _BGEM3Embeddings()
+        return LangchainEmbeddingsWrapper(embeddings)
+    except Exception as e:
+        log.warning(f"BGE-m3 embedding 加载失败，跳过 answer_relevancy: {e}")
         return None
 
-    from ragas.embeddings import LangchainEmbeddingsWrapper
-    from langchain_openai import OpenAIEmbeddings
 
-    embeddings = OpenAIEmbeddings(
-        model="text-embedding-3-small",
-        openai_api_key=api_key,
-    )
-    return LangchainEmbeddingsWrapper(embeddings)
+class _BGEM3Embeddings:
+    """Langchain-compatible wrapper for local BGE-m3 (FlagEmbedding).
+
+    实现 embed_documents / embed_query 接口，
+    通过 duck typing 兼容 LangchainEmbeddingsWrapper。
+    """
+
+    _model_instance = None  # 类级单例，避免重复加载 ~2GB 模型
+
+    def __init__(self):
+        if _BGEM3Embeddings._model_instance is None:
+            from FlagEmbedding import BGEM3FlagModel
+            model_name = os.environ.get("BGE_M3_MODEL", "BAAI/bge-m3")
+            log.info(f"加载 BGE-m3 embedding for RAGAS: {model_name}")
+            _BGEM3Embeddings._model_instance = BGEM3FlagModel(model_name, use_fp16=True)
+        self._model = _BGEM3Embeddings._model_instance
+
+    def embed_documents(self, texts: list[str]) -> list[list[float]]:
+        output = self._model.encode(texts, return_dense=True, return_sparse=False)
+        return output["dense_vecs"].tolist()
+
+    def embed_query(self, text: str) -> list[float]:
+        output = self._model.encode([text], return_dense=True, return_sparse=False)
+        return output["dense_vecs"][0].tolist()
 
 
 def ragas_judge(

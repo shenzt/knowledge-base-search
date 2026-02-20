@@ -10,20 +10,9 @@ confidence: medium
 Open high low - The intraday trading strategy
 
 #HTMLloading { background: rgba(255, 255, 255, 1) url(https://www.nirmalbang.com/app\_themes/images/logo.png)no-repeat center center; position: fixed; left: 0; top: 0; right: 0; bottom: 0; z-index: 99999; }
-@media screen and (max-width: 479px) {
+
 #HTMLloading { background-size: 65%; }
 }
-
-!function (e, a, t, n, g, c, o) { e.GoogleAnalyticsObject = g, e.ga = e.ga || function () { (e.ga.q = e.ga.q || []).push(arguments) }, e.ga.l = 1 \* new Date, c = a.createElement(t), o = a.getElementsByTagName(t)[0], c.async = 1, c.src = "//www.google-analytics.com/analytics.js", o.parentNode.insertBefore(c, o) } (window, document, "script", 0, "ga"), ga("create", "UA-66148552-1", "auto"), ga("send", "pageview");
-
-window.dataLayer = window.dataLayer || [];
-function gtag() { dataLayer.push(arguments); }
-gtag('js', new Date());
-gtag('config', 'AW-962092335');
-
-dataLayer = []
-
-!function (e, t, a, n, g) { e[n] = e[n] || [], e[n].push({ "gtm.start": (new Date).getTime(), event: "gtm.js" }); var m = t.getElementsByTagName(a)[0], r = t.createElement(a); r.async = !0, r.src = "https://www.googletagmanager.com/gtm.js?id=GTM-N7M54Z", m.parentNode.insertBefore(r, m) } (window, document, "script", "dataLayer");
 
 {
 "@context": "https://schema.org",
@@ -106,6 +95,20 @@ value, both open and low, meaning you should buy the shares. Alternatively, the
 sell signal is created when the indexes or stock has the same value, both open and
 high, meaning you should sell the shares.
 
-The strategy isn't as simple as it may seem. These trades are mad
+The strategy isn't as simple as it may seem. These trades are made in nifty scripts.
+The [NIFTY](https://www.nirmalbang.com/knowledge-center/all-about-nifty.html)
+50 Index reflects around 10% of the free-float market capitalization of the shares
+listed on the NSE. This helps to pick the best sector to invest in and to pull the
+stocks out of the market at the right time. There are scanners to help interpret
+the stock price better with higher accuracy to know when and how to invest. Open
+High Low Scan is a method used to process scripts that are open=high or open=low.
+You can use any calculator to find thresholds to purchase or sell. Some online calculators
+will help you filter out the scripts that can be used for intraday transactions.
+
+## [How to Execute Open High Low Strategy?](#collapse2)
+
+Not only does this solution require capital to gain profits, it requires full-proof
+strategies that have given fruitful results in history. It requires dedicated discipline
+towards learning the trend of the market.
 
 ...(truncated)

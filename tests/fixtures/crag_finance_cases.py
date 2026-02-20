@@ -434,7 +434,7 @@ CRAG_FINANCE_CASES = [
     "source": "qdrant",
     "category": "crag-finance",
     "question_type": "aggregation",
-    "expected_doc": "9da1741a.md",
+    "expected_doc": "b68c5239.md",
     "expected_keywords": [
       "total",
       "number",

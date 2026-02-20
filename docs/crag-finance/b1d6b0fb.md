@@ -16,7 +16,7 @@ var \_epi\_charts\_theme\_url ="https://www.epi.org/wp-content/themes/epi"
 /\* ]]> \*/
 
 /\* <![CDATA[ \*/
-window.lodash = \_.noConflict();
+
 /\* ]]> \*/
 
 /\* <![CDATA[ \*/
@@ -26,14 +26,12 @@ var \_epi\_charts\_theme\_url ="https://www.epi.org/wp-content/themes/epi";
 var \_epi\_environment ="production"
 /\* ]]> \*/
 
-window.fbAsyncInit = function() {
-FB.init({
 appId:'574742865984501',
 xfbml:true,
 version:'v5.0'
 });
 };
-(function(d, s, id){
+
 var js, fjs = d.getElementsByTagName(s)[0];
 if (d.getElementById(id)) {return;}
 js = d.createElement(s); js.id = id;
@@ -41,7 +39,6 @@ js.src = "https://connect.facebook.net/en\_US/sdk.js";
 fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
 
-!function(d,s,id){
 var js,fjs=d.getElementsByTagName(s)[0];
 if(!d.getElementById(id)){
 js=d.createElement(s);
@@ -50,37 +47,28 @@ js.src="//platform.twitter.com/widgets.js";
 fjs.parentNode.insertBefore(js,fjs);}
 }(document,"script","twitter-wjs");
 
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f.\_fbq)f.\_fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en\_US/fbevents.js');fbq('init', '322603365198568');fbq('track', 'PageView');
 ![](https://www.facebook.com/tr?id=322603365198568&ev=PageView&noscript=1)
 
-(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-TMRN68M');
 
 /\* <![CDATA[ \*/
 var google\_conversion\_id = 970728362;
-var google\_custom\_params = window.google\_tag\_params;
+
 var google\_remarketing\_only = true;
 /\* ]]> \*/
 
 /\* <![CDATA[ \*/
-goog\_snippet\_vars = function() {
-var w = window;
+
 w.google\_conversion\_id = 970728362;
 w.google\_conversion\_label = "tziXCPjP3loQqsfwzgM";
 w.google\_remarketing\_only = false;
 }
 // DO NOT CHANGE THE CODE BELOW.
-goog\_report\_conversion = function(url) {
+
 goog\_snippet\_vars();
-window.google\_conversion\_format = "3";
-window.google\_is\_call = true;
-var opt = new Object();
-opt.onload\_callback = function() {
+
 if (typeof(url) != 'undefined') {
-window.location = url;
+
 }
 }
 var conv\_handler = window['google\_trackConversion'];
@@ -104,7 +92,7 @@ display: table;
 clear: both;
 }
 /\* Older workers chartbook TOC \*/
-@media (min-width: 600px) {
+
 .owcb-toc {
 width: 40%;
 float: right;
@@ -199,7 +187,7 @@ margin-bottom: 1rem;
 width: 50%;
 float: right;
 }
-@media (min-width: 600px) {
+
 .owcb-teasers .shadow-box {
 padding: 2rem;
 }
@@ -210,6 +198,63 @@ float: right;
 margin-bottom: 0;
 }
 }
-/\* Publi
+/\* Publication overview mockup \*/
+.overview-sidebar iframe {
+max-height: 160px;
+}
+.overview-sidebar > h4 {
+margin-top: 2.5rem !important;
+}
+.overview-chart .figInner {
+padding: 0 !important;
+}
+.overview-sidebar .data-callout-container {
+background: none;
+font-size: .8em;
+border-bottom: 0;
+}
+.overview-sidebar .data-callout-value {
+background: none;
+color: #333;
+}
+.overview-sidebar .figure,
+.overview-sidebar .figInner {
+border: none !important;
+border-color: transparent !important;
+}
+.overview-chart .figInner::after,
+.overview-chart .donotprint,
+.overview-sidebar .admin-edit-box {
+display: none !important;
+}
+.overview-sidebar ul li {
+border-bottom: 1px solid #ccc;
+padding: .46rem 0;
+margin: 0;
+list-style-type: none !important;
+}
+.overview-sidebar ul li:last-child {
+border-bottom: none;
+}
+.overview-sidebar ul li strong {
+width: 3.3rem;
+display: block;
+float: left;
+}
+.overview-sidebar ul li a {
+color: #005da4;
+border: 1px solid #aaa;
+padding: 0 .4rem;
+background: white;
+border-radius: 1rem;
+border-color: #005da4;
+}
+.overview-sidebar ul {
+list-style-type: none !important;
+padding: 1rem 0;
+margin: 0;
+border: 1px solid #333;
+border-radius: .21rem;
+padding: 0.5re
 
 ...(truncated)
