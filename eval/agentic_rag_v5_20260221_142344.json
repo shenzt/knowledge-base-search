@@ -1,0 +1,100 @@
+{
+  "timestamp": "2026-02-21T14:25:24.178411",
+  "test_type": "agentic_rag_v5",
+  "method": "claude_agent_sdk",
+  "total": 1,
+  "passed": 1,
+  "failed": 0,
+  "errors": 0,
+  "total_time": 99.50167894363403,
+  "total_cost": 0.0,
+  "kb_commit": "fd31a22",
+  "eval_module": "eval_module.py (gate + quality + judge)",
+  "model": "router:default",
+  "dataset": "v5",
+  "category_stats": {
+    "redis-data-types": {
+      "total": 1,
+      "passed": 1
+    }
+  },
+  "source_stats": {
+    "qdrant": {
+      "total": 1,
+      "passed": 1
+    }
+  },
+  "judge_summary": {},
+  "speed_summary": {
+    "avg_seconds": 99.5,
+    "p50_seconds": 99.5,
+    "p95_seconds": 99.5,
+    "min_seconds": 99.5,
+    "max_seconds": 99.5
+  },
+  "use_mcp": true,
+  "use_judge": false,
+  "use_router": true,
+  "use_direct": false,
+  "direct_base_url": null,
+  "concurrency": 1,
+  "results": [
+    {
+      "test_id": "redis-dt-001",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is the difference between Redis Sorted Sets and regular Sets?",
+      "status": "passed",
+      "elapsed_seconds": 99.50167894363403,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 2459,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sets.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sorted set",
+        "score",
+        "ranking"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here is the difference between Redis Sorted Sets and regular Sets:\n\n## Redis Sorted Sets vs Regular Sets\n\n### Regular Sets\nA **Redis set** is an **unordered collection of unique strings (members)**. Key characteristics:\n\n- **No ordering**: Elements have no specific ",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null,
+      "context_precision": null,
+      "context_recall": null,
+      "answer_correctness": null,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        },
+        {
+          "turn": 3,
+          "tool": "Read"
+        },
+        {
+          "turn": 4,
+          "tool": "Read"
+        }
+      ]
+    }
+  ]
+}

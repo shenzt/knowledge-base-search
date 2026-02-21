@@ -1,0 +1,71 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 1 | 时间: 2026-02-21 14:23:44
+模式: MCP + Grep/Glob/Read
+模型: via router → default (http://127.0.0.1:3456)
+并发: 1
+KB commit: fd31a22
+评估: eval_module (Gate 门禁 + 质量检查)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read + MCP hybrid_search)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_142344.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_142344_detail.jsonl
+
+
+============================================================
+[1/1] redis-dt-001 (redis-data-types) [?]
+  Q: What is the difference between Redis Sorted Sets and regular Sets?
+  开始: 14:23:44
+    [INIT] session=6152f3e6-ac61-4ee6-854a-461f9099f976 model=claude-sonnet-4-5-20250929
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis Sorted Sets vs regular Sets difference", "top_k": 5})
+    [TOOL] Grep({"pattern": "sorted.*set|zset|ZADD|ZSET", "path": "docs/runbook/", "-i": true})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 3.1688,\n    \"doc_id\": \"7aa61062\",\n    \"chunk_id\": \"7aa61062-000\",\n    \"chunk_index\": 0,\n    \"path\": \"../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md\",\n    \"title\": \"Redis sorted sets\",\n    \"section_path\": \"\",\n    \"confidence\": \"medium\",\n    \"text\": \"A Redis sorted set is a collection of unique strings (members)
+    [TOOL_OUT] No files found
+    [THINK] Let me read the full documents for both Sorted Sets and Sets to get complete information:
+    [TOOL] Read({"file_path": "../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md"})
+    [TOOL] Read({"file_path": "../my-agent-kb/docs/redis-docs/develop/data-types/sets.md"})
+    [TOOL_OUT] 1→---
+     2→categories:
+     3→- docs
+    ... (264 lines total)
+    [TOOL_OUT] 1→---
+     2→categories:
+     3→- docs
+    ... (208 lines total)
+    [THINK] Based on the Redis documentation, here is the difference between Redis Sorted Sets and regular Sets: (+35 lines)
+    [RESULT] 2459 chars | 5 turns | 85592ms
+  ✅ 通过 | 2459字符 | 99.5s | $0.0000 | 引用✅ 文档✅ | ctx:4
+  🔧 工具: mcp__knowledge-base__hybrid_search, Read, Grep
+  📄 检索: ../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md, ../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md, ../my-agent-kb/docs/redis-docs/develop/data-types/sets.md
+  🔑 关键词: sorted set, score, ranking
+  📝 答案: Based on the Redis documentation, here is the difference between Redis Sorted Sets and regular Sets:
+
+## Redis Sorted Sets vs Regular Sets
+
+### Regular Sets
+A **Redis set** is an **unordered collection of unique strings (members)**. Key characteristics:
+
+- **No ordering**: Elements have no specific order - Redis can return them in any order at every call [来源: ../my-agent-kb/docs/redis-docs/develop/data-types/sets.md]
+- **Uniqueness**: All elements are unique (duplicates are silently ignored)
+- *...
+  结束: 14:25:24 | 耗时: 99.5s
+--------------------------------------------------------------------------------
+
+================================================================================
+📊 总结: ✅1 ❌0 ⚠️0 / 1 (100.0%)
+⏱️  总耗时: 99.5s | 平均: 99.5s
+💰 总费用: $0.0000
+⏱️  延迟: avg=99.5s | p50=99.5s | p95=99.5s | min=99.5s | max=99.5s
+
+📈 按查询类型:
+  ✅ unknown: 1/1 (100%)
+
+📋 按 category:
+  ✅ redis-data-types: 1/1 (100%)
+
+📈 按数据源:
+  ✅ Qdrant 索引 (MCP hybrid_search): 1/1 (100%)
+
+📁 汇总: /home/shenzt/ws/knowledge-base-search/eval/agentic_rag_v5_20260221_142344.json
+📋 日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_142344.log
+📝 详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_142344_detail.jsonl

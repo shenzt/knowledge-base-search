@@ -1,0 +1,73 @@
+{
+  "timestamp": "2026-02-21T14:20:41.714863",
+  "test_type": "agentic_rag_v5",
+  "method": "claude_agent_sdk",
+  "total": 1,
+  "passed": 0,
+  "failed": 0,
+  "errors": 1,
+  "total_time": 13.844432592391968,
+  "total_cost": 0,
+  "kb_commit": "fd31a22",
+  "eval_module": "eval_module.py (gate + quality + judge)",
+  "model": "router:default",
+  "dataset": "v5",
+  "category_stats": {
+    "redis-data-types": {
+      "total": 1,
+      "passed": 0
+    }
+  },
+  "source_stats": {
+    "qdrant": {
+      "total": 1,
+      "passed": 0
+    }
+  },
+  "judge_summary": {},
+  "speed_summary": {
+    "avg_seconds": 13.8,
+    "p50_seconds": 13.8,
+    "p95_seconds": 13.8,
+    "min_seconds": 13.8,
+    "max_seconds": 13.8
+  },
+  "use_mcp": true,
+  "use_judge": false,
+  "use_router": true,
+  "use_direct": false,
+  "direct_base_url": null,
+  "concurrency": 1,
+  "results": [
+    {
+      "test_id": "redis-dt-001",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is the difference between Redis Sorted Sets and regular Sets?",
+      "status": "error",
+      "elapsed_seconds": 13.844432592391968,
+      "cost_usd": 0,
+      "num_turns": 0,
+      "answer_length": 0,
+      "tools_used": [],
+      "retrieved_paths": [],
+      "contexts_count": 0,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": null,
+      "failure_reasons": [
+        "执行失败: Command failed with exit code 1 (exit code: 1)\nError output: Check stderr output"
+      ],
+      "answer_preview": "",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null,
+      "context_precision": null,
+      "context_recall": null,
+      "answer_correctness": null,
+      "turn_timings": []
+    }
+  ]
+}

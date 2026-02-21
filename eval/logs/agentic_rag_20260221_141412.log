@@ -1,0 +1,50 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 1 | 时间: 2026-02-21 14:14:12
+模式: MCP + Grep/Glob/Read
+模型: via router → default (http://127.0.0.1:3456)
+并发: 1
+KB commit: fd31a22
+评估: eval_module (Gate 门禁 + 质量检查)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read + MCP hybrid_search)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_141412.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_141412_detail.jsonl
+
+
+============================================================
+[1/1] redis-dt-001 (redis-data-types) [?]
+  Q: What is the difference between Redis Sorted Sets and regular Sets?
+  开始: 14:14:12
+    [INIT] session=6136c1c9-9b9f-45d0-9561-567e3f6aaca7 model=claude-sonnet-4-5-20250929
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis Sorted Sets vs regular Sets difference", "top_k": 5})
+    [TOOL] Grep({"pattern": "Sorted Set|sorted set|ZSET|zset", "path": "docs/runbook/"})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 3.1688,\n    \"doc_id\": \"7aa61062\",\n    \"chunk_id\": \"7aa61062-000\",\n    \"chunk_index\": 0,\n    \"path\": \"../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md\",\n    \"title\": \"Redis sorted sets\",\n    \"section_path\": \"\",\n    \"confidence\": \"medium\",\n    \"text\": \"A Redis sorted set is a collection of unique strings (members)
+    [TOOL_OUT] No files found
+    [THINK] API Error: 400 {"error":{"message":"Error from provider(moonshot,kimi-k2.5: 400): {\"error\":{\"message\":\"thinking is enabled but reasoning_content is missing in assistant tool call message at index
+    [RESULT] 920 chars | 3 turns | 71511ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 14:15:38 | 耗时: 85.5s
+--------------------------------------------------------------------------------
+
+================================================================================
+📊 总结: ✅0 ❌0 ⚠️1 / 1 (0.0%)
+⏱️  总耗时: 85.5s | 平均: 85.5s
+💰 总费用: $0.0000
+⏱️  延迟: avg=85.5s | p50=85.5s | p95=85.5s | min=85.5s | max=85.5s
+
+📈 按查询类型:
+  ❌ unknown: 0/1 (0%)
+
+📋 按 category:
+  ❌ redis-data-types: 0/1 (0%)
+
+📈 按数据源:
+  ❌ Qdrant 索引 (MCP hybrid_search): 0/1 (0%)
+
+📁 汇总: /home/shenzt/ws/knowledge-base-search/eval/agentic_rag_v5_20260221_141412.json
+📋 日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_141412.log
+📝 详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_141412_detail.jsonl

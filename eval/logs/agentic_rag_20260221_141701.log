@@ -1,0 +1,46 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 1 | 时间: 2026-02-21 14:17:01
+模式: MCP + Grep/Glob/Read
+模型: via router → default (http://127.0.0.1:3456)
+并发: 1
+KB commit: fd31a22
+评估: eval_module (Gate 门禁 + 质量检查)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read + MCP hybrid_search)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_141701.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_141701_detail.jsonl
+
+
+============================================================
+[1/1] redis-dt-001 (redis-data-types) [?]
+  Q: What is the difference between Redis Sorted Sets and regular Sets?
+  开始: 14:17:01
+    [INIT] session=a7a0e1d6-3140-44c4-9eb3-91a7b6f06b54 model=claude-sonnet-4-5-20250929
+    [THINK] API Error: 400 {"error":{"message":"Error from provider(moonshot,kimi-k2.5: 400): {\"error\":{\"message\":\"invalid temperature: only 0.6 is allowed for this model\",\"type\":\"invalid_request_error\"
+    [RESULT] 842 chars | 1 turns | 475ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 14:17:14 | 耗时: 13.8s
+--------------------------------------------------------------------------------
+
+================================================================================
+📊 总结: ✅0 ❌0 ⚠️1 / 1 (0.0%)
+⏱️  总耗时: 13.8s | 平均: 13.8s
+💰 总费用: $0.0000
+⏱️  延迟: avg=13.8s | p50=13.8s | p95=13.8s | min=13.8s | max=13.8s
+
+📈 按查询类型:
+  ❌ unknown: 0/1 (0%)
+
+📋 按 category:
+  ❌ redis-data-types: 0/1 (0%)
+
+📈 按数据源:
+  ❌ Qdrant 索引 (MCP hybrid_search): 0/1 (0%)
+
+📁 汇总: /home/shenzt/ws/knowledge-base-search/eval/agentic_rag_v5_20260221_141701.json
+📋 日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_141701.log
+📝 详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_141701_detail.jsonl
