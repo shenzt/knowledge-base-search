@@ -135,3 +135,115 @@ Based on the knowledge库检索结果, here's how to build a local RAG agent usi
 git clone https://github.com/Shubhamsab...
   结束: 10:36:32 | 耗时: 138.5s
 --------------------------------------------------------------------------------
+
+============================================================
+[4/5] local-001 (redis-failover) [?]
+  Q: READONLY You can't write against a read only replica 这个报错怎么解决
+  开始: 10:36:32
+    [INIT] session=d029c305-ba83-45f6-b17f-0f76c0e2f0e7 model=MiniMax-M2.5
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "READONLY you can't write against a read only replica 解决方案", "top_k": 5})
+    [TOOL] Grep({"path": "docs/runbook/", "pattern": "READONLY|read only replica"})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 4.1865,\n    \"doc_id\": \"eval-review-001\",\n    \"chunk_id\": \"eval-review-001-007\",\n    \"chunk_index\": 7,\n    \"path\": \"docs/eval-review.md\",\n    \"title\": \"RAG 评测方案 Review\",\n    \"section_path\": \"RAG 评测方案 Review > 数据格式设计\",\n    \"confidence\": \"high\",\n    \"text\": \"无论是否引入 Ragas，统一数据格式（兼容 Ragas 的 SingleTurnSample）:\\n\\n```python\\ntest_c
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [TOOL] Read({"file_path": "docs/runbook/redis-failover.md"})
+    [TOOL_OUT] 1→---
+     2→id: redis-failover-001
+     3→title: Redis 主从切换故障恢复手册
+    ... (87 lines total)
+    [THINK] 根据检索到的知识库文档，这个错误的**根本原因和解决方案**如下： (+51 lines)
+    [RESULT] 1072 chars | 4 turns | 111975ms
+  ✅ 通过 | 1072字符 | 127.7s | $0.0530 | 引用✅ 文档✅ | ctx:2
+  🔧 工具: mcp__knowledge-base__hybrid_search, Grep
+  📄 检索: docs/runbook/redis-failover.md, docs/eval-review.md, ../my-agent-kb/docs/redis-docs/develop/programmability/functions-intro.md, ../my-agent-kb/docs/redis-docs/develop/programmability/lua-api.md, ../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/replication.md
+  🔑 关键词: READONLY, replica, failover
+  🧑‍⚖️ Judge: score=1.9 faith=0.071 rel=0.837
+  📝 答案: 根据检索到的知识库文档，这个错误的**根本原因和解决方案**如下：
+
+## 错误原因
+
+`READONLY You can't write against a read only replica` 错误发生在 **Redis Sentinel 触发主从切换（failover）后**，应用层仍然连接到旧的 master（已降级为 replica），导致写入被拒绝。
+
+## 解决方案
+
+### 1. 自动恢复（推荐）
+
+如果应用使用 **Sentinel 客户端**（如 Jedis Sentinel、redis-py Sentinel），连接会自动切换：
+
+```bash
+# 确认客户端配置了 Sentinel 地址而非直连 master
+# 确认连接池的 testOnBorrow 或等效配置已开启
+# 等待 30 秒，观察错误率是否下降
+```
+
+### 2. 手动恢复
+
+如果应用**直连 master IP**：
+
+```bash
+# 1. 获取新 master 地址
+redis-cli -p 26379 SENTINEL get-master-addr-by-name mymaste...
+  结束: 10:39:44 | 耗时: 127.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[5/5] notfound-001 (notfound) [?]
+  Q: How to configure MongoDB sharding with mongos router?
+  开始: 10:39:44
+    [INIT] session=16073a60-56c9-4b5c-b428-856993384369 model=MiniMax-M2.5
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "MongoDB sharding mongos router configuration", "top_k": 5})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": -3.2102,\n    \"doc_id\": \"227377d9\",\n    \"chunk_id\": \"227377d9-001\",\n    \"chunk_index\": 1,\n    \"path\": \"../my-agent-kb/docs/redis-docs/develop/using-commands/multi-key-operations.md\",\n    \"title\": \"Multi-key operations\",\n    \"section_path\": \"Pipelines, transactions, and scripts\",\n    \"confidence\": \"medium\",\n    \"text\": \"| Behavio
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "MongoDB mongos sharding cluster config", "top_k": 10})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": -1.1708,\n    \"doc_id\": \"9f2d8d5c\",\n    \"chunk_id\": \"9f2d8d5c-029\",\n    \"chunk_index\": 29,\n    \"path\": \"../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md\",\n    \"title\": \"Redis cluster specification\",\n    \"section_path\": \"Configuration handling, propagation, and failovers > configEpoch conflicts resolution algo
+    [TOOL] Grep({"path": "docs/", "pattern": "mongos|MongoDB|sharding"})
+    [TOOL_OUT] No files found
+    [TOOL] mcp__knowledge-base__index_status({})
+    [TOOL_OUT] {"result":"{\n  \"collection\": \"knowledge-base\",\n  \"points_count\": 2675,\n  \"status\": \"green\"\n}"}
+    [TOOL] mcp__knowledge-base__keyword_search({"query": "MongoDB", "top_k": 10})
+    [TOOL_OUT] {"result":"[\n  {\n    \"doc_id\": \"7bf11dc4\",\n    \"chunk_id\": \"7bf11dc4-002\",\n    \"path\": \"../my-agent-kb/docs/awesome-llm-apps/awesome_agent_skills/fullstack-developer/SKILL.md\",\n    \"title\": \"Full-Stack Developer\",\n    \"text\": \"- **React** - Modern component patterns, hooks, context\\n- **Next.js** - SSR, SSG, API routes, App Router\\n- **TypeScript** - Type-safe frontend c
+    [THINK] ❌ **未找到相关文档** (+13 lines)
+    [RESULT] 838 chars | 6 turns | 394233ms
+  ✅ 通过 | 838字符 | 426.4s | $0.1189 | 引用❌  | ctx:5
+  🔧 工具: mcp__knowledge-base__index_status, mcp__knowledge-base__hybrid_search, Grep, mcp__knowledge-base__keyword_search
+  📄 检索: ../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisce-7.4-release-notes.md, ../my-agent-kb/docs/redis-docs/develop/using-commands/multi-key-operations.md, ../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/scaling.md, ../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.2-release-notes.md, ../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md
+  📝 答案: ❌ **未找到相关文档**
+
+The knowledge base does not contain MongoDB documentation. The search results show:
+
+1. **hybrid_search** for "MongoDB sharding mongos router" returned only Redis cluster/sharding documents
+2. **keyword_search** for "MongoDB" found only brief mentions in developer skill lists (not actual MongoDB documentation)
+3. **Grep** on local docs/ directory found no MongoDB-related files
+
+The current knowledge base contains:
+- **Redis official documentation** (234 docs) - cluster, scaling, c...
+  结束: 10:46:51 | 耗时: 426.4s
+--------------------------------------------------------------------------------
+
+================================================================================
+📊 总结: ✅5 ❌0 ⚠️0 / 5 (100.0%)
+⏱️  总耗时: 1144.2s | 平均: 228.8s
+💰 总费用: $0.4348
+
+📈 按查询类型:
+  ✅ unknown: 5/5 (100%)
+
+📋 按 category:
+  ✅ llm-rag: 1/1 (100%)
+  ✅ notfound: 1/1 (100%)
+  ✅ redis-data-types: 1/1 (100%)
+  ✅ redis-failover: 1/1 (100%)
+  ✅ redis-ops: 1/1 (100%)
+
+📈 按数据源:
+  ✅ 本地 docs/ (Grep/Glob/Read): 1/1 (100%)
+  ✅ 未收录 (应拒答): 1/1 (100%)
+  ✅ Qdrant 索引 (MCP hybrid_search): 3/3 (100%)
+
+🧑‍⚖️ LLM Judge (3 cases):
+  平均 score: 3.77/5 | faithfulness: 0.62/5 | relevancy: 0.94/5
+  ⚠️ 低质量 (score<3): 1 个
+    - local-001: score=1.9 READONLY You can't write against a read 
+
+📁 汇总: /home/shenzt/ws/knowledge-base-search/eval/agentic_rag_v5_20260221_102242.json
+📋 日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_102242.log
+📝 详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_102242_detail.jsonl

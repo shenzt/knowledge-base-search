@@ -4,11 +4,18 @@
 使用 RAGAS 标准化指标：
 - faithfulness (0-1): claim-level 验证，回答是否忠于检索 context
 - answer_relevancy (0-1): 回答是否切题
+- context_precision (0-1): 检索到的 chunks 有多少是相关的（需要 reference_answer）
+- context_recall (0-1): 是否检索到了所有必要信息（需要 reference_answer）
+- answer_correctness (0-1): 答案事实正确性（需要 reference_answer）
 
 用法:
     from ragas_judge import ragas_judge
     result = ragas_judge(query, answer, contexts)
     # {'faithfulness': 0.85, 'answer_relevancy': 0.92, 'score': 4.4, ...}
+
+    # 带 reference_answer 启用更多指标:
+    result = ragas_judge(query, answer, contexts, gold_answer="...")
+    # {'faithfulness': 0.85, 'context_precision': 0.90, 'context_recall': 0.80, ...}
 """
 
 import logging
@@ -118,12 +125,15 @@ def ragas_judge(
         query: 用户问题
         answer: Agent 回答
         contexts: extract_contexts() 返回的结构化 context list
-        gold_answer: 参考答案（可选，用于 answer_correctness）
+        gold_answer: 参考答案（可选，启用 ContextPrecision/Recall/AnswerCorrectness）
 
     Returns:
         {
             "faithfulness": 0.0-1.0,
             "answer_relevancy": 0.0-1.0 或 -1（无 embedding 时）,
+            "context_precision": 0.0-1.0 或 -1（无 gold_answer 时）,
+            "context_recall": 0.0-1.0 或 -1（无 gold_answer 时）,
+            "answer_correctness": 0.0-1.0 或 -1（无 gold_answer 时）,
             "score": 0-5（向后兼容映射）,
             "reason": "RAGAS评估详情",
         }
@@ -158,7 +168,40 @@ def ragas_judge(
         metrics.append(ResponseRelevancy(llm=llm, embeddings=embeddings))
         has_relevancy = True
 
-    # 4. 执行评估
+    # 4. 如果有 gold_answer，启用 ContextPrecision/Recall/AnswerCorrectness
+    has_ctx_precision = False
+    has_ctx_recall = False
+    has_correctness = False
+    if gold_answer:
+        try:
+            from ragas.metrics import LLMContextPrecisionWithReference, LLMContextRecallWithoutReference
+            metrics.append(LLMContextPrecisionWithReference(llm=llm))
+            has_ctx_precision = True
+            metrics.append(LLMContextRecallWithoutReference(llm=llm))
+            has_ctx_recall = True
+        except ImportError:
+            # 旧版 RAGAS 可能没有这些指标，尝试备选名称
+            try:
+                from ragas.metrics import ContextPrecision, ContextRecall
+                metrics.append(ContextPrecision(llm=llm))
+                has_ctx_precision = True
+                metrics.append(ContextRecall(llm=llm))
+                has_ctx_recall = True
+            except ImportError:
+                log.warning("RAGAS ContextPrecision/Recall 不可用，跳过")
+
+        try:
+            from ragas.metrics import AnswerCorrectness
+            if embeddings:
+                metrics.append(AnswerCorrectness(llm=llm, embeddings=embeddings))
+                has_correctness = True
+            else:
+                metrics.append(AnswerCorrectness(llm=llm))
+                has_correctness = True
+        except ImportError:
+            log.warning("RAGAS AnswerCorrectness 不可用，跳过")
+
+    # 5. 执行评估
     try:
         result = evaluate(dataset=eval_dataset, metrics=metrics)
         df = result.to_pandas()
@@ -166,20 +209,49 @@ def ragas_judge(
         faith_score = float(df["faithfulness"].iloc[0])
         rel_score = float(df["answer_relevancy"].iloc[0]) if has_relevancy else -1
 
-        # 5. 映射到 0-5 scale（向后兼容）
+        # 提取新指标
+        ctx_precision = -1
+        ctx_recall = -1
+        correctness = -1
+        if has_ctx_precision:
+            for col in ["context_precision", "llm_context_precision_with_reference"]:
+                if col in df.columns:
+                    ctx_precision = float(df[col].iloc[0])
+                    break
+        if has_ctx_recall:
+            for col in ["context_recall", "llm_context_recall_without_reference"]:
+                if col in df.columns:
+                    ctx_recall = float(df[col].iloc[0])
+                    break
+        if has_correctness and "answer_correctness" in df.columns:
+            correctness = float(df["answer_correctness"].iloc[0])
+
+        # 6. 映射到 0-5 scale（向后兼容）
         if has_relevancy and rel_score >= 0:
             combined = faith_score * 0.6 + rel_score * 0.4
         else:
             combined = faith_score
         legacy_score = round(combined * 5, 1)
 
+        reason_parts = [f"faith={faith_score:.2f}"]
+        if rel_score >= 0:
+            reason_parts.append(f"rel={rel_score:.2f}")
+        if ctx_precision >= 0:
+            reason_parts.append(f"ctx_prec={ctx_precision:.2f}")
+        if ctx_recall >= 0:
+            reason_parts.append(f"ctx_rec={ctx_recall:.2f}")
+        if correctness >= 0:
+            reason_parts.append(f"correct={correctness:.2f}")
+
         return {
             "faithfulness": round(faith_score, 3),
             "answer_relevancy": round(rel_score, 3) if rel_score >= 0 else -1,
             "relevancy": round(rel_score, 3) if rel_score >= 0 else -1,
+            "context_precision": round(ctx_precision, 3) if ctx_precision >= 0 else -1,
+            "context_recall": round(ctx_recall, 3) if ctx_recall >= 0 else -1,
+            "answer_correctness": round(correctness, 3) if correctness >= 0 else -1,
             "score": legacy_score,
-            "reason": f"RAGAS: faith={faith_score:.2f}"
-                      + (f" rel={rel_score:.2f}" if rel_score >= 0 else ""),
+            "reason": f"RAGAS: {' '.join(reason_parts)}",
         }
     except Exception as e:
         log.error(f"RAGAS 评估异常: {e}")
@@ -187,6 +259,9 @@ def ragas_judge(
             "faithfulness": -1,
             "answer_relevancy": -1,
             "relevancy": -1,
+            "context_precision": -1,
+            "context_recall": -1,
+            "answer_correctness": -1,
             "score": -1,
             "reason": f"RAGAS 异常: {str(e)[:120]}",
         }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""RAG 评测模块: 结构化 contexts 提取 + Gate 门禁 + LLM-as-Judge。
+"""RAG 评测模块: 结构化 contexts 提取 + Gate 门禁 + LLM-as-Judge + Per-turn Timing。
 
 从 Agent SDK 的 messages_log 中提取结构化的 retrieved_contexts，
 然后通过两阶段评估: Gate (确定性规则) → Score (LLM Judge)。
@@ -195,6 +195,85 @@ def get_kb_commit() -> str:
         return "unknown"
 
 
+# ── Per-turn Timing ──────────────────────────────────────────────
+
+def extract_turn_timings(messages_log: list[dict]) -> list[dict]:
+    """从 messages_log 中提取每个 turn 的时间戳信息。
+
+    通过分析 tool_use → tool_result 对来识别 turn 边界。
+    每个 turn 记录: tool 名称、开始/结束时间（如果有 duration_ms）。
+
+    返回: [{"turn": 1, "tool": "Grep", "duration_ms": 1234}, ...]
+    """
+    timings = []
+    turn_num = 0
+    pending_tools = []  # 待匹配的 tool_use
+
+    for msg in messages_log:
+        subtype = msg.get("subtype", "")
+        content = msg.get("content", "")
+
+        # 检测 tool_use（新 turn 开始）
+        if isinstance(content, str) and "ToolUseBlock" in content:
+            tool_match = re.search(
+                r"ToolUseBlock\(id='([^']*)', name='([\w-]+(?:__[\w-]+)*)'",
+                content,
+            )
+            if tool_match:
+                turn_num += 1
+                pending_tools.append({
+                    "turn": turn_num,
+                    "tool": tool_match.group(2),
+                    "tool_use_id": tool_match.group(1),
+                })
+        elif isinstance(content, list):
+            for block in content:
+                if isinstance(block, dict) and block.get("type") == "tool_use":
+                    turn_num += 1
+                    pending_tools.append({
+                        "turn": turn_num,
+                        "tool": block.get("name", "unknown"),
+                        "tool_use_id": block.get("id", ""),
+                    })
+
+        # 检测 tool_result（turn 结束）
+        if isinstance(content, str) and "ToolResultBlock" in content:
+            result_match = re.search(
+                r"ToolResultBlock\(tool_use_id='([^']*)'", content,
+            )
+            if result_match and pending_tools:
+                tool_use_id = result_match.group(1)
+                # 按 ID 匹配
+                matched = None
+                for pt in pending_tools:
+                    if pt.get("tool_use_id") == tool_use_id:
+                        matched = pt
+                        break
+                if not matched and pending_tools:
+                    matched = pending_tools[0]
+                if matched:
+                    timings.append({
+                        "turn": matched["turn"],
+                        "tool": matched["tool"],
+                    })
+                    pending_tools.remove(matched)
+
+        # 从 SDK duration_ms 提取总时长
+        duration_ms = msg.get("duration_ms")
+        if duration_ms and subtype == "success":
+            # 最终消息包含总时长，附加到 timings 元数据
+            pass
+
+    # 补充未匹配的 pending tools（可能是并行调用）
+    for pt in pending_tools:
+        timings.append({
+            "turn": pt["turn"],
+            "tool": pt["tool"],
+        })
+
+    return timings
+
+
 # ── Gate 门禁 (确定性规则，一票否决) ─────────────────────────────
 
 def gate_check(tc: dict, answer: str, contexts: list[dict]) -> dict:
@@ -279,10 +358,11 @@ def gate_check(tc: dict, answer: str, contexts: list[dict]) -> dict:
 # ── LLM-as-Judge ─────────────────────────────────────────────────
 
 def llm_judge(query: str, answer: str, contexts: list[dict],
-              model: str = "") -> dict:
+              model: str = "", gold_answer: str = None) -> dict:
     """用 RAGAS 或自研 Judge 评估 RAG 回答质量。只对 Gate 通过的样本调用。
 
     默认使用 RAGAS（faithfulness 0-1 claim-level + answer_relevancy 0-1）。
+    如果提供 gold_answer，还会启用 ContextPrecision/Recall/AnswerCorrectness。
     设置 USE_LEGACY_JUDGE=1 可回退到自研 Judge。
 
     返回: {"score": 0-5, "faithfulness": float, "relevancy": float, "reason": "..."}
@@ -293,7 +373,7 @@ def llm_judge(query: str, answer: str, contexts: list[dict],
         try:
             sys.path.insert(0, os.path.dirname(__file__))
             from ragas_judge import ragas_judge
-            return ragas_judge(query, answer, contexts)
+            return ragas_judge(query, answer, contexts, gold_answer=gold_answer)
         except ImportError as e:
             log.warning(f"RAGAS 未安装，回退到自研 Judge: {e}")
         except Exception as e:

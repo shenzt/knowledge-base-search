@@ -28,7 +28,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 # 导入评测模块
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
-from eval_module import extract_contexts, gate_check, get_tools_used, get_retrieved_doc_paths, get_kb_commit, llm_judge
+from eval_module import extract_contexts, gate_check, get_tools_used, get_retrieved_doc_paths, get_kb_commit, llm_judge, extract_turn_timings
 
 # 导入测试用例
 sys.path.insert(0, str(PROJECT_ROOT / "tests" / "fixtures"))
@@ -424,6 +424,10 @@ def evaluate(tc: Dict, result: Dict) -> Dict:
     ev["quality"]["tools_used"] = get_tools_used(contexts)
     ev["quality"]["retrieved_paths"] = get_retrieved_doc_paths(contexts)
 
+    # ── Stage 1.5: Per-turn timing ──
+    turn_timings = extract_turn_timings(messages_log)
+    ev["quality"]["turn_timings"] = turn_timings
+
     # ── Stage 2: Gate 门禁 ──
     gate = gate_check(tc, answer, contexts)
     ev["gate"] = gate
@@ -458,13 +462,17 @@ def evaluate(tc: Dict, result: Dict) -> Dict:
 
     # ── Stage 4: LLM-as-Judge (可选，Gate 通过后) ──
     if USE_JUDGE and ev["passed"] and not tc.get("source") == "notfound":
-        judge = llm_judge(tc["query"], answer, contexts)
+        gold_answer = tc.get("reference_answer")
+        judge = llm_judge(tc["query"], answer, contexts, gold_answer=gold_answer)
         ev["quality"]["judge"] = judge
         # Judge score < 2 视为质量不合格（但不改变 pass/fail）
         if judge.get("score", -1) >= 0:
             ev["quality"]["judge_score"] = judge["score"]
             ev["quality"]["faithfulness"] = judge.get("faithfulness", -1)
             ev["quality"]["relevancy"] = judge.get("relevancy", -1)
+            ev["quality"]["context_precision"] = judge.get("context_precision", -1)
+            ev["quality"]["context_recall"] = judge.get("context_recall", -1)
+            ev["quality"]["answer_correctness"] = judge.get("answer_correctness", -1)
 
     return ev
 
@@ -569,7 +577,11 @@ async def run_single_case(i: int, tc: Dict, sem: asyncio.Semaphore,
             "judge_score": quality.get("judge_score"),
             "faithfulness": quality.get("faithfulness"),
             "relevancy": quality.get("relevancy"),
+            "context_precision": quality.get("context_precision"),
+            "context_recall": quality.get("context_recall"),
+            "answer_correctness": quality.get("answer_correctness"),
             "judge": quality.get("judge"),
+            "turn_timings": quality.get("turn_timings", []),
             "messages": result.get("messages_log", []),
         }
 
@@ -594,6 +606,10 @@ async def run_single_case(i: int, tc: Dict, sem: asyncio.Semaphore,
             "judge_score": quality.get("judge_score"),
             "faithfulness": quality.get("faithfulness"),
             "relevancy": quality.get("relevancy"),
+            "context_precision": quality.get("context_precision"),
+            "context_recall": quality.get("context_recall"),
+            "answer_correctness": quality.get("answer_correctness"),
+            "turn_timings": quality.get("turn_timings", []),
         }
 
         # 线程安全写入日志和结果
@@ -660,6 +676,18 @@ async def main():
         log(f"📊 总结: ✅{passed} ❌{failed} ⚠️{errors} / {total} ({passed/total*100:.1f}%)", lf)
         log(f"⏱️  总耗时: {total_time:.1f}s | 平均: {total_time/max(passed+failed,1):.1f}s", lf)
         log(f"💰 总费用: ${total_cost:.4f}", lf)
+
+        # 速度统计: avg/p50/p95 latency
+        elapsed_list = sorted([r["elapsed_seconds"] for r in results if r["elapsed_seconds"] > 0])
+        if elapsed_list:
+            avg_latency = sum(elapsed_list) / len(elapsed_list)
+            p50_idx = max(0, int(len(elapsed_list) * 0.5) - 1)
+            p95_idx = max(0, int(len(elapsed_list) * 0.95) - 1)
+            p50_latency = elapsed_list[p50_idx]
+            p95_latency = elapsed_list[p95_idx]
+            min_latency = elapsed_list[0]
+            max_latency = elapsed_list[-1]
+            log(f"⏱️  延迟: avg={avg_latency:.1f}s | p50={p50_latency:.1f}s | p95={p95_latency:.1f}s | min={min_latency:.1f}s | max={max_latency:.1f}s", lf)
 
         # 按查询类型统计
         type_stats = {}
@@ -731,14 +759,31 @@ async def main():
                            if r.get("judge_score") is not None]
             if judge_scores:
                 avg_score = sum(judge_scores) / len(judge_scores)
-                avg_faith = sum(r.get("faithfulness", 0) for r in results
-                               if r.get("faithfulness") is not None and r.get("faithfulness", -1) >= 0) / max(len(judge_scores), 1)
-                avg_rel = sum(r.get("relevancy", 0) for r in results
-                             if r.get("relevancy") is not None and r.get("relevancy", -1) >= 0) / max(len(judge_scores), 1)
+                faith_vals = [r.get("faithfulness", 0) for r in results
+                              if r.get("faithfulness") is not None and r.get("faithfulness", -1) >= 0]
+                rel_vals = [r.get("relevancy", 0) for r in results
+                            if r.get("relevancy") is not None and r.get("relevancy", -1) >= 0]
+                ctx_prec_vals = [r.get("context_precision", 0) for r in results
+                                 if r.get("context_precision") is not None and r.get("context_precision", -1) >= 0]
+                ctx_rec_vals = [r.get("context_recall", 0) for r in results
+                                if r.get("context_recall") is not None and r.get("context_recall", -1) >= 0]
+                correct_vals = [r.get("answer_correctness", 0) for r in results
+                                if r.get("answer_correctness") is not None and r.get("answer_correctness", -1) >= 0]
+                avg_faith = sum(faith_vals) / max(len(faith_vals), 1)
+                avg_rel = sum(rel_vals) / max(len(rel_vals), 1)
                 low_quality = [r for r in results if r.get("judge_score") is not None and r["judge_score"] < 3]
                 log("", lf)
                 log(f"🧑‍⚖️ LLM Judge ({len(judge_scores)} cases):", lf)
-                log(f"  平均 score: {avg_score:.2f}/5 | faithfulness: {avg_faith:.2f}/5 | relevancy: {avg_rel:.2f}/5", lf)
+                log(f"  平均 score: {avg_score:.2f}/5 | faithfulness: {avg_faith:.3f} | relevancy: {avg_rel:.3f}", lf)
+                if ctx_prec_vals:
+                    avg_ctx_prec = sum(ctx_prec_vals) / len(ctx_prec_vals)
+                    log(f"  context_precision: {avg_ctx_prec:.3f} ({len(ctx_prec_vals)} cases with reference_answer)", lf)
+                if ctx_rec_vals:
+                    avg_ctx_rec = sum(ctx_rec_vals) / len(ctx_rec_vals)
+                    log(f"  context_recall: {avg_ctx_rec:.3f} ({len(ctx_rec_vals)} cases with reference_answer)", lf)
+                if correct_vals:
+                    avg_correct = sum(correct_vals) / len(correct_vals)
+                    log(f"  answer_correctness: {avg_correct:.3f} ({len(correct_vals)} cases with reference_answer)", lf)
                 if low_quality:
                     log(f"  ⚠️ 低质量 (score<3): {len(low_quality)} 个", lf)
                     for r in low_quality[:5]:
@@ -755,11 +800,37 @@ async def main():
             judge_scores = [r.get("judge_score") for r in results
                            if r.get("judge_score") is not None]
             if judge_scores:
+                faith_vals = [r.get("faithfulness") for r in results
+                              if r.get("faithfulness") is not None and r.get("faithfulness", -1) >= 0]
+                rel_vals = [r.get("relevancy") for r in results
+                            if r.get("relevancy") is not None and r.get("relevancy", -1) >= 0]
+                ctx_prec_vals = [r.get("context_precision") for r in results
+                                 if r.get("context_precision") is not None and r.get("context_precision", -1) >= 0]
+                ctx_rec_vals = [r.get("context_recall") for r in results
+                                if r.get("context_recall") is not None and r.get("context_recall", -1) >= 0]
+                correct_vals = [r.get("answer_correctness") for r in results
+                                if r.get("answer_correctness") is not None and r.get("answer_correctness", -1) >= 0]
                 judge_summary = {
                     "count": len(judge_scores),
                     "avg_score": round(sum(judge_scores) / len(judge_scores), 2),
+                    "avg_faithfulness": round(sum(faith_vals) / max(len(faith_vals), 1), 3) if faith_vals else None,
+                    "avg_relevancy": round(sum(rel_vals) / max(len(rel_vals), 1), 3) if rel_vals else None,
+                    "avg_context_precision": round(sum(ctx_prec_vals) / len(ctx_prec_vals), 3) if ctx_prec_vals else None,
+                    "avg_context_recall": round(sum(ctx_rec_vals) / len(ctx_rec_vals), 3) if ctx_rec_vals else None,
+                    "avg_answer_correctness": round(sum(correct_vals) / len(correct_vals), 3) if correct_vals else None,
                     "low_quality_count": sum(1 for s in judge_scores if s < 3),
                 }
+
+        # 速度汇总
+        speed_summary = {}
+        if elapsed_list:
+            speed_summary = {
+                "avg_seconds": round(avg_latency, 1),
+                "p50_seconds": round(p50_latency, 1),
+                "p95_seconds": round(p95_latency, 1),
+                "min_seconds": round(min_latency, 1),
+                "max_seconds": round(max_latency, 1),
+            }
 
         with open(out_file, "w", encoding="utf-8") as f:
             json.dump({
@@ -774,6 +845,7 @@ async def main():
                 "category_stats": {c: {"total": s["t"], "passed": s["p"]} for c, s in cats.items()},
                 "source_stats": {s: {"total": v["t"], "passed": v["p"]} for s, v in source_stats.items()},
                 "judge_summary": judge_summary,
+                "speed_summary": speed_summary,
                 "use_mcp": USE_MCP,
                 "use_judge": USE_JUDGE,
                 "use_router": USE_ROUTER,
