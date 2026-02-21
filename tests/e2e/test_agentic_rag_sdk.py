@@ -32,7 +32,7 @@ from eval_module import extract_contexts, gate_check, get_tools_used, get_retrie
 
 # 导入测试用例
 sys.path.insert(0, str(PROJECT_ROOT / "tests" / "fixtures"))
-from v5_test_queries import TEST_CASES_V5
+from v5_test_queries import TEST_CASES_V5, GOLDEN_CASES
 
 # 数据集选择
 EVAL_DATASET = os.environ.get("EVAL_DATASET", "v5")
@@ -47,6 +47,9 @@ elif EVAL_DATASET == "all":
     from ragbench_techqa_cases import RAGBENCH_TECHQA_CASES
     from crag_finance_cases import CRAG_FINANCE_CASES
     TEST_CASES = TEST_CASES_V5 + RAGBENCH_TECHQA_CASES + CRAG_FINANCE_CASES
+elif EVAL_DATASET == "golden":
+    TEST_CASES = GOLDEN_CASES
+    print(f"🌟 Golden dataset: {len(TEST_CASES)} cases")
 else:
     TEST_CASES = TEST_CASES_V5
 
@@ -177,6 +180,12 @@ Grep path 选择：
 hybrid_search 返回的 path 字段是文档的实际路径，用 Read(file_path=path) 读取完整内容。
 如果 chunk 只有概述缺少细节，必须 Read 完整文档。
 
+## 检索效率
+
+1. **见好就收**：hybrid_search 的 top-1 title/path 与问题直接相关 → Read 后，如果能引用到回答问题的关键句（定义/步骤/命令/配置）→ 直接回答。如果 Read 后只有概念没有细节，且问题是"怎么做/配置/排障" → 再搜一次补证据，或声明"文档未提供具体步骤"
+2. **快速放弃**：第一次 hybrid_search 无相关结果（top-5 的 title/path 都不含问题核心词）→ 改写 query 再搜一次（换语言/提取核心名词）。第二次 top-5 title/path 仍不含核心词 → 回答"❌ 未找到"
+3. **禁止循环**：连续 Grep/Glob 2 次未命中 → 必须换到 hybrid_search/keyword_search，或直接回答/notfound。禁止继续换 pattern 堆叠
+
 ## 回答规则
 
 - 100% 基于检索到的文档内容，附引用 [来源: path]
@@ -212,7 +221,7 @@ hybrid_search 返回的 path 字段是文档的实际路径，用 Read(file_path
         system_prompt=SEARCH_SYSTEM_PROMPT,
         permission_mode="bypassPermissions",
         cwd=str(PROJECT_ROOT),
-        max_turns=15,
+        max_turns=10,
         **({"model": MODEL_NAME} if MODEL_NAME else {}),
     )
 else:
@@ -224,7 +233,7 @@ else:
         disallowed_tools=["Bash", "Write", "Edit", "NotebookEdit", "Task"],
         permission_mode="bypassPermissions",
         cwd=str(PROJECT_ROOT),
-        max_turns=15,
+        max_turns=10,
         system_prompt="""你是一个知识库检索助手。用户会用 /search 命令查询知识库。
 
 知识库文档在 docs/ 目录下，格式为 Markdown，包含 Redis、LLM/AI 应用开发等技术文档。
@@ -276,7 +285,7 @@ async def run_query(prompt: str, session_id: Optional[str], log_file) -> Dict[st
             opts = ClaudeAgentOptions(
                 resume=session_id,
                 permission_mode="bypassPermissions",
-                max_turns=15,
+                max_turns=10,
             )
         else:
             opts = ClaudeAgentOptions(**BASE_OPTIONS)
@@ -753,6 +762,87 @@ async def main():
             log(f"     通过 {qdrant_pass}/{qdrant_total} — 可能是 Claude 用通用知识回答（非检索）", lf)
             log(f"     设置 USE_MCP=1 启用 hybrid_search 以测试真正的向量检索", lf)
 
+        # ── Early Stopping 观测指标（纯后处理，不影响 Agent 行为）──
+        def _compute_early_stop_metrics(r):
+            """从 turn_timings 统计检索效率指标。"""
+            timings = r.get("turn_timings", [])
+            tools = r.get("tools_used", [])
+
+            # search_calls: hybrid_search 调用次数
+            search_calls = sum(1 for t in tools if "hybrid_search" in t)
+
+            # max_consecutive_same_tool: 最大连续同工具次数（Read 不同文件豁免）
+            max_consec = 1
+            cur_consec = 1
+            for j in range(1, len(tools)):
+                t_cur = tools[j]
+                t_prev = tools[j - 1]
+                if t_cur == t_prev:
+                    # Read 不同文件豁免：检查 turn_timings 中的 tool_input
+                    if t_cur == "Read" and j < len(timings) and j - 1 < len(timings):
+                        path_cur = timings[j].get("tool_input", {}).get("file_path", "") if isinstance(timings[j].get("tool_input"), dict) else ""
+                        path_prev = timings[j-1].get("tool_input", {}).get("file_path", "") if isinstance(timings[j-1].get("tool_input"), dict) else ""
+                        if path_cur != path_prev:
+                            cur_consec = 1
+                            continue
+                    cur_consec += 1
+                    max_consec = max(max_consec, cur_consec)
+                else:
+                    cur_consec = 1
+
+            # stop_reason: 从结果推断
+            num_turns = r.get("num_turns", 0)
+            status = r.get("status", "")
+            answer = r.get("answer_preview", "") or ""
+            if num_turns >= 10:
+                stop_reason = "max_turns_reached"
+            elif "❌" in answer and ("未找到" in answer or "not found" in answer.lower()):
+                stop_reason = "notfound_quick" if num_turns <= 4 else "notfound_slow"
+            elif search_calls <= 1 and num_turns <= 4:
+                stop_reason = "hit_first_search"
+            elif max_consec >= 3:
+                stop_reason = "loop_detected"
+            else:
+                stop_reason = "normal"
+
+            return {
+                "search_calls": search_calls,
+                "max_consecutive_same_tool": max_consec,
+                "stop_reason": stop_reason,
+            }
+
+        # 计算每个 case 的 early stop 指标
+        for r in results:
+            r["early_stop"] = _compute_early_stop_metrics(r)
+
+        # 汇总 early stop 统计
+        stop_reasons = {}
+        all_search_calls = []
+        all_max_consec = []
+        for r in results:
+            es = r.get("early_stop", {})
+            reason = es.get("stop_reason", "unknown")
+            stop_reasons[reason] = stop_reasons.get(reason, 0) + 1
+            all_search_calls.append(es.get("search_calls", 0))
+            all_max_consec.append(es.get("max_consecutive_same_tool", 0))
+
+        avg_search = sum(all_search_calls) / max(len(all_search_calls), 1)
+        avg_consec = sum(all_max_consec) / max(len(all_max_consec), 1)
+
+        # Turns 统计
+        all_turns = [r.get("num_turns", 0) for r in results if r.get("num_turns", 0) > 0]
+        avg_turns = sum(all_turns) / max(len(all_turns), 1)
+        high_turn_cases = [r for r in results if r.get("num_turns", 0) >= 7]
+
+        log("", lf)
+        log("🔍 检索效率 (Early Stopping):", lf)
+        log(f"  avg turns: {avg_turns:.1f} | avg search_calls: {avg_search:.1f} | avg max_consec_same_tool: {avg_consec:.1f}", lf)
+        log(f"  stop_reasons: {json.dumps(stop_reasons, ensure_ascii=False)}", lf)
+        if high_turn_cases:
+            log(f"  ⚠️ 高 turn cases (≥7): {len(high_turn_cases)}", lf)
+            for r in sorted(high_turn_cases, key=lambda x: -x.get("num_turns", 0))[:5]:
+                log(f"    - {r['test_id']}: {r.get('num_turns', 0)} turns | {r.get('elapsed_seconds', 0):.0f}s | {r.get('early_stop', {}).get('stop_reason', '?')}", lf)
+
         # LLM Judge 统计
         if USE_JUDGE:
             judge_scores = [r.get("judge_score") for r in results
@@ -846,6 +936,13 @@ async def main():
                 "source_stats": {s: {"total": v["t"], "passed": v["p"]} for s, v in source_stats.items()},
                 "judge_summary": judge_summary,
                 "speed_summary": speed_summary,
+                "early_stop_summary": {
+                    "avg_turns": round(avg_turns, 1),
+                    "avg_search_calls": round(avg_search, 1),
+                    "avg_max_consec_same_tool": round(avg_consec, 1),
+                    "stop_reasons": stop_reasons,
+                    "high_turn_count": len(high_turn_cases),
+                },
                 "use_mcp": USE_MCP,
                 "use_judge": USE_JUDGE,
                 "use_router": USE_ROUTER,

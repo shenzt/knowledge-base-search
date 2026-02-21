@@ -75,3 +75,9 @@ Grep(pattern="<关键词>", path="docs/runbook/")
 - 文档无相关信息 → `❌ 未找到相关文档。`
 - 宁可回答不完整，也不要编造
 - 回答语言跟随查询语言
+
+## 检索效率
+
+1. **见好就收**：hybrid_search 的 top-1 title/path 与问题直接相关 → Read 后，如果能引用到回答问题的关键句（定义/步骤/命令/配置）→ 直接回答。如果 Read 后只有概念没有细节，且问题是"怎么做/配置/排障" → 再搜一次补证据，或声明"文档未提供具体步骤"
+2. **快速放弃**：第一次 hybrid_search 无相关结果（top-5 的 title/path 都不含问题核心词）→ 改写 query 再搜一次（换语言/提取核心名词）。第二次 top-5 title/path 仍不含核心词 → 回答"❌ 未找到"
+3. **禁止循环**：连续 Grep/Glob 2 次未命中 → 必须换到 hybrid_search/keyword_search，或直接回答/notfound。禁止继续换 pattern 堆叠
