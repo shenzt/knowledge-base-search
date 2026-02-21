@@ -1,0 +1,55 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 5 | 时间: 2026-02-21 10:10:03
+模式: MCP + Grep/Glob/Read
+模型: direct → MiniMax-M2.5 (https://api.minimaxi.com/anthropic)
+并发: 1
+KB commit: 4ee2f5a
+评估: eval_module (Gate 门禁 + 质量检查)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read + MCP hybrid_search)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_101003.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_101003_detail.jsonl
+
+
+============================================================
+[1/5] redis-dt-001 (redis-data-types) [?]
+  Q: What is the difference between Redis Sorted Sets and regular Sets?
+  开始: 10:10:03
+    [INIT] session=e224fa1e-4141-428c-809a-83b2ff3a5280 model=MiniMax-M2.5
+    [THINK] Failed to authenticate. API Error: 401 {"type":"error","error":{"type":"authentication_error","message":"login fail: Please carry the API secret key in the 'Authorization' field of the request header"
+    [RESULT] 250 chars | 1 turns | 179424ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 10:13:15 | 耗时: 192.7s
+--------------------------------------------------------------------------------
+
+============================================================
+[2/5] redis-ops-009 (redis-ops) [?]
+  Q: Redis debugging 有哪些常用工具和命令？
+  开始: 10:13:15
+    [INIT] session=10cd5a6a-d6a3-478e-badd-0b52cddab429 model=MiniMax-M2.5
+    [THINK] Failed to authenticate. API Error: 401 {"type":"error","error":{"type":"authentication_error","message":"login fail: Please carry the API secret key in the 'Authorization' field of the request header"
+    [RESULT] 250 chars | 1 turns | 183843ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 10:16:32 | 耗时: 196.9s
+--------------------------------------------------------------------------------
+
+============================================================
+[3/5] llm-rag-001 (llm-rag) [?]
+  Q: How to build a local RAG agent with Llama?
+  开始: 10:16:32
+    [INIT] session=ffa67dec-f695-41ff-a97f-efe0d9116b7a model=MiniMax-M2.5
+    [THINK] Failed to authenticate. API Error: 401 {"type":"error","error":{"type":"authentication_error","message":"login fail: Please carry the API secret key in the 'Authorization' field of the request header"
+    [RESULT] 250 chars | 1 turns | 176222ms
+    [ERROR] Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output for details
+  ❌ 错误: Command failed with exit code 1 (exit code: 1)
+Error output: Check stderr output
+  结束: 10:19:42 | 耗时: 189.5s
+--------------------------------------------------------------------------------

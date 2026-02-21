@@ -1,0 +1,94 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 5 | 时间: 2026-02-21 10:22:42
+模式: MCP + Grep/Glob/Read
+模型: direct → MiniMax-M2.5 (https://api.minimaxi.com/anthropic)
+并发: 1
+KB commit: 4ee2f5a
+评估: eval_module (Gate 门禁 + 质量检查)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read + MCP hybrid_search)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_102242.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_102242_detail.jsonl
+
+
+============================================================
+[1/5] redis-dt-001 (redis-data-types) [?]
+  Q: What is the difference between Redis Sorted Sets and regular Sets?
+  开始: 10:22:42
+    [INIT] session=d098ccdc-bd70-4a8c-a5fc-c0c0dac91818 model=MiniMax-M2.5
+    [THINK] I'll search the knowledge base for information about Redis Sorted Sets vs regular Sets.
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis Sorted Sets vs regular Sets difference", "top_k": 5})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 3.1688,\n    \"doc_id\": \"7aa61062\",\n    \"chunk_id\": \"7aa61062-000\",\n    \"chunk_index\": 0,\n    \"path\": \"../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md\",\n    \"title\": \"Redis sorted sets\",\n    \"section_path\": \"\",\n    \"confidence\": \"medium\",\n    \"text\": \"A Redis sorted set is a collection of unique strings (members)
+    [THINK] Based on the retrieved Redis documentation, here's the difference between Redis Sorted Sets and regular Sets: (+28 lines)
+    [RESULT] 1371 chars | 2 turns | 59627ms
+  ✅ 通过 | 1371字符 | 73.6s | $0.0609 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: mcp__knowledge-base__hybrid_search
+  📄 检索: ../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md, ../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md, ../my-agent-kb/docs/redis-docs/develop/data-types/sets.md
+  🔑 关键词: sorted set, score
+  🧑‍⚖️ Judge: score=4.6 faith=0.871 rel=1.0
+  📝 答案: Based on the retrieved Redis documentation, here's the difference between Redis Sorted Sets and regular Sets:
+
+## Redis Sets vs Sorted Sets
+
+### Redis Sets
+- **Unordered** collection of unique strings (members)
+- Elements have no specific order
+- Support set operations: **intersection, union, and difference**
+- Use cases: tracking unique items, representing relations
+
+### Redis Sorted Sets (ZSets)
+- **Ordered** collection of unique strings (members) ordered by an **associated score**
+- Every ele...
+  结束: 10:25:03 | 耗时: 73.6s
+--------------------------------------------------------------------------------
+
+============================================================
+[2/5] redis-ops-009 (redis-ops) [?]
+  Q: Redis debugging 有哪些常用工具和命令？
+  开始: 10:25:03
+    [INIT] session=1f21f7da-6f67-401a-967f-dac81c856f88 model=MiniMax-M2.5
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis debugging tools commands", "top_k": 5})
+    [TOOL] Grep({"path": "docs/runbook/", "pattern": "Redis.*debug|debug.*Redis"})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 4.458,\n    \"doc_id\": \"81091cbf\",\n    \"chunk_id\": \"81091cbf-001\",\n    \"chunk_index\": 1,\n    \"path\": \"../my-agent-kb/docs/redis-docs/develop/programmability/lua-debugging.md\",\n    \"title\": \"Debugging Lua scripts in Redis\",\n    \"section_path\": \"Quick start\",\n    \"confidence\": \"medium\",\n    \"text\": \"A simple way to get started with
+    [TOOL_OUT] No files found
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis DEBUG SLOWLOG MONITOR redis-cli debugging", "top_k": 10})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 2.251,\n    \"doc_id\": \"81091cbf\",\n    \"chunk_id\": \"81091cbf-002\",\n    \"chunk_index\": 2,\n    \"path\": \"../my-agent-kb/docs/redis-docs/develop/programmability/lua-debugging.md\",\n    \"title\": \"Debugging Lua scripts in Redis\",\n    \"section_path\": \"Synchronous mode\",\n    \"confidence\": \"medium\",\n    \"text\": \"When the scripts terminates
+    [TOOL] Read({"file_path": "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/debugging.md"})
+    [TOOL_OUT] 1→---
+     2→categories:
+     3→- docs
+    ... (212 lines total)
+    [TOOL] Grep({"output_mode": "files_with_matches", "path": "docs/runbook/", "pattern": "SLOWLOG|MONITOR|INFO|DEBUG"})
+    [TOOL_OUT] Found 1 file
+docs/runbook/redis-failover.md
+    [THINK] 根据检索到的 Redis 官方文档，以下是 Redis debugging 常用工具和命令： (+113 lines)
+    [RESULT] 2580 chars | 6 turns | 364154ms
+  ✅ 通过 | 2580字符 | 377.9s | $0.1551 | 引用✅ 文档✅ | ctx:4
+  🔧 工具: mcp__knowledge-base__hybrid_search, Grep
+  📄 检索: docs/runbook/redis-failover.md, ../my-agent-kb/docs/redis-docs/develop/programmability/lua-debugging.md, ../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.0-release-notes.md, ../my-agent-kb/docs/redis-docs/develop/data-types/json/developer.md
+  🔑 关键词: debug
+  📝 答案: 根据检索到的 Redis 官方文档，以下是 Redis debugging 常用工具和命令：
+
+---
+
+## 1. redis-cli 调试选项
+
+| 命令/选项 | 说明 |
+|---------|------|
+| `redis-cli --ldb --eval <script.lua>` | 启动 Lua 脚本调试会话 (LDB) |
+| `redis-cli --ldb-sync-mode --eval <script.lua>` | 同步模式调试（会阻塞服务器） |
+| `redis-cli INFO` | 查看服务器详细信息 |
+| `redis-cli INFO \| grep process_id` | 获取 Redis 进程 ID |
+
+---
+
+## 2. Redis 内置调试命令
+
+### CLIENT 命令（连接调试）
+```redis
+CLIENT LIST              # 查看所有连接客户端及状态
+CLIENT KILL <addr>       # 关闭指定客户端连接
+CLIENT SETNAME <name>    # 设置客户端名称（便...
+  结束: 10:33:01 | 耗时: 377.9s
+--------------------------------------------------------------------------------

@@ -1,0 +1,243 @@
+{
+  "timestamp": "2026-02-21T10:32:47.553748",
+  "test_type": "agentic_rag_v5",
+  "method": "claude_agent_sdk",
+  "total": 5,
+  "passed": 5,
+  "failed": 0,
+  "errors": 0,
+  "total_time": 1020.122451543808,
+  "total_cost": 0.3055602,
+  "kb_commit": "4ee2f5a",
+  "eval_module": "eval_module.py (gate + quality + judge)",
+  "model": "MiniMax-M2.5",
+  "dataset": "v5",
+  "category_stats": {
+    "redis-data-types": {
+      "total": 1,
+      "passed": 1
+    },
+    "redis-ops": {
+      "total": 1,
+      "passed": 1
+    },
+    "llm-rag": {
+      "total": 1,
+      "passed": 1
+    },
+    "redis-failover": {
+      "total": 1,
+      "passed": 1
+    },
+    "notfound": {
+      "total": 1,
+      "passed": 1
+    }
+  },
+  "source_stats": {
+    "qdrant": {
+      "total": 3,
+      "passed": 3
+    },
+    "local": {
+      "total": 1,
+      "passed": 1
+    },
+    "notfound": {
+      "total": 1,
+      "passed": 1
+    }
+  },
+  "judge_summary": {},
+  "use_mcp": true,
+  "use_judge": false,
+  "use_router": false,
+  "use_direct": true,
+  "direct_base_url": "https://api.minimaxi.com/anthropic",
+  "concurrency": 3,
+  "results": [
+    {
+      "test_id": "redis-dt-001",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is the difference between Redis Sorted Sets and regular Sets?",
+      "status": "passed",
+      "elapsed_seconds": 207.35099816322327,
+      "cost_usd": 0.0317247,
+      "num_turns": 2,
+      "answer_length": 2068,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sets.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md"
+      ],
+      "contexts_count": 1,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sorted set",
+        "score",
+        "ranking"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here are the key differences between Redis Sorted Sets and regular Sets:\n\n## Ordering\n\n| Feature | Regular Sets | Sorted Sets |\n|---------|-------------|-------------|\n| **Order** | Unordered | Ordered by score |\n| **Sorting** | No inherent order; Redis returns elem",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "redis-ops-001",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How does Redis Sentinel handle automatic failover?",
+      "status": "passed",
+      "elapsed_seconds": 206.25798869132996,
+      "cost_usd": 0.10718970000000001,
+      "num_turns": 3,
+      "answer_length": 2610,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/sentinel-clients.md",
+        "docs/runbook/redis-failover.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sentinel",
+        "failover",
+        "master"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the retrieved Redis Sentinel documentation, here's how Redis Sentinel handles automatic failover:\n\n## How Redis Sentinel Handles Automatic Failover\n\nRedis Sentinel provides **automatic failover** as one of its core capabilities for high availability. Here's the complete process:\n\n### 1. Fai",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "llm-rag-001",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a local RAG agent with Llama?",
+      "status": "passed",
+      "elapsed_seconds": 197.3973913192749,
+      "cost_usd": 0.0463434,
+      "num_turns": 3,
+      "answer_length": 1498,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/local_rag_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/qwen_local_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_embedding_gemma/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/deepseek_local_rag_agent/README.md"
+      ],
+      "contexts_count": 1,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "local",
+        "Llama"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## 🦙 How to Build a Local RAG Agent with Llama\n\nBased on the knowledge base, here's how to build a **Local RAG Agent with Llama 3.2**:\n\n### Tech Stack\n- **LLM**: Llama 3.2 (via Ollama)\n- **Vector Database**: Qdrant\n- **Framework**: Agno v2.0\n- **Embedder**: OpenHermes (via Ollama)\n\n### Step-by-Step ",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "local-001",
+      "category": "redis-failover",
+      "type": "unknown",
+      "source": "local",
+      "query": "READONLY You can't write against a read only replica 这个报错怎么解决",
+      "status": "passed",
+      "elapsed_seconds": 168.15006947517395,
+      "cost_usd": 0.05266725,
+      "num_turns": 4,
+      "answer_length": 899,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/runbook/redis-failover.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/functions-intro.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/lua-api.md",
+        "docs/eval-review.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "READONLY",
+        "replica",
+        "failover"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据知识库文档，`READONLY You can't write against a read only replica` 错误的解决方如下：\n\n## 错误原因\n\n这个错误通常发生在 **Redis Sentinel 触发主从切换（failover）后**：\n- 原 master 降级为 replica\n- 应用仍然连接到旧的 master IP，但该节点已变为只读 replica\n- Redis 从节点默认开启只读模式（`replica-read-only`）\n\n## 解决方案\n\n### 方案一：自动恢复（推荐）\n\n如果应用使用 Sentinel 客户端（Jedis Sentinel、re",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "notfound-001",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "How to configure MongoDB sharding with mongos router?",
+      "status": "passed",
+      "elapsed_seconds": 240.9660038948059,
+      "cost_usd": 0.06763515,
+      "num_turns": 4,
+      "answer_length": 677,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/design.md",
+        "docs/progress-2025-02-13.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/search/query-performance-factor.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisstack/redisstack-6.2.6-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/Configuration.md",
+        "docs/archive/PROJECT_STATUS.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/google_adk_crash_course/4_tool_using_agent/4_3_thirdparty_tools/README.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/enterprise-capabilities.md",
+        "../my-agent-kb/docs/redis-docs/develop/using-commands/multi-key-operations.md",
+        "docs/ragbench-techqa/d6615813.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "❌ **未找到相关文档**\n\nThe knowledge base does not contain any MongoDB documentation. All retrieved documents are about **Redis** (Redis clustering, persistence, modules API, etc.) and **LLM applications**, but there is no MongoDB sharding or mongos router configuration content.\n\n**Knowledge base contents:*",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    }
+  ]
+}

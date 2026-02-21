@@ -1,0 +1,13 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 100 | 时间: 2026-02-21 07:18:08
+模式: MCP + Grep/Glob/Read
+模型: via router → default (http://127.0.0.1:3456)
+并发: 5
+KB commit: 4ee2f5a
+评估: eval_module (Gate 门禁 + 质量检查)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read + MCP hybrid_search)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_071808.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_071808_detail.jsonl
+

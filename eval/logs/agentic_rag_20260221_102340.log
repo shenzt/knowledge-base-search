@@ -1,0 +1,60 @@
+================================================================================
+🤖 Agentic RAG 测试 (Agent SDK)
+================================================================================
+用例: 1 | 时间: 2026-02-21 10:23:40
+模式: MCP + Grep/Glob/Read
+模型: direct → MiniMax-M2.5 (https://api.minimaxi.com/anthropic)
+并发: 1
+KB commit: 4ee2f5a
+评估: eval_module (Gate 门禁 + 质量检查)
+策略: Claude 自主选择检索策略 (Grep/Glob/Read + MCP hybrid_search)
+日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_102340.log
+详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_102340_detail.jsonl
+
+
+============================================================
+[1/1] redis-dt-001 (redis-data-types) [?]
+  Q: What is the difference between Redis Sorted Sets and regular Sets?
+  开始: 10:23:40
+    [INIT] session=43564ec9-eacc-43c6-bc12-9dbce49cdc31 model=MiniMax-M2.5
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "Redis Sorted Sets vs Sets difference", "top_k": 5})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 4.336,\n    \"doc_id\": \"7aa61062\",\n    \"chunk_id\": \"7aa61062-000\",\n    \"chunk_index\": 0,\n    \"path\": \"../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md\",\n    \"title\": \"Redis sorted sets\",\n    \"section_path\": \"\",\n    \"confidence\": \"medium\",\n    \"text\": \"A Redis sorted set is a collection of unique strings (members) 
+    [THINK] Based on the Redis documentation, here are the key differences between **Redis Sorted Sets** and **regular Sets**: (+54 lines)
+    [RESULT] 1941 chars | 2 turns | 70333ms
+  ✅ 通过 | 1941字符 | 84.9s | $0.0313 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: mcp__knowledge-base__hybrid_search
+  📄 检索: ../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md, ../my-agent-kb/docs/redis-docs/develop/data-types/sets.md, ../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md
+  🔑 关键词: sorted set, score
+  📝 答案: Based on the Redis documentation, here are the key differences between **Redis Sorted Sets** and **regular Sets**:
+
+## Order
+
+| Feature | Regular Sets | Sorted Sets |
+|---------|--------------|-------------|
+| **Ordering** | Unordered - elements returned in no particular order | Ordered by score, then lexicographically for ties |
+| **Data structure** | Hash table | Skip list + hash table (dual-ported) |
+
+## Key Characteristics
+
+### Regular Sets (`SET`)
+- **Unordered collection** of unique string...
+  结束: 10:25:04 | 耗时: 84.9s
+--------------------------------------------------------------------------------
+
+================================================================================
+📊 总结: ✅1 ❌0 ⚠️0 / 1 (100.0%)
+⏱️  总耗时: 84.9s | 平均: 84.9s
+💰 总费用: $0.0313
+
+📈 按查询类型:
+  ✅ unknown: 1/1 (100%)
+
+📋 按 category:
+  ✅ redis-data-types: 1/1 (100%)
+
+📈 按数据源:
+  ✅ Qdrant 索引 (MCP hybrid_search): 1/1 (100%)
+
+📁 汇总: /home/shenzt/ws/knowledge-base-search/eval/agentic_rag_v5_20260221_102340.json
+📋 日志: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_102340.log
+📝 详细: /home/shenzt/ws/knowledge-base-search/eval/logs/agentic_rag_20260221_102340_detail.jsonl

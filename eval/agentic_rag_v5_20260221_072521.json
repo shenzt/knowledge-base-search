@@ -1,0 +1,4053 @@
+{
+  "timestamp": "2026-02-21T10:00:51.162469",
+  "test_type": "agentic_rag_v5",
+  "method": "claude_agent_sdk",
+  "total": 100,
+  "passed": 98,
+  "failed": 2,
+  "errors": 0,
+  "total_time": 20022.390932798386,
+  "total_cost": 0.0,
+  "kb_commit": "4ee2f5a",
+  "eval_module": "eval_module.py (gate + quality + judge)",
+  "model": "router:default",
+  "dataset": "v5",
+  "category_stats": {
+    "redis-data-types": {
+      "total": 10,
+      "passed": 10
+    },
+    "redis-ops": {
+      "total": 15,
+      "passed": 15
+    },
+    "redis-so": {
+      "total": 15,
+      "passed": 14
+    },
+    "llm-rag": {
+      "total": 12,
+      "passed": 12
+    },
+    "llm-agent": {
+      "total": 13,
+      "passed": 13
+    },
+    "llm-framework": {
+      "total": 10,
+      "passed": 9
+    },
+    "redis-failover": {
+      "total": 6,
+      "passed": 6
+    },
+    "k8s-crashloop": {
+      "total": 4,
+      "passed": 4
+    },
+    "api-auth": {
+      "total": 5,
+      "passed": 5
+    },
+    "notfound": {
+      "total": 10,
+      "passed": 10
+    }
+  },
+  "source_stats": {
+    "qdrant": {
+      "total": 75,
+      "passed": 73
+    },
+    "local": {
+      "total": 15,
+      "passed": 15
+    },
+    "notfound": {
+      "total": 10,
+      "passed": 10
+    }
+  },
+  "judge_summary": {
+    "count": 76,
+    "avg_score": 4.22,
+    "low_quality_count": 6
+  },
+  "use_mcp": true,
+  "use_judge": true,
+  "use_router": true,
+  "concurrency": 3,
+  "results": [
+    {
+      "test_id": "redis-dt-001",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is the difference between Redis Sorted Sets and regular Sets?",
+      "status": "passed",
+      "elapsed_seconds": 250.77814865112305,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 3050,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sets.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sorted set",
+        "score",
+        "hash",
+        "TS."
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the search results, I have found comprehensive information about the differences between Redis Sorted Sets and regular Sets. Let me provide the answer based on the documentation.\n\n## Difference between Redis Sorted Sets and Regular Sets\n\n### **Redis Sets**\nA Redis set is an **unordered coll",
+      "judge_score": 4.7,
+      "faithfulness": 0.895,
+      "relevancy": 1.0
+    },
+    {
+      "test_id": "redis-dt-002",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How do I use Redis Streams for message queuing?",
+      "status": "passed",
+      "elapsed_seconds": 636.4935247898102,
+      "cost_usd": 0.0,
+      "num_turns": 17,
+      "answer_length": 4288,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/streams/idempotency.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.0-release-notes.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.0-release-notes.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/develop/reference/key-specs.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.2-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/using-commands/pipelining.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisce-7.4-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.2-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/concepts/triggers/Stream_Triggers.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.4-release-notes.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.4-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/compare-data-types.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisstack/redisstack-7.4-release-notes.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/develop/data-types/streams/idempotency.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/lists.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/develop/reference/command-arguments.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/develop/pubsub/keyspace-notifications.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisstack/redisstack-7.2-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.6-release-notes.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/concepts/triggers/Stream_Triggers.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/hashes.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.6-release-notes.md",
+        "/home/shenzt/ws/my-agent-kb/docs/redis-docs/develop/using-commands/multi-key-operations.md"
+      ],
+      "contexts_count": 16,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "stream",
+        "XADD",
+        "consumer",
+        "field",
+        "list",
+        "LPUSH",
+        "RPOP",
+        "time series",
+        "TS."
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on my search results, I now have enough information to answer the question about using Redis Streams for message queuing. Let me compile the information from the retrieved documents.\n\n## Using Redis Streams for Message Queuing\n\nBased on the Redis documentation, here's how to use Redis Streams ",
+      "judge_score": 3.8,
+      "faithfulness": 0.6,
+      "relevancy": 0.986
+    },
+    {
+      "test_id": "redis-dt-003",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis Bloom Filter 的误判率怎么配置？",
+      "status": "passed",
+      "elapsed_seconds": 156.73525047302246,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 776,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/probabilistic/configuration.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/probabilistic/bloom-filter.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "bloom",
+        "filter",
+        "list",
+        "probabilistic"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的 Redis 官方文档，Redis Bloom Filter 的误判率（false positive rate）配置方法如下：\n\n## 误判率配置参数\n\n**参数名称：** `bf-error-rate`\n\n**配置方式：**\n\n1. **运行时配置（Redis 8+）**：使用 `CONFIG SET` 命令\n2. **加载时配置**：在 `redis.conf` 文件中设置\n\n## 参数详情\n\n| 属性 | 值 |\n|------|-----|\n| **类型** | double |\n| **有效范围** | `(0 .. 1)`（即 > 0% 到 < 100%） |\n| **",
+      "judge_score": 4.7,
+      "faithfulness": 1.0,
+      "relevancy": 0.873
+    },
+    {
+      "test_id": "redis-dt-004",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "When should I use Redis Hashes vs JSON?",
+      "status": "passed",
+      "elapsed_seconds": 125.68475294113159,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 1291,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.4-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/json/use_cases.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/document-database.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/compare-data-types.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "hash"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据 Redis 官方文档，以下是选择 **Redis Hashes vs JSON** 的决策指南：\n\n---\n\n## 何时使用 JSON\n\n**使用 JSON，如果你需要：**\n\n1. **嵌套数据结构** - JSON 是唯一支持深层嵌套结构（字段和数组）的文档类型\n2. **地理空间索引/查询** - JSON 与 Redis 查询引擎集成，支持地理空间查询\n3. **访问子值** - 可以获取嵌套值而无需通过网络传输整个对象，这对于存储大型 JSON 对象非常高效\n4. **原子性部分更新** - 可以原子性地执行操作，如递增数值、添加或删除数组元素、追加字符串等\n5. **复杂的查",
+      "judge_score": 3.5,
+      "faithfulness": 0.542,
+      "relevancy": 0.955
+    },
+    {
+      "test_id": "redis-dt-005",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How does HyperLogLog count unique elements in Redis?",
+      "status": "passed",
+      "elapsed_seconds": 123.74536085128784,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 1852,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.0-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/probabilistic/hyperloglogs.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sets.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "error rate",
+        "hyperloglog",
+        "cardinality",
+        "PFADD",
+        "list",
+        "integer",
+        "TS.",
+        "probabilistic"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's how HyperLogLog counts unique elements in Redis:\n\n## How HyperLogLog Works\n\n**HyperLogLog** is a **probabilistic data structure** that estimates the cardinality (count of unique elements) of a set. It trades perfect accuracy for efficient space utilization.\n\n",
+      "judge_score": 4.9,
+      "faithfulness": 0.963,
+      "relevancy": 1.0
+    },
+    {
+      "test_id": "redis-dt-006",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis Lists 作为消息队列和 Streams 有什么区别？",
+      "status": "passed",
+      "elapsed_seconds": 734.7870326042175,
+      "cost_usd": 0.0,
+      "num_turns": 11,
+      "answer_length": 2447,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/streams/idempotency.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.4-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/concepts/triggers/Stream_Triggers.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redistimeseries/redistimeseries-1.0-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.2-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.6-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisstack/redisstack-7.4-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/command-arguments.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/protocol-spec.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisce-7.4-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/compare-data-types.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/redis-in-ai.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/hashes.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/lists.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md"
+      ],
+      "contexts_count": 10,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "stream",
+        "consumer",
+        "field",
+        "list",
+        "RPOP",
+        "TS."
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，我现在可以回答 Redis Lists 和 Streams 作为消息队列的区别了。让我整理相关信息。\n\n## Redis Lists 与 Streams 作为消息队列的区别\n\n根据 Redis 官方文档，Lists 和 Streams 在作为消息队列使用时有以下主要区别：\n\n### 1. 数据结构\n\n**Lists（列表）**:\n- 结构：简单的字符串序列（simple sequence of strings）[来源：../my-agent-kb/docs/redis-docs/develop/data-types/compare-data-types.md]\n- 实现：链表",
+      "judge_score": 4.1,
+      "faithfulness": 0.739,
+      "relevancy": 0.925
+    },
+    {
+      "test_id": "redis-dt-007",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What are Redis Bitfields and when would I use them?",
+      "status": "passed",
+      "elapsed_seconds": 163.60105729103088,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1886,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/bitmaps.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.0-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/bitfields.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/hashes.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "field",
+        "bitfield",
+        "counter",
+        "integer"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's what Redis Bitfields are and when to use them:\n\n## What are Redis Bitfields?\n\n**Redis bitfields** let you set, increment, and get integer values of arbitrary bit length. You can operate on anything from **unsigned 1-bit integers to signed 63-bit integers** [来",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 0.995
+    },
+    {
+      "test_id": "redis-dt-008",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to store and query geospatial data in Redis?",
+      "status": "passed",
+      "elapsed_seconds": 158.69251084327698,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1975,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/geospatial.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/compare-data-types.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisstack/redisstack-7.2-release-notes.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "list",
+        "geo",
+        "GEOADD",
+        "radius"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's how to store and query geospatial data in Redis:\n\n## Storing Geospatial Data\n\nUse the **`GEOADD`** command to store coordinates in a geospatial index. Note that **longitude comes before latitude** in this command.\n\n**Example:**\n```redis\nGEOADD bikes:rentable ",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 0.995
+    },
+    {
+      "test_id": "redis-dt-009",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis TimeSeries 适合什么场景？怎么配置 retention？",
+      "status": "passed",
+      "elapsed_seconds": 240.3079059123993,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 1384,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/7_sessions/7_3_multi_sessions/README.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redistimeseries/redistimeseries-1.0-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/timeseries/use_cases.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redistimeseries/redistimeseries-1.2-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/timeseries/configuration.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/timeseries/config.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "retention",
+        "TS."
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，我来回答您的问题：\n\n## Redis TimeSeries 适合的场景\n\nRedis TimeSeries 适合以下场景 [来源：../my-agent-kb/docs/redis-docs/develop/data-types/timeseries/use_cases.md]：\n\n### 1. **监控场景**\n- **数据中心监控**：CPU 利用率、网络延迟、IO 带宽利用率、应用响应时间等指标\n- **服务质量监控（电信）**：流量峰值分析、负载均衡、基础设施规划\n\n### 2. **传感器数据和 IoT**\n- **飞行数据记录**：高度、飞行路径、发动机温度、振",
+      "judge_score": 3.9,
+      "faithfulness": 0.667,
+      "relevancy": 0.934
+    },
+    {
+      "test_id": "redis-dt-010",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Compare Count-Min Sketch and Top-K in Redis probabilistic data structures",
+      "status": "passed",
+      "elapsed_seconds": 240.80604028701782,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1908,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/probabilistic/cuckoo-filter.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.0-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisbloom/redisbloom-2.4-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisbloom/redisbloom-2.0-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/probabilistic/top-k.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/probabilistic/hyperloglogs.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/probabilistic/count-min-sketch.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "list",
+        "count-min"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的 Redis 官方文档，以下是 **Count-Min Sketch** 和 **Top-K** 两种概率数据结构的详细比较：\n\n---\n\n## Count-Min Sketch vs Top-K 比较\n\n### 共同点\n\n1. **都是概率数据结构**：都属于 Redis Open Source 中的概率数据结构，用于处理数据流 [来源：top-k.md, count-min-sketch.md]\n2. **都使用亚线性空间**：以牺牲一定精度换取空间效率 [来源：count-min-sketch.md]\n3. **都用于频率相关场景**：两者功能有一定重叠，但适用于不同的使用场",
+      "judge_score": 4.3,
+      "faithfulness": 0.836,
+      "relevancy": 0.915
+    },
+    {
+      "test_id": "redis-ops-001",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How does Redis Sentinel handle automatic failover?",
+      "status": "passed",
+      "elapsed_seconds": 150.3894760608673,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 4600,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/sentinel-clients.md",
+        "docs/runbook/redis-failover.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sentinel",
+        "failover",
+        "master",
+        "AOF",
+        "replication",
+        "replica",
+        "monitor",
+        "OBJECT",
+        "MULTI",
+        "EXEC"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the documentation, here's how Redis Sentinel handles automatic failover:\n\n## Redis Sentinel Automatic Failover\n\n### Overview\n\nRedis Sentinel provides high availability for Redis by monitoring instances and automatically promoting a replica to master when the current master fails. The failov",
+      "judge_score": 2.6,
+      "faithfulness": 0.2,
+      "relevancy": 1.0
+    },
+    {
+      "test_id": "redis-ops-002",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis cluster 是怎么做数据分片的？hash slot 机制是什么？",
+      "status": "passed",
+      "elapsed_seconds": 158.9737467765808,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 1860,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "failover",
+        "master",
+        "cluster",
+        "hash slot",
+        "16384",
+        "user"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索结果，我已经找到了关于 Redis Cluster 数据分片和 hash slot 机制的详细信息。让我为您整理答案：\n\n---\n\n## Redis Cluster 数据分片机制\n\nRedis Cluster 使用 **hash slot（哈希槽）** 机制进行数据分片，而不是使用一致性哈希。\n\n### Hash Slot 机制核心原理\n\n**1. Hash Slot 数量与计算**\n- Redis Cluster 共有 **16384 个 hash slots**\n- 计算任意 key 的 hash slot 公式：\n  \n  ```\n  HASH_SLOT = CRC16(key)",
+      "judge_score": 4.2,
+      "faithfulness": 0.857,
+      "relevancy": 0.831
+    },
+    {
+      "test_id": "redis-ops-003",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is the difference between RDB and AOF persistence in Redis?",
+      "status": "passed",
+      "elapsed_seconds": 153.73696446418762,
+      "cost_usd": 0.0,
+      "num_turns": 2,
+      "answer_length": 4319,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/faq.md"
+      ],
+      "contexts_count": 1,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "failover",
+        "RDB",
+        "AOF",
+        "snapshot",
+        "replica",
+        "slow",
+        "memory",
+        "MEMORY",
+        "shutdown"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the search results, I have comprehensive information about the differences between RDB and AOF persistence in Redis. Let me provide you with a detailed answer.\n\n---\n\n## Difference Between RDB and AOF Persistence in Redis\n\nRedis provides two main persistence options: **RDB (Redis Database)**",
+      "judge_score": 4.6,
+      "faithfulness": 0.851,
+      "relevancy": 0.998
+    },
+    {
+      "test_id": "redis-ops-004",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to configure Redis ACL for fine-grained access control?",
+      "status": "passed",
+      "elapsed_seconds": 181.5027985572815,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 4368,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/security/acl.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sentinel",
+        "ACL",
+        "user",
+        "permission",
+        "replication",
+        "replica",
+        "PSYNC",
+        "MULTI",
+        "EXEC",
+        "script"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's how to configure Redis ACL for fine-grained access control:\n\n## Overview\n\nRedis ACL (Access Control List) allows you to limit connections in terms of:\n- **Commands** that can be executed\n- **Keys** that can be accessed\n- **Pub/Sub channels** that can be used\n",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "redis-ops-005",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis 主从复制的原理是什么？PSYNC 怎么工作？",
+      "status": "passed",
+      "elapsed_seconds": 196.64064002037048,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2228,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "docs/runbook/redis-failover.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "master",
+        "RDB",
+        "AOF",
+        "replication",
+        "replica",
+        "PSYNC"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的 Redis 官方文档，我来详细解答 Redis 主从复制的原理和 PSYNC 的工作机制：\n\n---\n\n## Redis 主从复制原理\n\nRedis 主从复制采用 **leader-follower（主从）模式**，基于三种主要机制工作 [来源：../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/replication.md]：\n\n### 1. 三种复制机制\n\n1. **正常连接时**：主节点通过向从节点发送命令流来保持从节点更新，复制的效果包括：客户端写入、键过期或被驱逐、以及其他任何改变主节点数据集的",
+      "judge_score": 4.1,
+      "faithfulness": 0.789,
+      "relevancy": 0.852
+    },
+    {
+      "test_id": "redis-ops-006",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to diagnose and fix Redis latency spikes?",
+      "status": "passed",
+      "elapsed_seconds": 213.76179909706116,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 5325,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/latency.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/troubleshooting.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/admin.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/latency-monitor.md",
+        "docs/runbook/kubernetes-pod-crashloop.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RDB",
+        "AOF",
+        "user",
+        "latency",
+        "slow",
+        "monitor",
+        "memory",
+        "optimization",
+        "MEMORY",
+        "EXEC",
+        "script"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's a comprehensive guide to diagnose and fix Redis latency spikes:\n\n---\n\n## How to Diagnose and Fix Redis Latency Spikes\n\n### Quick Checklist\n\n1. **Check for slow commands** using the Redis [Slow Log feature](/commands/slowlog)\n2. **For EC2 users**: Use HVM base",
+      "judge_score": 3.5,
+      "faithfulness": 0.51,
+      "relevancy": 0.997
+    },
+    {
+      "test_id": "redis-ops-007",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis memory optimization best practices",
+      "status": "passed",
+      "elapsed_seconds": 257.1475279331207,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2631,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/vector-sets/memory.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RDB",
+        "AOF",
+        "user",
+        "memory",
+        "optimization",
+        "OBJECT",
+        "MEMORY",
+        "EVAL"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "基于检索到的文档，以下是 **Redis 内存优化最佳实践**的完整总结：\n\n---\n\n## Redis 内存优化最佳实践\n\n### 1. 使用特殊编码优化小聚合数据类型 [来源：memory-optimization.md]\n\nRedis 2.2+ 对小型数据类型使用内存优化的特殊编码，可节省 **高达 10 倍内存**（平均节省 5 倍）：\n\n**Redis ≤ 6.2 配置：**\n```conf\nhash-max-ziplist-entries 512\nhash-max-ziplist-value 64\nzset-max-ziplist-entries 128 \nzset-max-zip",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "redis-ops-008",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to enable TLS encryption for Redis connections?",
+      "status": "passed",
+      "elapsed_seconds": 176.5115785598755,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2567,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/security/encryption.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/install/build-stack/almalinux-rocky-8.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/client-side-caching.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/security/acl.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sentinel",
+        "master",
+        "cluster",
+        "replication",
+        "replica",
+        "TLS",
+        "SSL",
+        "encrypt"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's how to enable TLS encryption for Redis connections:\n\n## How to Enable TLS Encryption for Redis Connections\n\n### 1. Build Redis with TLS Support\n\nSSL/TLS is supported by Redis starting with version 6 as an optional feature that needs to be enabled at compile t",
+      "judge_score": 2.6,
+      "faithfulness": 0.195,
+      "relevancy": 0.998
+    },
+    {
+      "test_id": "redis-ops-009",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis debugging 有哪些常用工具和命令？",
+      "status": "passed",
+      "elapsed_seconds": 259.35452604293823,
+      "cost_usd": 0.0,
+      "num_turns": 6,
+      "answer_length": 2719,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/reference/clients.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/lua-debugging.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "slow",
+        "debug",
+        "EXEC",
+        "EVAL",
+        "Lua",
+        "script"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，以下是 Redis 调试的常用工具和命令：\n\n## Redis 调试工具和命令\n\n### 1. GDB (GNU Debugger) - Redis 进程调试 [来源: ../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/debugging.md]\n\n**GDB 是调试 Redis 进程本身的主要工具**，有两种使用方式：\n- 附加到运行中的进程，实时检查状态\n- 使用 core file 检查已终止的进程\n\n**常用 GDB 命令：**\n- `bt` - 获取完整的堆栈跟踪（backtrace）\n-",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "redis-ops-010",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to upgrade a Redis cluster without downtime?",
+      "status": "passed",
+      "elapsed_seconds": 196.10742712020874,
+      "cost_usd": 0.0,
+      "num_turns": 6,
+      "answer_length": 3440,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/install/upgrade-module.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/admin.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/install/upgrade/cluster.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/gears-v1/installing-redisgears.md"
+      ],
+      "contexts_count": 5,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sentinel",
+        "failover",
+        "master",
+        "cluster",
+        "AOF",
+        "snapshot",
+        "replication",
+        "replica",
+        "upgrade"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the documentation, here's how to upgrade a Redis cluster without downtime:\n\n## How to Upgrade a Redis Cluster Without Downtime\n\n### For Redis Cluster (Open Source)\n\nThe key to zero-downtime upgrades is **upgrading nodes one at a time**, starting with replicas, and using manual failovers for",
+      "judge_score": 4.5,
+      "faithfulness": 0.848,
+      "relevancy": 0.998
+    },
+    {
+      "test_id": "redis-ops-011",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What signals does Redis handle and how to gracefully shutdown?",
+      "status": "passed",
+      "elapsed_seconds": 184.03186345100403,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2430,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/signals.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/vector-database.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RDB",
+        "AOF",
+        "replication",
+        "replica",
+        "memory",
+        "MEMORY",
+        "signal",
+        "SIGTERM",
+        "shutdown",
+        "Lua",
+        "script"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's a comprehensive answer about Redis signal handling and graceful shutdown:\n\n## Redis Signals Handled\n\n### Graceful Shutdown Signals: `SIGTERM` and `SIGINT`\n\nThese signals tell Redis to shut down gracefully [来源：../my-agent-kb/docs/redis-docs/operate/oss_and_sta",
+      "judge_score": 4.7,
+      "faithfulness": 0.93,
+      "relevancy": 0.94
+    },
+    {
+      "test_id": "redis-ops-012",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis pipelining 能提升多少性能？怎么用？",
+      "status": "passed",
+      "elapsed_seconds": 176.5963180065155,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1667,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/using-commands/pipelining.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "pipeline",
+        "RTT",
+        "EVAL",
+        "script"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据 Redis 官方文档，我来为您详细解答 Redis pipelining 的性能提升和使用方法：\n\n---\n\n## Redis Pipelining 性能提升\n\n### 性能提升幅度\n\n根据文档中的基准测试结果：\n\n| 场景 | 性能提升倍数 |\n|------|-------------|\n| **Mac OS X loopback 接口** | **5 倍** (1.18s → 0.25s 完成 10,000 次请求) |\n| **Raspberry Pi 3** | **约 3 倍** (28,000 ops/s → 80,000 ops/s) |\n| **Raspberry Pi",
+      "judge_score": 3.1,
+      "faithfulness": 0.467,
+      "relevancy": 0.828
+    },
+    {
+      "test_id": "redis-ops-013",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How do Redis transactions work? What is MULTI/EXEC?",
+      "status": "passed",
+      "elapsed_seconds": 185.08385229110718,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 3226,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/using-commands/transactions.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "monitor",
+        "MULTI",
+        "EXEC",
+        "transaction",
+        "script"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's how Redis transactions work:\n\n## Redis Transactions Overview\n\nRedis Transactions allow the execution of a group of commands in a single step. They are centered around four commands: **`MULTI`**, **`EXEC`**, **`DISCARD`**, and **`WATCH`** [来源: ../my-agent-kb/d",
+      "judge_score": 4.5,
+      "faithfulness": 0.917,
+      "relevancy": 0.877
+    },
+    {
+      "test_id": "redis-ops-014",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis client-side caching mechanism and invalidation",
+      "status": "passed",
+      "elapsed_seconds": 234.69932675361633,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 3183,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/reference/clients.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/client-side-caching.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/eval-intro.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "user",
+        "memory",
+        "TLS",
+        "OBJECT",
+        "MEMORY",
+        "client-side",
+        "caching",
+        "invalidat"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's a comprehensive answer about Redis client-side caching mechanism and invalidation:\n\n## Redis Client-Side Caching Mechanism\n\nRedis client-side caching (introduced in Redis 6) is called **Tracking**. It allows applications to cache data locally while receiving ",
+      "judge_score": 3.8,
+      "faithfulness": 0.647,
+      "relevancy": 0.928
+    },
+    {
+      "test_id": "redis-ops-015",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to use Redis Lua scripting with EVAL command?",
+      "status": "passed",
+      "elapsed_seconds": 178.8815634250641,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2538,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/programmability/functions-intro.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/eval-intro.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "failover",
+        "EXEC",
+        "caching",
+        "EVAL",
+        "Lua",
+        "script"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's how to use Redis Lua scripting with the EVAL command:\n\n## Basic Usage\n\nThe `EVAL` command executes a Lua script on the Redis server. The syntax is:\n\n```\nEVAL <script> <numkeys> [key ...] [arg ...]\n```\n\n- **`<script>`**: The Lua source code as a string\n- **`<n",
+      "judge_score": 4.3,
+      "faithfulness": 0.767,
+      "relevancy": 0.995
+    },
+    {
+      "test_id": "redis-so-001",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "My Redis is using too much memory, maxmemory is set but keys keep growing. How does eviction work?",
+      "status": "passed",
+      "elapsed_seconds": 214.31424355506897,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 3625,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/reference/clients.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/eviction/index.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "eviction",
+        "maxmemory",
+        "policy",
+        "replica",
+        "AOF",
+        "KEYS",
+        "keyspace",
+        "expired",
+        "memory",
+        "monitor"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's how eviction works when `maxmemory` is set:\n\n## How Redis Eviction Works\n\n**Eviction Trigger**: Whenever a client runs a command that adds data to the cache, Redis checks memory usage. If it exceeds the `maxmemory` limit, Redis evicts keys according to the co",
+      "judge_score": 3.9,
+      "faithfulness": 0.702,
+      "relevancy": 0.893
+    },
+    {
+      "test_id": "redis-so-002",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis Sentinel 一直报 failover-abort-no-good-slave，怎么排查？",
+      "status": "passed",
+      "elapsed_seconds": 426.52037501335144,
+      "cost_usd": 0.0,
+      "num_turns": 8,
+      "answer_length": 3084,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/sentinel-clients.md",
+        "docs/runbook/redis-failover.md"
+      ],
+      "contexts_count": 6,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sentinel",
+        "failover",
+        "replica",
+        "quorum"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，我现在有足够的信息来回答关于 `failover-abort-no-good-slave` 错误的问题。虽然文档中没有直接提到这个具体的错误消息，但有关于 `no-good-slave` Pub/Sub 事件和副本选择逻辑的详细说明。让我整理答案。\n\n---\n\n## Redis Sentinel `failover-abort-no-good-slave` 排查指南\n\n根据文档，当 Sentinel 日志中出现 `no-good-slave` 事件时，表示 **Sentinel 在尝试故障转移时找不到合适的副本进行提升**。以下是排查步骤：\n\n---\n\n### 一、错误原因分",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "redis-so-003",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "I need to run SORT and SUNION across different Redis cluster nodes, but getting CROSSSLOT error",
+      "status": "passed",
+      "elapsed_seconds": 181.12428975105286,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 3184,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/using-commands/multi-key-operations.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisstack/redisstack-7.2-release-notes.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "cluster",
+        "hash slot",
+        "CROSSSLOT",
+        "KEYS"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the documentation, I can now provide a comprehensive answer about the CROSSSLOT error with SORT and SUNION commands in Redis Cluster.\n\n## Answer: CROSSSLOT Error with SORT and SUNION in Redis Cluster\n\nThe **CROSSSLOT error** occurs because Redis Cluster requires that all keys involved in mu",
+      "judge_score": 3.9,
+      "faithfulness": 0.694,
+      "relevancy": 0.913
+    },
+    {
+      "test_id": "redis-so-004",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis AOF rewrite keeps failing with 'Can't open the append-only file', disk is not full",
+      "status": "failed",
+      "elapsed_seconds": 447.6484920978546,
+      "cost_usd": 0.0,
+      "num_turns": 0,
+      "answer_length": 0,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/install/upgrade/cluster.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/signals.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/eval-intro.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [
+        "答案过短 (0)"
+      ],
+      "answer_preview": "",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "redis-so-005",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "线上 Redis 延迟突然飙到 200ms，SLOWLOG 里全是 KEYS 命令，怎么办？",
+      "status": "passed",
+      "elapsed_seconds": 251.47408723831177,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 1796,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/latency.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.2-release-notes.md",
+        "docs/runbook/redis-failover.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisstack/redisstack-7.2-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/using-commands/keyspace.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/latency-monitor.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisgraph/redisgraph-2.2-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisgraph/redisgraph-2.8-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redistimeseries/redistimeseries-1.6-release-notes.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "latency",
+        "SLOWLOG",
+        "KEYS",
+        "keyspace",
+        "monitor"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据文档检索结果，现在我可以为您提供完整的解决方案。\n\n---\n\n## 问题诊断与解决方案\n\n您遇到的问题是 **KEYS 命令阻塞 Redis 服务器**导致的延迟飙升。这是 Redis 生产环境中**最常见**的延迟问题来源 [来源：../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/latency.md]。\n\n### 🔴 紧急处理措施\n\n**1. 立即定位并停止使用 KEYS 命令的客户端**\n- KEYS 命令会**阻塞 Redis 服务器**直到返回所有键，在大数据库中可能阻塞数秒\n",
+      "judge_score": 2.1,
+      "faithfulness": 0.209,
+      "relevancy": 0.761
+    },
+    {
+      "test_id": "redis-so-006",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to implement a rate limiter using Redis sorted sets?",
+      "status": "passed",
+      "elapsed_seconds": 478.6856780052185,
+      "cost_usd": 0.0,
+      "num_turns": 8,
+      "answer_length": 728,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/ragbench-techqa/c3349692.md",
+        "../my-agent-kb/docs/redis-docs/develop/using-commands/pipelining.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.0-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redistimeseries/redistimeseries-1.0-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/concepts/triggers/Stream_Triggers.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisstack/redisstack-7.2-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.6-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/protocol-spec.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sets.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/concepts/JavaScript_API.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/functions-intro.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/faq.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/probabilistic/hyperloglogs.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redistimeseries/redistimeseries-1.12-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md",
+        "../my-agent-kb/docs/ragbench-techqa/c3349692.md"
+      ],
+      "contexts_count": 7,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sorted set",
+        "score",
+        "ZADD"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据我的检索结果，知识库中的 Redis 官方文档确认了可以使用 sorted sets 实现滑动窗口限流器，但**没有提供具体的实现步骤和代码示例**。\n\n文档中只提到：\n> * Rate limiters. In particular, you can use a sorted set to build a sliding-window rate limiter to prevent excessive API requests. [来源：../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md]\n\n文档提供了 sor",
+      "judge_score": 2.2,
+      "faithfulness": 0.739,
+      "relevancy": 0.0
+    },
+    {
+      "test_id": "redis-so-007",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis keyspace notifications 怎么配置？我想监听 key 过期事件",
+      "status": "passed",
+      "elapsed_seconds": 176.05398845672607,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1774,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/pubsub/keyspace-notifications.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/concepts/triggers/KeySpace_Triggers.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "maxmemory",
+        "cluster",
+        "KEYS",
+        "keyspace",
+        "notification",
+        "expired",
+        "memory"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据 Redis 官方文档，我来介绍如何配置 keyspace notifications 来监听 key 过期事件：\n\n## Redis Keyspace Notifications 配置指南\n\n### 1. 启用通知功能\n\n默认情况下，keyspace event notifications 是**禁用**的，因为该功能会消耗一定的 CPU 资源。需要通过以下两种方式之一启用：\n\n#### 方法一：使用 `redis.conf` 配置文件\n```\nnotify-keyspace-events Ex\n```\n\n#### 方法二：使用 `CONFIG SET` 命令（运行时动态配置）\n```b",
+      "judge_score": 3.7,
+      "faithfulness": 0.682,
+      "relevancy": 0.845
+    },
+    {
+      "test_id": "redis-so-008",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is the Redis RESP protocol? How does client-server communication work?",
+      "status": "passed",
+      "elapsed_seconds": 194.77294492721558,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 3312,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/reference/protocol-spec.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RESP",
+        "protocol",
+        "bulk string",
+        "monitor"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's a comprehensive answer about the RESP protocol and client-server communication:\n\n## What is the Redis RESP Protocol?\n\n**RESP (Redis Serialization Protocol)** is the wire protocol that Redis clients use to communicate with Redis servers. It was designed to be:",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "redis-so-009",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis cluster spec says 16384 hash slots, why this number? How are keys mapped?",
+      "status": "passed",
+      "elapsed_seconds": 154.25913000106812,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 1658,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "cluster",
+        "hash slot",
+        "KEYS",
+        "16384",
+        "CRC16"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的 Redis Cluster 规范文档，我来回答您的问题：\n\n## Why 16384 hash slots?\n\nRedis Cluster 使用 **16384** 个哈希槽，这个数量的设计原因是：\n\n1. **二进制优化**：16384 = 2^14，这意味着可以使用位运算代替取模运算。在代码实现中，`CRC16(key) mod 16384` 可以优化为 `CRC16(key) & 16383`（即使用低 14 位），这样计算更高效 [来源：../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/clust",
+      "judge_score": 4.3,
+      "faithfulness": 0.81,
+      "relevancy": 0.941
+    },
+    {
+      "test_id": "redis-so-010",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "我的 Redis 用了 10GB 内存但只存了 2GB 数据，内存碎片怎么处理？",
+      "status": "passed",
+      "elapsed_seconds": 152.16330814361572,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1400,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/admin.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/faq.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "eviction",
+        "maxmemory",
+        "policy",
+        "memory"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的 Redis 官方文档，我来解释您的内存碎片问题及处理方法：\n\n## 问题分析\n\n您遇到的情况是典型的 **Redis 内存碎片**现象。根据您的描述（10GB 内存占用但只存了 2GB 数据），碎片率约为 5 倍（10GB/2GB）。\n\n## 原因说明\n\n根据 Redis 官方文档 [来源：../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md]：\n\n1. **Redis 不会总是将内存返还给操作系统**：当您删除 key 时，Redis",
+      "judge_score": 3.6,
+      "faithfulness": 0.614,
+      "relevancy": 0.875
+    },
+    {
+      "test_id": "redis-so-011",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to set up Redis Sentinel with 3 nodes for high availability?",
+      "status": "passed",
+      "elapsed_seconds": 119.4315025806427,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 5004,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "docs/runbook/redis-failover.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sentinel",
+        "failover",
+        "replica",
+        "RESP",
+        "quorum",
+        "monitor"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the retrieved documentation, here's how to set up Redis Sentinel with 3 nodes for high availability:\n\n## How to Set Up Redis Sentinel with 3 Nodes for High Availability\n\n### Overview\n\nRedis Sentinel provides high availability for Redis by monitoring masters and replicas, detecting failures,",
+      "judge_score": 3.6,
+      "faithfulness": 0.549,
+      "relevancy": 0.998
+    },
+    {
+      "test_id": "redis-so-012",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis Functions vs Lua scripts — what's the difference and when to use which?",
+      "status": "passed",
+      "elapsed_seconds": 205.87399339675903,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 2553,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/programmability/functions-intro.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/lua-debugging.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/lua-api.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/eval-intro.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "AOF",
+        "KEYS",
+        "monitor",
+        "function",
+        "FCALL"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，我现在可以为您详细解答 Redis Functions 和 Lua scripts 之间的区别以及使用场景。\n\n---\n\n## Redis Functions vs Lua Scripts — 区别与使用建议\n\n### 核心区别\n\n| 特性 | Lua Scripts (EVAL) | Redis Functions |\n|------|-------------------|-----------------|\n| **引入版本** | Redis 2.6+ | Redis 7.0+ |\n| **定位** | 应用程序域的一部分 | 数据库的一等公民 (first-clas",
+      "judge_score": 4.7,
+      "faithfulness": 0.904,
+      "relevancy": 0.984
+    },
+    {
+      "test_id": "redis-so-013",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to benchmark Redis performance? What tool should I use?",
+      "status": "passed",
+      "elapsed_seconds": 147.29602575302124,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2834,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/benchmarks/index.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "cluster",
+        "latency",
+        "KEYS",
+        "keyspace",
+        "memory",
+        "benchmark",
+        "redis-benchmark",
+        "throughput"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## How to Benchmark Redis Performance\n\nBased on the Redis documentation, here's how to benchmark Redis performance:\n\n### Primary Tool: `redis-benchmark`\n\nRedis includes the **`redis-benchmark`** utility, which simulates running commands by N clients simultaneously sending M total queries (similar to",
+      "judge_score": 3.7,
+      "faithfulness": 0.604,
+      "relevancy": 0.958
+    },
+    {
+      "test_id": "redis-so-014",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis vector sets 怎么做 filtered search？能结合标签过滤吗？",
+      "status": "passed",
+      "elapsed_seconds": 147.66720294952393,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1733,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/vector-sets/filtered-search.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/vector-database.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "vector",
+        "filter",
+        "search"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的 Redis 官方文档，我来回答关于 Redis vector sets filtered search 的问题：\n\n## Redis Vector Sets 如何做 Filtered Search\n\nRedis vector sets 支持在向量相似度搜索时结合标量过滤（scalar filtering）。核心机制如下：\n\n### 1. 基本用法\n\n使用 `VSIM` 命令配合 `FILTER` 选项进行带过滤的向量搜索：\n\n```bash\nVSIM movies VALUES 3 0.5 0.8 0.2 FILTER '.year >= 1980 and .rating > 7",
+      "judge_score": 4.7,
+      "faithfulness": 0.972,
+      "relevancy": 0.87
+    },
+    {
+      "test_id": "redis-so-015",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to install Redis Stack on Ubuntu with apt?",
+      "status": "passed",
+      "elapsed_seconds": 164.43052291870117,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1133,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/install/archive/install-stack/linux.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/install/archive/install-stack/binaries.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/install/archive/install-redis/install-redis-on-windows.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/install/install-stack/apt.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "install",
+        "apt",
+        "ubuntu"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here's how to install Redis Stack on Ubuntu with apt:\n\n## Install Redis Stack on Ubuntu using APT\n\n### Step 1: Add the repository to the APT index and install\n\n```bash\nsudo apt-get install lsb-release curl gpg\ncurl -fsSL https://packages.redis.io/gpg | sudo gpg --de",
+      "judge_score": 4.8,
+      "faithfulness": 1.0,
+      "relevancy": 0.906
+    },
+    {
+      "test_id": "llm-rag-001",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a local RAG agent with Llama?",
+      "status": "passed",
+      "elapsed_seconds": 168.6999750137329,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 2973,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_embedding_gemma/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/qwen_local_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/deepseek_local_rag_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/local_rag_agent/README.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "local",
+        "Llama",
+        "agentic",
+        "PDF",
+        "GitHub",
+        "repository"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## How to Build a Local RAG Agent with Llama\n\nBased on the documentation, here are two approaches to build a local RAG agent using Llama:\n\n---\n\n### **Option 1: Local RAG Agent with Llama 3.2 (Agno v2.0 + Qdrant)**\n\nThis is a fully local RAG implementation using Llama 3.2 via Ollama with Qdrant as th",
+      "judge_score": 4.7,
+      "faithfulness": 0.918,
+      "relevancy": 0.979
+    },
+    {
+      "test_id": "llm-rag-002",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is Corrective RAG and how does it improve retrieval quality?",
+      "status": "passed",
+      "elapsed_seconds": 176.3872354030609,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2501,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "mcp__knowledge-base__keyword_search",
+        "Read"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/corrective_rag/README.md",
+        "docs/eval-review.md",
+        "../my-agent-kb/docs/awesome-llm-apps/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "local",
+        "corrective",
+        "retrieval"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the retrieved documents, here's what **Corrective RAG** is and how it improves retrieval quality:\n\n## What is Corrective RAG?\n\n**Corrective RAG** is a sophisticated Retrieval-Augmented Generation (RAG) system that implements a **corrective multi-stage workflow** using LangGraph. It combines",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 1.0
+    },
+    {
+      "test_id": "llm-rag-003",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "怎么用 Agentic RAG 实现带推理能力的检索？",
+      "status": "passed",
+      "elapsed_seconds": 348.7076280117035,
+      "cost_usd": 0.0,
+      "num_turns": 10,
+      "answer_length": 3216,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/doc-preprocess-plan.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_with_reasoning/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_math_agent/README.md",
+        "docs/design.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/corrective_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_with_reasoning/rag_reasoning_agent.py",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_embedding_gemma/README.md",
+        "docs/eval-review.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_gpt5/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_with_reasoning/requirements.txt",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/deepseek_local_rag_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/local_rag_agent/README.md"
+      ],
+      "contexts_count": 9,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "agentic",
+        "reasoning",
+        "GitHub"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据知识库中的文档，我现在可以为您详细解答如何用 Agentic RAG 实现带推理能力的检索。\n\n---\n\n## 🧐 如何用 Agentic RAG 实现带推理能力的检索\n\n### 核心概念\n\nAgentic RAG with Reasoning 是一个复杂的 RAG 系统，它展示了 AI Agent 的**逐步推理过程**。该系统使用 **Agno 框架**、**Gemini** 和 **OpenAI** 构建，允许用户添加网络资源、提问，并**实时观察 Agent 的思考过程** [来源：../my-agent-kb/docs/awesome-llm-apps/rag_tutorials",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "llm-rag-004",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a RAG app that can chat with PDF documents?",
+      "status": "passed",
+      "elapsed_seconds": 256.6659355163574,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2127,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_research_papers/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_pdf/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/autonomous_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/voice_ai_agents/voice_rag_openaisdk/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/local_hybrid_search_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/hybrid_search_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/gemini_agentic_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/contextualai_rag_agent/README.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "local",
+        "Llama",
+        "retrieval",
+        "PDF",
+        "chat",
+        "GitHub",
+        "repository"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the knowledge base search results, here's how to build a RAG app that can chat with PDF documents:\n\n## How to Build a RAG App to Chat with PDF Documents\n\n### Overview\nThis is a LLM app with RAG (Retrieval Augmented Generation) that allows you to chat with PDF documents in just 30 lines of P",
+      "judge_score": 4.4,
+      "faithfulness": 0.8,
+      "relevancy": 0.998
+    },
+    {
+      "test_id": "llm-rag-005",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is Vision RAG? How to do RAG with images?",
+      "status": "passed",
+      "elapsed_seconds": 173.41360640525818,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 3002,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/vision_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/rag-as-a-service/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/corrective_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_embedding_gemma/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "retrieval",
+        "PDF",
+        "vision",
+        "image",
+        "Cohere"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## What is Vision RAG?\n\n**Vision RAG** is a visual Retrieval-Augmented Generation (RAG) system that combines multimodal embedding and visual question answering to enable users to ask questions about images and PDF documents using natural language. [来源：../my-agent-kb/docs/awesome-llm-apps/rag_tutoria",
+      "judge_score": 4.4,
+      "faithfulness": 0.878,
+      "relevancy": 0.908
+    },
+    {
+      "test_id": "llm-rag-006",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a RAG chain using LangChain?",
+      "status": "passed",
+      "elapsed_seconds": 229.94423127174377,
+      "cost_usd": 0.0,
+      "num_turns": 9,
+      "answer_length": 3564,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/llama3.1_local_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_with_reasoning/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/ai_blog_search/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/rag_database_routing/README.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/rag.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/voice_ai_agents/voice_rag_openaisdk/README.md"
+      ],
+      "contexts_count": 7,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "local",
+        "Llama",
+        "retrieval",
+        "agentic",
+        "chat",
+        "chain",
+        "LangChain"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on my search of the knowledge base, I found information about building RAG chains with LangChain. Here's what the documentation covers:\n\n## How to Build a RAG Chain Using LangChain\n\n### What is RAG?\n\nRAG (Retrieval Augmented Generation) involves three main steps [来源: ../my-agent-kb/docs/redis-",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "llm-rag-007",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to chat with YouTube videos using RAG?",
+      "status": "passed",
+      "elapsed_seconds": 117.34436130523682,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 2253,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/llama3.1_local_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_github/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_pdf/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos/FIX_SUMMARY.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "retrieval",
+        "chat",
+        "chain",
+        "YouTube",
+        "video",
+        "GitHub",
+        "repository"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## How to Chat with YouTube Videos Using RAG\n\nBased on the documentation, here's how to build an LLM app with RAG to chat with YouTube videos:\n\n### Overview\n\nThis is a Streamlit app that uses **Retrieval Augmented Generation (RAG)** to provide accurate answers to questions based on the content of Yo",
+      "judge_score": 4.7,
+      "faithfulness": 1.0,
+      "relevancy": 0.866
+    },
+    {
+      "test_id": "llm-rag-008",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a RAG app with Cohere Command R?",
+      "status": "passed",
+      "elapsed_seconds": 109.97238969802856,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2141,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/hybrid_search_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/rag_agent_cohere/README.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "retrieval",
+        "agentic",
+        "PDF",
+        "chat",
+        "chain",
+        "LangChain",
+        "Cohere",
+        "command",
+        "research",
+        "GitHub",
+        "repository"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## How to Build a RAG App with Cohere Command R\n\nBased on the documentation, here's how to build a RAG (Retrieval-Augmented Generation) application using Cohere's Command R model:\n\n### Overview\n\nThis is a **RAG Agentic system** built with:\n- **Cohere Command-r7b-12-2024** model for Chat and RAG\n- **",
+      "judge_score": 4.8,
+      "faithfulness": 0.964,
+      "relevancy": 0.941
+    },
+    {
+      "test_id": "llm-rag-009",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Can I chat with my Gmail inbox using an LLM?",
+      "status": "passed",
+      "elapsed_seconds": 170.26790571212769,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1070,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_gmail/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/single_agent_apps/windows_use_autonomous_agent/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "chat",
+        "Gmail",
+        "GitHub"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## 答案\n\n**是的，你可以使用 LLM 与 Gmail 收件箱进行聊天！** 知识库中有一个完整的项目可以实现这个功能。\n\n### 项目概述\n\n这是一个使用 RAG（检索增强生成）技术的 LLM 应用，只需 30 行 Python 代码就能实现与 Gmail 收件箱聊天。该应用可以根据你 Gmail 收件箱的内容提供准确的问题答案 [来源：../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_gmail/README.md]。\n\n### 主要功能\n\n- 连接到你的 Gma",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 0.993
+    },
+    {
+      "test_id": "llm-rag-010",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a chat app for research papers?",
+      "status": "passed",
+      "elapsed_seconds": 179.35966777801514,
+      "cost_usd": 0.0,
+      "num_turns": 6,
+      "answer_length": 1944,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_research_papers/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/llama3.1_local_rag/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_pdf/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_research_papers/requirements.txt",
+        "../my-agent-kb/docs/awesome-llm-apps/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_research_papers/chat_arxiv.py"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "local",
+        "retrieval",
+        "chat",
+        "research",
+        "paper",
+        "GitHub",
+        "repository"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "The requirements.txt and Python code files are not stored locally - only the README documentation is available. Based on the documentation I found, here's how to build a chat app for research papers:\n\n---\n\n## How to Build a Chat App for Research Papers\n\nBased on the知识库 documentation, here's a comple",
+      "judge_score": 4.5,
+      "faithfulness": 0.838,
+      "relevancy": 0.969
+    },
+    {
+      "test_id": "llm-rag-011",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to chat with a GitHub repository using RAG?",
+      "status": "passed",
+      "elapsed_seconds": 178.29762434959412,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2066,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_gmail/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_youtube_videos/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_pdf/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/chat_with_github/README.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "retrieval",
+        "chat",
+        "chain",
+        "GitHub",
+        "repository"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the knowledge base documentation, here's how to chat with a GitHub repository using RAG:\n\n## How to Chat with a GitHub Repository Using RAG\n\nThis tutorial shows you how to build an LLM app with RAG to chat with a GitHub repository in just 30 lines of Python code. The app uses **Retrieval Au",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 0.996
+    },
+    {
+      "test_id": "llm-rag-012",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is a streaming AI chatbot and how to build one?",
+      "status": "passed",
+      "elapsed_seconds": 174.82734608650208,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 4187,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_apps_with_memory_tutorials/llm_app_personalized_memory/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/chat_with_X_tutorials/streaming_ai_chatbot/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RAG",
+        "local",
+        "chat",
+        "GitHub",
+        "repository",
+        "streaming",
+        "chatbot",
+        "real-time"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## What is a Streaming AI Chatbot?\n\nA **streaming AI chatbot** is a chatbot that demonstrates **real-time AI streaming** and **conversation state management**. It uses token-by-token response generation, providing users with immediate feedback as the AI generates responses rather than waiting for th",
+      "judge_score": 4.9,
+      "faithfulness": 0.98,
+      "relevancy": 0.999
+    },
+    {
+      "test_id": "llm-agent-001",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a multi-agent finance team with AI?",
+      "status": "passed",
+      "elapsed_seconds": 181.39562153816223,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 3934,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_vc_due_diligence_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_finance_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_financial_coach_agent/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "finance",
+        "agent",
+        "team",
+        "document",
+        "analysis",
+        "web",
+        "personalized",
+        "persistent",
+        "RAG"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the knowledge base documentation, here's how to build a multi-agent finance team with AI:\n\n## Building a Multi-Agent Finance Team with AI\n\nThere are two main approaches documented in the knowledge base:\n\n---\n\n### Option 1: AI Finance Agent Team with Web Access (OpenAI/GPT-4o)\n\nThis approach",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "llm-agent-002",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is an AI recruitment agent team? How does it work?",
+      "status": "passed",
+      "elapsed_seconds": 165.5448615550995,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2632,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_recruitment_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_teaching_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "team",
+        "recruitment",
+        "hiring",
+        "document",
+        "analysis"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the documentation, here's what an **AI Recruitment Agent Team** is and how it works:\n\n## What is an AI Recruitment Agent Team?\n\nAn AI Recruitment Agent Team is a **Streamlit application that simulates a full-service recruitment team using multiple AI agents** to automate and streamline the ",
+      "judge_score": 4.9,
+      "faithfulness": 1.0,
+      "relevancy": 0.974
+    },
+    {
+      "test_id": "llm-agent-003",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build an AI travel planner with multiple agents?",
+      "status": "passed",
+      "elapsed_seconds": 244.9197702407837,
+      "cost_usd": 0.0,
+      "num_turns": 6,
+      "answer_length": 5977,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/ragbench-techqa/6b083006.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/single_agent_apps/ai_meeting_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_services_agency/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/backend/agents/README.md",
+        "docs/eval-strategy-discussion.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/mcp_ai_agents/ai_travel_planner_mcp_agent_team/README.md",
+        "docs/ragbench-techqa/e6c86628.md",
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/9_multi_agent_orchestration/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/multi_agent_trust_layer/README.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "team",
+        "travel",
+        "planner",
+        "document",
+        "scraping",
+        "web"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the documentation, here's how to build an AI travel planner with multiple agents:\n\n---\n\n## How to Build an AI Travel Planner with Multiple Agents\n\n### Overview\n\n**TripCraft AI** is a reference implementation of a multi-agent travel planning system. It transforms simple user inputs into comp",
+      "judge_score": 3.8,
+      "faithfulness": 0.586,
+      "relevancy": 0.999
+    },
+    {
+      "test_id": "llm-agent-004",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "AI agent that can play chess — how is it built?",
+      "status": "passed",
+      "elapsed_seconds": 173.92171216011047,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1296,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/archive/SUMMARY.md",
+        "docs/ragbench-techqa/7052cd37.md",
+        "docs/archive/COMPLETE_SUMMARY.md",
+        "docs/eval-upgrade-plan.md",
+        "docs/crag-finance/4a1c8e19.md",
+        "docs/design.md",
+        "docs/pageindex-insights/PAGEINDEX_INSIGHTS.md",
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/1_starter_agent/README.md",
+        "docs/ragbench-techqa/92f09282.md",
+        "docs/ragbench-techqa/da35ef0b.md",
+        "docs/ragbench-techqa/c744eb21.md",
+        "docs/ragbench-techqa/e2adfbb4.md",
+        "docs/ragbench-techqa/b2bf079d.md",
+        "docs/ragbench-techqa/3e91c810.md",
+        "docs/crag-finance/1bdcb7a6.md",
+        "docs/archive/DUAL_LAYER_SUMMARY.md",
+        "docs/dual-repo-architecture.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/autonomous_game_playing_agent_apps/ai_tic_tac_toe_agent/README.md",
+        "docs/eval-strategy-discussion.md",
+        "docs/progress-2025-02-13.md",
+        "docs/eval-review.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent/README.md",
+        "docs/crag-finance/92ff400b.md",
+        "docs/doc-preprocess-plan.md",
+        "docs/guides/demo.md",
+        "docs/design-review.md",
+        "docs/archive/STATUS.md",
+        "docs/ragbench-techqa/de28e0c4.md",
+        "docs/crag-finance/054a2842.md",
+        "docs/ragbench-techqa/198a9314.md",
+        "docs/dual-layer-architecture.md",
+        "docs/crag-finance/f77b7a50.md",
+        "docs/ragbench-techqa/94098d59.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "chess",
+        "game"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据知识库文档，以下是 **AI 国际象棋代理（AI Chess Agent）** 的构建方法：\n\n## 📋 项目概述\n\n这是一个高级国际象棋游戏系统，两个 AI 代理使用 **Autogen** 框架在 **Streamlit** 应用中进行对弈。系统具有稳健的走法验证和游戏状态管理功能 [来源：../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/autonomous_game_playing_agent_apps/ai_chess_agent/README.md]\n\n## 🏗️ 多代理架构\n\n该系统由三个代理组成：\n\n| 代理 |",
+      "judge_score": 4.7,
+      "faithfulness": 0.971,
+      "relevancy": 0.919
+    },
+    {
+      "test_id": "llm-agent-005",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build an AI legal agent team for document review?",
+      "status": "passed",
+      "elapsed_seconds": 175.01036643981934,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 3035,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_recruitment_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_teaching_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "team",
+        "legal",
+        "document",
+        "analysis"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the knowledge base documentation, here's how to build an AI legal agent team for document review:\n\n---\n\n## 👨‍⚖️ How to Build an AI Legal Agent Team for Document Review\n\n### Overview\nA Streamlit application that simulates a full-service legal team using multiple AI agents to analyze legal do",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 0.998
+    },
+    {
+      "test_id": "llm-agent-006",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is an AI SEO audit team and how does it analyze websites?",
+      "status": "passed",
+      "elapsed_seconds": 258.5510015487671,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2547,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_vc_due_diligence_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_seo_audit_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_real_estate_agent_team/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "team",
+        "SEO",
+        "audit",
+        "website",
+        "competitor",
+        "intelligence",
+        "analysis",
+        "scraping",
+        "web"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## What is an AI SEO Audit Team?\n\nThe **AI SEO Audit Team** is an autonomous, multi-agent workflow built with Google ADK (Agent Development Kit). It takes a webpage URL, crawls the live page, researches real-time SERP (Search Engine Results Page) competition, and produces a polished, prioritized SEO",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 0.98
+    },
+    {
+      "test_id": "llm-agent-007",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a competitor intelligence agent with AI?",
+      "status": "passed",
+      "elapsed_seconds": 257.4550540447235,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 2999,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/guides/demo.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/single_agent_apps/ai_consultant_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_competitor_intelligence_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/README.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "team",
+        "document",
+        "website",
+        "competitor",
+        "intelligence",
+        "analysis",
+        "web"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the knowledge base documentation, here's how to build a **Competitor Intelligence Agent with AI**:\n\n---\n\n## 🧲 AI Competitor Intelligence Agent Team\n\nThe AI Competitor Intelligence Agent Team is a powerful competitor analysis tool powered by **Firecrawl** and **Agno's AI Agent framework**. T",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 0.986
+    },
+    {
+      "test_id": "llm-agent-008",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "AI agent for web scraping — what tools does it use?",
+      "status": "passed",
+      "elapsed_seconds": 160.31189823150635,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 1474,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/google_adk_crash_course/4_tool_using_agent/4_4_mcp_tools/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/starter_ai_agents/web_scrapping_ai_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/starter_ai_agents/web_scrapping_ai_agent/scrapegraph_ai_sdk/README.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "website",
+        "scraping",
+        "web"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据知识库文档，AI agent for web scraping 主要使用以下工具：\n\n## 核心工具：ScrapeGraph AI\n\n该 Web Scraping AI Agent 基于 **ScrapeGraph AI** 构建，提供两种实现方式：\n\n### 1. 🏠 Local Library（本地库版本）\n- 使用 `scrapegraphai` Python 库\n- 在本地机器上运行\n- 需要 OpenAI API Key\n\n### 2. ☁️ Cloud SDK（云 SDK 版本）\n使用 ScrapeGraph AI API，提供以下高级工具：\n\n| 工具 | 功能 |\n|---",
+      "judge_score": 3.6,
+      "faithfulness": 0.571,
+      "relevancy": 0.934
+    },
+    {
+      "test_id": "llm-agent-009",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to fine-tune Llama 3.2 for a specific task?",
+      "status": "passed",
+      "elapsed_seconds": 97.46130084991455,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 1623,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_finetuning_tutorials/llama3.2_finetuning/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_finetuning_tutorials/gemma3_finetuning/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_embedding_gemma/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/local_rag_agent/README.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "fine-tune",
+        "Llama",
+        "training"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "</think>\n\n基于知识库检索结果，我为您提供 Llama 3.2 微调的完整指南：\n\n---\n\n## How to Fine-tune Llama 3.2 for a Specific Task\n\n根据知识库中的教程文档，以下是使用 [Unsloth](https://unsloth.ai/) 库微调 Llama 3.2 模型的方法：\n\n### 安装步骤\n\n1. **克隆仓库**：\n```bash\ngit clone https://github.com/Shubhamsaboo/awesome-llm-apps.git\ncd awesome-llm-apps/llm_finetunin",
+      "judge_score": 4.9,
+      "faithfulness": 0.98,
+      "relevancy": 0.978
+    },
+    {
+      "test_id": "llm-agent-010",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to add persistent memory to an LLM application?",
+      "status": "passed",
+      "elapsed_seconds": 195.15209984779358,
+      "cost_usd": 0.0,
+      "num_turns": 7,
+      "answer_length": 2559,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_apps_with_memory_tutorials/llm_app_personalized_memory/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_travel_agent_memory/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_apps_with_memory_tutorials/multi_llm_memory/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/README.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "travel",
+        "document",
+        "Llama",
+        "memory",
+        "personalized",
+        "persistent",
+        "RAG"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the knowledge base search, here's how to add persistent memory to an LLM application:\n\n## How to Add Persistent Memory to an LLM Application\n\nAccording to the documentation, persistent memory in LLM applications is implemented using **Qdrant vector store** (often combined with **Mem0** for ",
+      "judge_score": 4.6,
+      "faithfulness": 0.882,
+      "relevancy": 0.998
+    },
+    {
+      "test_id": "llm-agent-011",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a voice RAG agent using OpenAI SDK?",
+      "status": "passed",
+      "elapsed_seconds": 186.69713592529297,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1639,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/voice_ai_agents/voice_rag_openaisdk/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/11_voice/static/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/11_voice/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/11_voice/realtime/README.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "voice",
+        "RAG"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据知识库文档，以下是使用 OpenAI SDK 构建 Voice RAG Agent 的完整指南：\n\n---\n\n## 🎙️ 如何使用 OpenAI SDK 构建 Voice RAG Agent\n\n### 概述\n这是一个使用 OpenAI SDK 和 Streamlit 构建的语音增强检索增强生成 (RAG) 系统。用户可以上传 PDF 文档、提问，并通过 OpenAI 的文本转语音功能接收文本和语音响应。[来源：../my-agent-kb/docs/awesome-llm-apps/voice_ai_agents/voice_rag_openaisdk/README.md]\n\n### 主要",
+      "judge_score": 4.1,
+      "faithfulness": 0.691,
+      "relevancy": 0.989
+    },
+    {
+      "test_id": "llm-agent-012",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is an AI VC due diligence agent team?",
+      "status": "passed",
+      "elapsed_seconds": 177.37221598625183,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2991,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_vc_due_diligence_agent_team/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "team",
+        "document",
+        "website",
+        "competitor",
+        "analysis",
+        "web",
+        "VC",
+        "due diligence",
+        "investment"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## AI VC Due Diligence Agent Team\n\nAn **AI VC Due Diligence Agent Team** is a multi-agent AI pipeline for startup investment analysis, built with Google ADK, Gemini 3 Pro, Gemini 3 Flash, and Nano Banana Pro. It works with any startup—from early-stage unknowns to well-funded companies—by just provid",
+      "judge_score": 4.9,
+      "faithfulness": 1.0,
+      "relevancy": 0.926
+    },
+    {
+      "test_id": "llm-agent-013",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build an AI teaching agent team for education?",
+      "status": "passed",
+      "elapsed_seconds": 147.3534073829651,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2986,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "mcp__knowledge-base__keyword_search",
+        "Read"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_speech_trainer_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_recruitment_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_teaching_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "team",
+        "document",
+        "personalized",
+        "teaching",
+        "education"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## How to Build an AI Teaching Agent Team for Education\n\nBased on the documentation, here's how to build an AI Teaching Agent Team:\n\n---\n\n### 📋 Overview\n\nThe AI Teaching Agent Team is a Streamlit application that brings together **4 specialized AI teaching agents** who collaborate like a professiona",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 0.987
+    },
+    {
+      "test_id": "llm-fw-001",
+      "category": "llm-framework",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "OpenAI Agents SDK crash course — how to get started?",
+      "status": "passed",
+      "elapsed_seconds": 167.11730360984802,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1528,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "OpenAI",
+        "SDK",
+        "agent"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## OpenAI Agents SDK Crash Course — 入门指南\n\n根据知识库中的教程文档，以下是 OpenAI Agents SDK Crash Course 的入门方法：\n\n### 🚀 快速开始步骤\n\n1. **选择教程** — 从教程列表中选择一个开始（建议按顺序学习）\n2. **安装依赖** — `pip install -r requirements.txt`\n3. **设置环境变量** — 复制 `env.example` 到 `.env` 并添加你的 API key\n4. **运行示例** — 开始学习！\n\n### 🛠️ 前置要求\n\n开始前请确保具备：\n- **P",
+      "judge_score": 4.2,
+      "faithfulness": 0.786,
+      "relevancy": 0.931
+    },
+    {
+      "test_id": "llm-fw-002",
+      "category": "llm-framework",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Google ADK crash course for building AI agents",
+      "status": "passed",
+      "elapsed_seconds": 171.64601755142212,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 1909,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/google_adk_crash_course/README.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "OpenAI",
+        "agent",
+        "Google",
+        "ADK",
+        "review"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据知识库检索结果，以下是关于 **Google ADK Crash Course** 的完整信息：\n\n---\n\n## 🚀 Google ADK Crash Course 概述\n\n这是一个全面的教程系列，用于从基础到高级概念学习 Google 的 Agent Development Kit (ADK)。该课程旨在帮助你从零开始掌握使用 Google ADK 构建 AI 代理的能力。\n\n> **📌 注意：课程已更新为新的 Gemini 3 Flash 模型！**  \n> 所有教程均使用 **Gemini 3 Flash** 模型（如 `gemini-3-flash-preview`）。\n\n---",
+      "judge_score": 3.9,
+      "faithfulness": 0.841,
+      "relevancy": 0.702
+    },
+    {
+      "test_id": "llm-fw-003",
+      "category": "llm-framework",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a multimodal AI agent?",
+      "status": "passed",
+      "elapsed_seconds": 192.76067471504211,
+      "cost_usd": 0.0,
+      "num_turns": 6,
+      "answer_length": 4413,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_uiux_feedback_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/starter_ai_agents/multimodal_ai_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_coding_agent_team/README.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "Google",
+        "ADK",
+        "multimodal",
+        "code",
+        "support",
+        "design"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the retrieved documentation, here's how to build a multimodal AI agent:\n\n---\n\n## How to Build a Multimodal AI Agent\n\nBased on the documentation, there are several approaches to building multimodal AI agents. Here are the key methods:\n\n---\n\n### **Option 1: Basic Multimodal AI Agent (Single A",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "llm-fw-004",
+      "category": "llm-framework",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build an AI code reviewer agent?",
+      "status": "passed",
+      "elapsed_seconds": 258.84333658218384,
+      "cost_usd": 0.0,
+      "num_turns": 9,
+      "answer_length": 4599,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Glob",
+        "Grep",
+        "mcp__knowledge-base__keyword_search",
+        "Read"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/awesome_agent_skills/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_domain_deep_research_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_apps_with_memory_tutorials/ai_arxiv_agent_memory/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/single_agent_apps/ai_consultant_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/2_structured_output_agent/2_2_product_review_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/awesome_agent_skills/code-reviewer/SKILL.md",
+        "../my-agent-kb/docs/awesome-llm-apps/awesome_agent_skills/code-reviewer/AGENTS.md"
+      ],
+      "contexts_count": 8,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "code",
+        "review",
+        "support"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，我现在可以为您提供关于如何构建 AI code reviewer agent 的完整答案。\n\n---\n\n## How to Build an AI Code Reviewer Agent\n\nBased on the knowledge base documentation, here's how to build an AI code reviewer agent:\n\n### 1. **Understand the Agent Skills Format**\n\nThe code-reviewer follows the [Agent Skills specification]",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "llm-fw-005",
+      "category": "llm-framework",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is an AI customer support voice agent?",
+      "status": "passed",
+      "elapsed_seconds": 172.11921334266663,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1757,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/ragbench-techqa/0d4f89d6.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_speech_trainer_agent/README.md",
+        "docs/ragbench-techqa/ef38ba39.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/single_agent_apps/ai_customer_support_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/voice_ai_agents/customer_support_voice_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/11_voice/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "OpenAI",
+        "SDK",
+        "agent",
+        "customer",
+        "support",
+        "voice"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the knowledge base, here's what an **AI customer support voice agent** is:\n\n## Definition\n\nAn **AI customer support voice agent** is an OpenAI SDK-powered application that delivers voice-powered responses to questions about a knowledge base using OpenAI's GPT-4o and Text-to-Speech (TTS) cap",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 1.0
+    },
+    {
+      "test_id": "llm-fw-006",
+      "category": "llm-framework",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a resume job matcher with AI?",
+      "status": "passed",
+      "elapsed_seconds": 196.21780490875244,
+      "cost_usd": 0.0,
+      "num_turns": 6,
+      "answer_length": 1375,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_recruitment_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_services_agency/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/resume_job_matcher/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/resume_job_matcher/app.py",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/resume_job_matcher/requirements.txt"
+      ],
+      "contexts_count": 5,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "resume",
+        "job",
+        "match"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据知识库检索结果，我找到了关于如何构建 AI 简历职位匹配器的文档。以下是基于文档的完整回答：\n\n---\n\n## 📄 如何用 AI 构建简历职位匹配器 (Resume Job Matcher)\n\n### 🚀 概述\n这是一个 AI 应用，允许用户上传**简历**和**职位描述**，然后使用 LLM 来：\n- ✅ 提供**匹配度分数** (0-100%)\n- 💪 突出简历中的优势\n- 📝 提供针对该职位的改进建议\n\n这是求职者优化简历以适配每个申请的绝佳工具。[来源：../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/resume_job",
+      "judge_score": 4.2,
+      "faithfulness": 0.829,
+      "relevancy": 0.878
+    },
+    {
+      "test_id": "llm-fw-007",
+      "category": "llm-framework",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "AI real estate agent team — how does it analyze properties?",
+      "status": "passed",
+      "elapsed_seconds": 230.91818046569824,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 2195,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/crag-finance/2bb77bcf.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_finance_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team/README.md",
+        "docs/crag-finance/054a2842.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_vc_due_diligence_agent_team/README.md",
+        "docs/crag-finance/da7e5e26.md",
+        "../my-agent-kb/docs/awesome-llm-apps/README.md",
+        "docs/crag-finance/f77b7a50.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_real_estate_agent_team/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "real estate",
+        "property"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the documentation, here's how the **AI Real Estate Agent Team** analyzes properties:\n\n## Property Analysis Architecture\n\nThe AI Real Estate Agent Team uses a **multi-agent analysis system** with three specialized AI agents working together:\n\n### 1. **Property Search Agent** 📍\n- Uses direct ",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 0.976
+    },
+    {
+      "test_id": "llm-fw-008",
+      "category": "llm-framework",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build an AI sales intelligence agent?",
+      "status": "passed",
+      "elapsed_seconds": 215.45389199256897,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 4867,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/guides/demo.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_services_agency/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "Google",
+        "ADK",
+        "review",
+        "sales",
+        "intelligence"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## How to Build an AI Sales Intelligence Agent\n\nBased on the documentation, here's a comprehensive guide to building an AI Sales Intelligence Agent:\n\n---\n\n### Overview\n\nThe AI Sales Intelligence Agent is a **multi-agent AI pipeline** that generates competitive sales battle cards in real-time. It's b",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "llm-fw-009",
+      "category": "llm-framework",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is an AI game design agent team?",
+      "status": "passed",
+      "elapsed_seconds": 126.32309865951538,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 2340,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_recruitment_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_teaching_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_game_design_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/README.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "agent",
+        "game",
+        "design"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the search results, I found detailed information about the AI Game Design Agent Team. Let me provide you with the answer:\n\n---\n\n## What is an AI Game Design Agent Team? 🎮\n\nThe **AI Game Design Agent Team** is a collaborative game design system powered by [AG2](https://github.com/ag2ai/ag2) ",
+      "judge_score": 4.6,
+      "faithfulness": 0.86,
+      "relevancy": 0.989
+    },
+    {
+      "test_id": "llm-fw-010",
+      "category": "llm-framework",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build an AI services agency with multiple agents?",
+      "status": "failed",
+      "elapsed_seconds": 24.843454837799072,
+      "cost_usd": 0.0,
+      "num_turns": 1,
+      "answer_length": 0,
+      "tools_used": [],
+      "retrieved_paths": [],
+      "contexts_count": 0,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": false,
+      "failure_reasons": [
+        "无检索结果",
+        "未检索到期望文档 ['ai_services_agency'] (实际: [])"
+      ],
+      "answer_preview": "",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "local-001",
+      "category": "redis-failover",
+      "type": "unknown",
+      "source": "local",
+      "query": "READONLY You can't write against a read only replica 这个报错怎么解决",
+      "status": "passed",
+      "elapsed_seconds": 160.70592045783997,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1200,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "docs/runbook/redis-failover.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/functions-intro.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+        "docs/eval-review.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "READONLY",
+        "replica",
+        "failover",
+        "SENTINEL",
+        "master",
+        "addr",
+        "主从切换",
+        "Sentinel"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## 解决方案\n\n`READONLY You can't write against a read only replica` 错误是 **Redis Sentinel 触发主从切换（failover）后**，应用仍然连接旧 master（已降为 replica）导致的 [来源：docs/runbook/redis-failover.md]。\n\n### 解决步骤\n\n#### 1. 确认 Sentinel 状态\n```bash\nredis-cli -p 26379 SENTINEL masters\nredis-cli -p 26379 SENTINEL get-master-addr-by-na",
+      "judge_score": 3.3,
+      "faithfulness": 0.545,
+      "relevancy": 0.843
+    },
+    {
+      "test_id": "local-002",
+      "category": "k8s-crashloop",
+      "type": "unknown",
+      "source": "local",
+      "query": "kubectl describe pod 显示 OOMKilled 怎么办",
+      "status": "passed",
+      "elapsed_seconds": 170.08666443824768,
+      "cost_usd": 0.0,
+      "num_turns": 6,
+      "answer_length": 1117,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Glob",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/ragbench-techqa/c37e4a3b.md",
+        "../my-agent-kb/docs/runbook/kubernetes-pod-crashloop.md",
+        "docs/e2e-testing.md",
+        "/home/shenzt/ws/knowledge-base-search/docs/runbook/kubernetes-pod-crashloop.md",
+        "docs/runbook/kubernetes-pod-crashloop.md"
+      ],
+      "contexts_count": 5,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "OOMKilled",
+        "memory",
+        "limit",
+        "OOM",
+        "resource",
+        "killed"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据知识库文档，当 `kubectl describe pod` 显示 **OOMKilled** 时，表示容器超出了内存限制。以下是处理步骤：\n\n## 解决步骤\n\n### 1. 确认问题\n\n```bash\nkubectl describe pod <pod-name> -n <namespace>\n```\n\n查看输出中是否有 `OOMKilled` 状态，这表明容器 exceeded memory limits（超出内存限制）。\n\n### 2. 查看容器日志\n\n```bash\n# 查看当前崩溃日志\nkubectl logs <pod-name> -n <namespace>\n\n# 查看上次崩",
+      "judge_score": 4.9,
+      "faithfulness": 1.0,
+      "relevancy": 0.927
+    },
+    {
+      "test_id": "local-003",
+      "category": "api-auth",
+      "type": "unknown",
+      "source": "local",
+      "query": "API 返回 401 TOKEN_EXPIRED，前端该怎么处理",
+      "status": "passed",
+      "elapsed_seconds": 178.4125578403473,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 878,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "docs/api/authentication.md",
+        "../my-agent-kb/docs/awesome-llm-apps/awesome_agent_skills/code-reviewer/rules/correctness-error-handling.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "TOKEN_EXPIRED",
+        "refresh",
+        "401",
+        "token",
+        "过期"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档内容，我来回答 API 返回 401 TOKEN_EXPIRED 时前端的处理方式：\n\n---\n\n## API 返回 401 TOKEN_EXPIRED 的前端处理方案\n\n根据 API 认证文档 [来源: docs/api/authentication.md]：\n\n### 错误码定义\n\n| HTTP Status | 错误码 | 说明 |\n|-------------|--------|------|\n| 401 | TOKEN_EXPIRED | token 已过期，需刷新 |\n\n### Token 机制\n\n- **access_token** 有效期：不超过 15 分钟\n-",
+      "judge_score": 3.3,
+      "faithfulness": 0.462,
+      "relevancy": 0.946
+    },
+    {
+      "test_id": "local-004",
+      "category": "redis-failover",
+      "type": "unknown",
+      "source": "local",
+      "query": "redis-cli SENTINEL get-master-addr-by-name 命令返回什么",
+      "status": "passed",
+      "elapsed_seconds": 173.25097727775574,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 842,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/sentinel-clients.md",
+        "docs/runbook/redis-failover.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "replica",
+        "failover",
+        "SENTINEL",
+        "master",
+        "addr",
+        "Sentinel"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，`redis-cli SENTINEL get-master-addr-by-name` 命令的返回结果如下：\n\n## 命令返回结果\n\n`SENTINEL get-master-addr-by-name <master name>` 命令用于返回指定名称的主节点的 IP 地址和端口号。\n\n**返回值有两种可能：**\n\n1. **IP:Port 对** - 返回一个包含 IP 地址和端口号的多行回复：\n   ```\n   127.0.0.1:5000> SENTINEL get-master-addr-by-name mymaster\n   1) \"127.0.0.1\"\n   ",
+      "judge_score": 4.9,
+      "faithfulness": 1.0,
+      "relevancy": 0.947
+    },
+    {
+      "test_id": "local-005",
+      "category": "api-auth",
+      "type": "unknown",
+      "source": "local",
+      "query": "JWT RS256 签名验证流程是什么",
+      "status": "passed",
+      "elapsed_seconds": 169.63832187652588,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 885,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/doc-preprocess-plan.md",
+        "docs/api/authentication.md",
+        "docs/ragbench-techqa/c744eb21.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "refresh",
+        "JWT",
+        "RS256",
+        "签名",
+        "token",
+        "过期"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档内容，以下是 **JWT RS256 签名验证流程**：\n\n---\n\n## JWT RS256 签名验证流程\n\n根据 API 认证与授权设计文档 [来源：docs/api/authentication.md]，每个微服务在接收到 JWT token 后需要独立进行以下验证步骤：\n\n### 验证步骤\n\n1. **验证签名（RS256 算法）**\n   - 使用 JWKS (JSON Web Key Set) endpoint 获取公钥\n   - 用公钥验证 JWT 的 RS256 签名是否有效\n\n2. **验证有效期**\n   - 检查 `exp` (expiration) 字段",
+      "judge_score": 4.8,
+      "faithfulness": 1.0,
+      "relevancy": 0.923
+    },
+    {
+      "test_id": "local-006",
+      "category": "redis-failover",
+      "type": "unknown",
+      "source": "local",
+      "query": "线上 Redis 突然大量写入失败，错误日志一直刷屏，应用都快挂了",
+      "status": "passed",
+      "elapsed_seconds": 299.55354619026184,
+      "cost_usd": 0.0,
+      "num_turns": 9,
+      "answer_length": 3409,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redistimeseries/redistimeseries-1.0-release-notes.md",
+        "docs/runbook/redis-failover.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/Configuration.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/admin.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/Debugging.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/concepts/Function_Flags.md",
+        "docs/runbook/kubernetes-pod-crashloop.md",
+        "docs/eval-review.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/eviction/index.md"
+      ],
+      "contexts_count": 7,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "READONLY",
+        "replica",
+        "failover",
+        "SENTINEL",
+        "master",
+        "addr",
+        "写入失败",
+        "主从切换",
+        "Sentinel"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据知识库检索结果，我现在可以为您提供完整的故障排查和恢复方案。\n\n---\n\n## 🔴 Redis 大量写入失败 - 紧急故障处理指南\n\n根据检索到的文档，Redis 大量写入失败通常由以下两种常见原因导致：\n\n---\n\n### 原因一：内存超限（OOM）- 最可能的原因\n\n当 Redis 使用内存超过 `maxmemory` 限制时，会根据 eviction 策略拒绝写入命令。\n\n#### 故障现象\n- 写入命令返回错误：`OOM command not allowed when used memory > 'maxmemory'`\n- 应用日志出现大量写入失败错误\n- 监控显示 Redis",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "local-007",
+      "category": "k8s-crashloop",
+      "type": "unknown",
+      "source": "local",
+      "query": "我的 pod 一直在 restart，已经重启了 50 多次了",
+      "status": "passed",
+      "elapsed_seconds": 176.88553023338318,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1365,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/runbook/kubernetes-pod-crashloop.md",
+        "docs/e2e-testing.md",
+        "docs/runbook/redis-failover.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "OOMKilled",
+        "memory",
+        "limit",
+        "CrashLoopBackOff",
+        "OOM",
+        "resource",
+        "killed"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据知识库中的 Kubernetes Pod CrashLoopBackOff 故障排查指南，您的 Pod 重启 50 多次说明处于 `CrashLoopBackOff` 状态。以下是诊断和解决步骤：\n\n## 🔍 诊断步骤\n\n### 1. 查看 Pod 事件\n```bash\nkubectl describe pod <pod-name> -n <namespace>\n```\n重点关注：\n- `OOMKilled` — 容器超出内存限制\n- `Error` — 应用启动时崩溃\n- `ContainerCannotRun` — 镜像或入口点问题\n\n### 2. 查看容器日志\n```bash\n# 当",
+      "judge_score": 4.4,
+      "faithfulness": 0.917,
+      "relevancy": 0.829
+    },
+    {
+      "test_id": "local-008",
+      "category": "api-auth",
+      "type": "unknown",
+      "source": "local",
+      "query": "用户登录后 token 过一会就失效了，要重新登录很烦",
+      "status": "passed",
+      "elapsed_seconds": 171.3495228290558,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1077,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/readme.md",
+        "docs/api/authentication.md",
+        "docs/ragbench-techqa/c744eb21.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "TOKEN_EXPIRED",
+        "refresh",
+        "401",
+        "token",
+        "过期"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据文档，我找到了解释和解决方案：\n\n## 问题分析\n\n用户遇到的问题是 **access_token 过期**导致的。根据 API 认证文档 [来源：docs/api/authentication.md]：\n\n### Token 有效期设计\n\n| Token 类型 | 有效期 | 用途 |\n|-----------|--------|------|\n| **access_token** | **15 分钟** | 用于日常 API 请求 |\n| **refresh_token** | **7 天** | 用于换取新的 access_token |\n\n当 access_token 过期后，用户",
+      "judge_score": 3.1,
+      "faithfulness": 0.513,
+      "relevancy": 0.785
+    },
+    {
+      "test_id": "local-009",
+      "category": "redis-failover",
+      "type": "unknown",
+      "source": "local",
+      "query": "How to manually trigger Redis Sentinel failover?",
+      "status": "passed",
+      "elapsed_seconds": 166.59888339042664,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 1710,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/sentinel-clients.md",
+        "docs/runbook/redis-failover.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "replica",
+        "failover",
+        "SENTINEL",
+        "master",
+        "addr",
+        "manual",
+        "Sentinel"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the documentation, I can now provide a complete answer about how to manually trigger Redis Sentinel failover.\n\n---\n\n## How to Manually Trigger Redis Sentinel Failover\n\nTo manually trigger a Redis Sentinel failover, use the **`SENTINEL FAILOVER`** command:\n\n```bash\nredis-cli -p 26379 SENTINE",
+      "judge_score": 2.8,
+      "faithfulness": 0.28,
+      "relevancy": 0.993
+    },
+    {
+      "test_id": "local-010",
+      "category": "k8s-crashloop",
+      "type": "unknown",
+      "source": "local",
+      "query": "Pod stuck in CrashLoopBackOff with exit code 137",
+      "status": "passed",
+      "elapsed_seconds": 158.30462169647217,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1041,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/runbook/kubernetes-pod-crashloop.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/Configuration.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisearch/redisearch-2.8-release-notes.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "OOMKilled",
+        "memory",
+        "limit",
+        "CrashLoopBackOff",
+        "137",
+        "OOM",
+        "resource",
+        "killed"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## Pod CrashLoopBackOff with Exit Code 137 - 故障排查指南\n\n**Exit Code 137 = OOMKilled**，表示容器超出了内存限制被系统杀死。\n\n### 诊断步骤\n\n#### 1. 检查 Pod 事件\n```bash\nkubectl describe pod <pod-name> -n <namespace>\n```\n查找 `OOMKilled` 状态，确认容器超出了内存限制。\n\n#### 2. 查看容器日志\n```bash\n# 当前崩溃日志\nkubectl logs <pod-name> -n <namespace>\n\n# 上一次崩溃",
+      "judge_score": 4.7,
+      "faithfulness": 0.971,
+      "relevancy": 0.916
+    },
+    {
+      "test_id": "local-011",
+      "category": "api-auth",
+      "type": "unknown",
+      "source": "local",
+      "query": "OAuth 2.0 authorization code flow 怎么实现",
+      "status": "passed",
+      "elapsed_seconds": 242.2990279197693,
+      "cost_usd": 0.0,
+      "num_turns": 6,
+      "answer_length": 520,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/crag-finance/6db497de.md",
+        "docs/ragbench-techqa/77dfef3d.md",
+        "docs/ragbench-techqa/c744eb21.md",
+        "docs/ragbench-techqa/b862bc81.md",
+        "docs/ragbench-techqa/07c75e3a.md",
+        "docs/ragbench-techqa/6684cda0.md",
+        "docs/api/authentication.md"
+      ],
+      "contexts_count": 5,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "JWT",
+        "OAuth",
+        "authorization",
+        "code"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "❌ **未找到相关文档**\n\n根据检索结果，知识库中**没有关于 OAuth 2.0 authorization code flow 实现的具体文档**。\n\n目前找到的相关信息仅限于：\n- `docs/api/authentication.md` 提到系统采用 \"OAuth 2.0 + JWT 的认证方案\"，但只描述了简单的用户名密码登录流程（`/api/v1/auth/login`），并未涉及 OAuth 2.0 authorization code grant 的实现细节 [来源：docs/api/authentication.md]\n\n其他匹配的文档（如 `docs/ragbench-t",
+      "judge_score": 2.3,
+      "faithfulness": 0.778,
+      "relevancy": 0.0
+    },
+    {
+      "test_id": "local-012",
+      "category": "redis-failover",
+      "type": "unknown",
+      "source": "local",
+      "query": "Redis 主从切换后客户端怎么自动重连？",
+      "status": "passed",
+      "elapsed_seconds": 175.218603849411,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 1259,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/eval-review.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/sentinel-clients.md",
+        "docs/runbook/redis-failover.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "READONLY",
+        "replica",
+        "failover",
+        "SENTINEL",
+        "master",
+        "addr",
+        "主从切换",
+        "重连",
+        "Sentinel"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，Redis 主从切换后客户端自动重连的机制如下：\n\n## 自动重连原理\n\nRedis Sentinel 触发主从切换（failover）后，从 **Redis 2.8.12** 开始，Sentinel 会向被重新配置的实例发送 `CLIENT KILL type normal` 命令，强制断开所有客户端连接。这会迫使客户端重新解析 master 地址 [来源：../my-agent-kb/docs/redis-docs/develop/reference/sentinel-clients.md]。\n\n## 客户端自动重连流程\n\n支持 Sentinel 的客户端（如 Jedis",
+      "judge_score": 4.1,
+      "faithfulness": 0.811,
+      "relevancy": 0.81
+    },
+    {
+      "test_id": "local-013",
+      "category": "k8s-crashloop",
+      "type": "unknown",
+      "source": "local",
+      "query": "Container keeps getting killed, how to check resource limits?",
+      "status": "passed",
+      "elapsed_seconds": 179.47767329216003,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 1112,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/admin.md",
+        "docs/runbook/kubernetes-pod-crashloop.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/Configuration.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redistimeseries/redistimeseries-1.0-release-notes.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "OOMKilled",
+        "memory",
+        "limit",
+        "OOM",
+        "resource",
+        "killed"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，当 Container 不断被杀死时，以下是检查资源限制的方法：\n\n## 诊断步骤\n\n### 1. 检查 Pod 事件\n\n```bash\nkubectl describe pod <pod-name> -n <namespace>\n```\n\n查找以下关键信息：\n- **`OOMKilled`** — 容器超出了内存限制\n- `Error` — 应用程序启动时崩溃\n- `ContainerCannotRun` — 镜像或入口点问题\n\n### 2. 查看容器日志\n\n```bash\n# 当前崩溃日志\nkubectl logs <pod-name> -n <namespace>\n\n#",
+      "judge_score": 4.5,
+      "faithfulness": 1.0,
+      "relevancy": 0.758
+    },
+    {
+      "test_id": "local-014",
+      "category": "api-auth",
+      "type": "unknown",
+      "source": "local",
+      "query": "access token 和 refresh token 的区别是什么？",
+      "status": "passed",
+      "elapsed_seconds": 170.3486452102661,
+      "cost_usd": 0.0,
+      "num_turns": 4,
+      "answer_length": 813,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_optimization_tools/toonify_token_optimization/README.md",
+        "docs/api/authentication.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_optimization_tools/README.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "TOKEN_EXPIRED",
+        "refresh",
+        "token",
+        "过期",
+        "authorization",
+        "access token",
+        "refresh token"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据知识库中的 API 认证文档，**access token** 和 **refresh token** 的区别如下：\n\n| 特性 | Access Token | Refresh Token |\n|------|-------------|---------------|\n| **有效期** | 不超过 15 分钟 | 7 天 |\n| **用途** | 用于后续 API 请求的身份验证，在 `Authorization: Bearer <token>` 头中携带 | 用于在 access_token 过期后换取新的 token |\n| **使用方式** | 每次请求都携带 | 仅在 tok",
+      "judge_score": 5.0,
+      "faithfulness": 1.0,
+      "relevancy": 0.982
+    },
+    {
+      "test_id": "local-015",
+      "category": "redis-failover",
+      "type": "unknown",
+      "source": "local",
+      "query": "Redis failover 后数据会丢失吗？怎么保证数据一致性？",
+      "status": "passed",
+      "elapsed_seconds": 185.59312462806702,
+      "cost_usd": 0.0,
+      "num_turns": 5,
+      "answer_length": 2422,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Read",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+        "docs/eval-review.md",
+        "docs/runbook/redis-failover.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "replica",
+        "failover",
+        "SENTINEL",
+        "master",
+        "Sentinel",
+        "数据丢失",
+        "一致性"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，我来回答您关于 Redis failover 后数据丢失和数据一致性的问题：\n\n---\n\n## Redis Failover 后数据会丢失吗？\n\n**是的，Redis failover 后可能会丢失数据**。根据 Redis 官方文档 [来源：../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/scaling.md]，Redis Cluster **不保证强一致性**，在某些条件下可能会丢失已经向客户端确认的写入数据。\n\n### 数据丢失的原因\n\n1. **异步复制机制**：\n   - 客户端写入 m",
+      "judge_score": 3.3,
+      "faithfulness": 0.48,
+      "relevancy": 0.918
+    },
+    {
+      "test_id": "notfound-001",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "How to configure MongoDB sharding with mongos router?",
+      "status": "passed",
+      "elapsed_seconds": 163.20683193206787,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 389,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/Configuration.md",
+        "../my-agent-kb/docs/redis-docs/develop/using-commands/multi-key-operations.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/search/query-performance-factor.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索结果，知识库中没有关于 MongoDB sharding 和 mongos router 配置的相关文档。\n\n检索结果显示：\n- **hybrid_search** 返回的所有结果都是关于 **Redis** 的内容（Redis 集群、分片、配置等），没有 MongoDB 相关信息\n- **Grep** 在 `docs/runbook/` 目录下也没有找到任何 MongoDB 相关内容\n\n知识库主要包含：\n1. Redis 官方文档\n2. awesome-llm-apps（LLM 应用相关）\n3. 本地 runbook（Redis 运维、K8s 故障排查）\n4. RAGBench te",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "notfound-002",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "Kafka consumer group rebalancing 怎么优化？",
+      "status": "passed",
+      "elapsed_seconds": 163.6262993812561,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 583,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/vector-sets/memory.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/concepts/triggers/Stream_Triggers.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisstack/redisstack-7.2-release-notes.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_sales_intelligence_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_optimization_tools/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_optimization_tools/headroom_context_optimization/README.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+        "docs/eval-review.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_Self-Evolving_agent/README.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索结果，知识库中**没有关于 Kafka consumer group rebalancing 优化的相关文档**。\n\n检索结果显示：\n1. **Hybrid search** 返回的结果主要是 Redis 相关文档（Redis Stack 发布说明、内存优化、Stream consumer 等），没有 Kafka 相关内容\n2. **Grep 搜索** `docs/runbook/` 目录也没有找到任何包含 \"Kafka\"、\"consumer\" 或 \"rebalance\" 的文件\n\n知识库当前包含的文档主要是：\n- Redis 官方文档（data-types、programmabili",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "notfound-003",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "How to set up Prometheus alerting rules for CPU usage?",
+      "status": "passed",
+      "elapsed_seconds": 152.37603163719177,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 590,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/cpu-profiling.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/search/query-performance-factor.md",
+        "docs/ragbench-techqa/e2b65de8.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "检索结果显示，知识库中没有找到关于 \"Prometheus alerting rules for CPU usage\"（如何设置 Prometheus CPU 使用率告警规则）的具体配置文档。\n\n搜索到的相关结果仅涉及：\n1. Redis 文档中提到了如何与 Prometheus 集成以及监控 `redis_process_cpu_usage_percent` 指标 [来源: ../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/search/query-performance-factor.md]",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "notfound-004",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "Elasticsearch index mapping 怎么设计？",
+      "status": "passed",
+      "elapsed_seconds": 151.75691962242126,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 485,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisearch/redisearch-2.2-release-notes.md",
+        "docs/design.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索结果，知识库中没有关于 **Elasticsearch index mapping 设计** 的相关文档。\n\n检索到的内容主要涉及：\n1. 知识库搜索系统的设计文档（design.md）- 与 Elasticsearch 无关\n2. Redisearch（Redis 的搜索模块）的发布说明 - 这是 Redis 生态，不是 Elasticsearch\n\n❌ **未找到相关文档** - 知识库中不包含 Elasticsearch index mapping 设计的相关信息。\n\n当前知识库主要包含：\n- Redis 官方文档（数据结构、编程性、参考、发布订阅等）\n- Awesome LLM",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "notfound-005",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "How to configure Nginx reverse proxy with load balancing?",
+      "status": "passed",
+      "elapsed_seconds": 130.03026366233826,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 430,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/probabilistic/configuration.md",
+        "docs/ragbench-techqa/e3bb9a38.md",
+        "docs/ragbench-techqa/6b083006.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/timeseries/configuration.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "检索结果显示，知识库中没有找到关于 Nginx 反向代理和负载均衡配置的相关文档。\n\n- **hybrid_search** 返回的结果主要涉及：\n  - IBM API Management 的负载均衡器配置（DataPower 设备）\n  - Redis 模块配置参数\n  - DataPower 的代理配置\n  \n- **Grep** 在 `docs/runbook/` 目录下也没有找到任何关于 Nginx 的内容\n\n❌ **未找到相关文档**\n\n知识库中不包含 Nginx 反向代理和负载均衡的配置文档。当前知识库主要涵盖：\n- Redis 官方文档\n- awesome-llm-apps ",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "notfound-006",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "PostgreSQL VACUUM 和 ANALYZE 什么时候需要手动执行？",
+      "status": "passed",
+      "elapsed_seconds": 245.0271134376526,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 433,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/autonomous_rag/README.md",
+        "docs/ragbench-techqa/8153d573.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "检索结果显示，知识库中没有关于 PostgreSQL VACUUM 和 ANALYZE 的文档。搜索结果主要返回的是：\n1. RAG 教程文档（关于使用 PostgreSQL 作为向量数据库）\n2. Oracle 数据库补丁文档\n3. 项目架构文档\n\nGrep 在 docs/runbook/ 目录下也没有找到任何相关内容。\n\n知识库的目录结构主要包括：\n- Redis 官方文档\n- awesome-llm-apps（LLM 应用教程）\n- 本地 runbook（Redis 运维、K8s 故障排查）\n- API 文档\n- RAGBench techqa 和 CRAG finance 数据集\n\n*",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "notfound-007",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "How to deploy a Spring Boot application to AWS ECS?",
+      "status": "passed",
+      "elapsed_seconds": 164.5958695411682,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 344,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/e2e-testing.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_news_and_podcast_agents/web/readme.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/client/README.md",
+        "docs/ragbench-techqa/ea35437a.md",
+        "docs/ragbench-techqa/7d69a59b.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索结果，知识库中**没有找到关于 Spring Boot 应用部署到 AWS ECS 的相关文档**。\n\n检索覆盖的范围包括：\n- Redis 官方文档\n- awesome-llm-apps（LLM 应用示例）\n- 本地 runbook/API/guides 文档\n- RAGBench techqa 和 CRAG finance 数据集\n\n这些文档主要涵盖：\n- Redis 数据类型的开发和运维\n- Kubernetes 故障排查\n- API 认证和 OAuth\n- LLM 应用和 AI Agent 示例\n- 一些 IBM CICS 和 Oracle 相关的技术文档\n\n**❌ 未找到相关",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "notfound-008",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "RabbitMQ dead letter queue 怎么配置？",
+      "status": "passed",
+      "elapsed_seconds": 165.21597909927368,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 309,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "docs/ragbench-techqa/ba7b5156.md",
+        "docs/ragbench-techqa/4c65fe96.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/search/query-performance-factor.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/timeseries/configuration.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "检索结果显示，知识库中没有找到关于 **RabbitMQ dead letter queue 配置**的相关文档。\n\n搜索到的结果主要是：\n- IBM MQ 的安全公告和故障排查文档\n- Redis 配置文档\n\n**❌ 未找到相关文档**\n\n知识库中当前没有 RabbitMQ 的官方文档或 dead letter queue (DLQ) 配置指南。如果您需要这方面的信息，建议：\n\n1. 查阅 [RabbitMQ 官方文档](https://www.rabbitmq.com/dlx.html) 关于 Dead Letter Exchanges 的说明\n2. 或者将 RabbitMQ 文档添加到知",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "notfound-009",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "How to implement circuit breaker pattern with Hystrix?",
+      "status": "passed",
+      "elapsed_seconds": 139.0971953868866,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 476,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/google_adk_crash_course/9_multi_agent_patterns/9_1_sequential_agent/README.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索结果，知识库中没有找到关于 Hystrix 熔断器模式实现的相关文档。\n\n检索结果主要返回了：\n- Redis Cluster 规范文档（关于哈希槽和键分布）\n- Google ADK 多 Agent 模式教程\n- CICS/VSE 技术问题文档\n\n**❌ 未找到相关文档**\n\n知识库中不包含关于 Hystrix 或熔断器模式（circuit breaker pattern）的实现指南。Hystrix 是 Netflix 开源的延迟和容错库，但该主题不在当前知识库的覆盖范围内。\n\n当前知识库主要包含：\n1. Redis 官方文档\n2. Awesome LLM Apps（AI Agent",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    },
+    {
+      "test_id": "notfound-010",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "Terraform state management best practices for team collaboration",
+      "status": "passed",
+      "elapsed_seconds": 111.69070100784302,
+      "cost_usd": 0.0,
+      "num_turns": 3,
+      "answer_length": 294,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search",
+        "Grep"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/google_adk_crash_course/4_tool_using_agent/4_4_mcp_tools/README.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/search/scalable-query-best-practices.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/multimodal_design_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/awesome_agent_skills/meeting-notes/SKILL.md",
+        "../my-agent-kb/docs/awesome-llm-apps/awesome_agent_skills/fullstack-developer/SKILL.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索结果，知识库中没有找到关于 \"Terraform state management best practices for team collaboration\"（Terraform 状态管理的团队协作最佳实践）的相关文档。\n\n检索返回的结果主要涉及：\n- Redis 可扩展查询最佳实践\n- MCP 工具集成最佳实践\n- 多模态 AI 设计代理团队\n- 全栈开发最佳实践\n- 会议记录最佳实践\n\n这些都与 Terraform 状态管理无关。\n\n❌ **未找到相关文档** — 知识库中没有收录关于 Terraform state management 的团队协作最佳实践相关内容。",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    }
+  ]
+}

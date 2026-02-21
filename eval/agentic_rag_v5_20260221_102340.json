@@ -1,0 +1,69 @@
+{
+  "timestamp": "2026-02-21T10:25:04.975225",
+  "test_type": "agentic_rag_v5",
+  "method": "claude_agent_sdk",
+  "total": 1,
+  "passed": 1,
+  "failed": 0,
+  "errors": 0,
+  "total_time": 84.92622232437134,
+  "total_cost": 0.0313047,
+  "kb_commit": "4ee2f5a",
+  "eval_module": "eval_module.py (gate + quality + judge)",
+  "model": "MiniMax-M2.5",
+  "dataset": "v5",
+  "category_stats": {
+    "redis-data-types": {
+      "total": 1,
+      "passed": 1
+    }
+  },
+  "source_stats": {
+    "qdrant": {
+      "total": 1,
+      "passed": 1
+    }
+  },
+  "judge_summary": {},
+  "use_mcp": true,
+  "use_judge": false,
+  "use_router": false,
+  "use_direct": true,
+  "direct_base_url": "https://api.minimaxi.com/anthropic",
+  "concurrency": 1,
+  "results": [
+    {
+      "test_id": "redis-dt-001",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is the difference between Redis Sorted Sets and regular Sets?",
+      "status": "passed",
+      "elapsed_seconds": 84.92622232437134,
+      "cost_usd": 0.0313047,
+      "num_turns": 2,
+      "answer_length": 1941,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sets.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md"
+      ],
+      "contexts_count": 1,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sorted set",
+        "score"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation, here are the key differences between **Redis Sorted Sets** and **regular Sets**:\n\n## Order\n\n| Feature | Regular Sets | Sorted Sets |\n|---------|--------------|-------------|\n| **Ordering** | Unordered - elements returned in no particular order | Ordered by score, th",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null
+    }
+  ]
+}

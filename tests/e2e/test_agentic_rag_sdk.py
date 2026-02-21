@@ -50,6 +50,13 @@ elif EVAL_DATASET == "all":
 else:
     TEST_CASES = TEST_CASES_V5
 
+# Smoke test 过滤：只跑指定 ID 的用例
+_SMOKE_IDS = os.environ.get("EVAL_SMOKE_IDS", "")
+if _SMOKE_IDS:
+    _ids = set(_SMOKE_IDS.split(","))
+    TEST_CASES = [tc for tc in TEST_CASES if tc["id"] in _ids]
+    print(f"🔥 Smoke test: {len(TEST_CASES)} cases ({_SMOKE_IDS})")
+
 # 从 v5 用例的 expected_keywords 动态构建 KEYWORD_CHECKS
 KEYWORD_CHECKS = {}
 for _tc in TEST_CASES:
@@ -74,6 +81,13 @@ EVAL_CONCURRENCY = int(os.environ.get("EVAL_CONCURRENCY", "1"))
 USE_ROUTER = os.environ.get("USE_ROUTER", "0") == "1"
 ROUTER_URL = os.environ.get("ROUTER_URL", "http://127.0.0.1:3456")
 ROUTER_MODEL = os.environ.get("ROUTER_MODEL", "")  # 空=使用 router 默认配置
+# 直连模式：Anthropic 兼容 API（如 MiniMax M2.5）
+# 用法: ANTHROPIC_BASE_URL=https://api.minimaxi.com/anthropic ANTHROPIC_API_KEY=sk-xxx MODEL_NAME=MiniMax-M2.5
+# 无需 router，直接设置 base_url + api_key，Agent SDK 原生支持
+DIRECT_BASE_URL = os.environ.get("ANTHROPIC_BASE_URL", "")
+DIRECT_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+MODEL_NAME = os.environ.get("MODEL_NAME", "")
+USE_DIRECT = bool(DIRECT_BASE_URL and DIRECT_API_KEY)
 
 
 def _switch_router_model(model_name: str):
@@ -105,7 +119,13 @@ def _switch_router_model(model_name: str):
         print(f"⚠️ Router 切换失败: {e}")
 
 
-if USE_ROUTER:
+if USE_DIRECT:
+    # 直连模式：Anthropic 兼容 API（MiniMax 等）
+    # Claude CLI 用 ANTHROPIC_AUTH_TOKEN 做 Authorization header
+    os.environ["ANTHROPIC_AUTH_TOKEN"] = DIRECT_API_KEY
+    os.environ.setdefault("DISABLE_COST_WARNINGS", "true")
+    print(f"🔗 直连模式: {DIRECT_BASE_URL} | model={MODEL_NAME or 'default'}")
+elif USE_ROUTER:
     # 设置环境变量让 Agent SDK 走 router 代理
     os.environ["ANTHROPIC_BASE_URL"] = ROUTER_URL
     os.environ["ANTHROPIC_AUTH_TOKEN"] = os.environ.get("ANTHROPIC_AUTH_TOKEN", "test")
@@ -193,6 +213,7 @@ hybrid_search 返回的 path 字段是文档的实际路径，用 Read(file_path
         permission_mode="bypassPermissions",
         cwd=str(PROJECT_ROOT),
         max_turns=15,
+        **({"model": MODEL_NAME} if MODEL_NAME else {}),
     )
 else:
     # 无 MCP 模式：仅使用 Grep/Glob/Read（Agentic Layer 1）
@@ -597,7 +618,7 @@ async def main():
          open(detail_path, "w", encoding="utf-8") as df:
 
         mode = "MCP + Grep/Glob/Read" if USE_MCP else "Grep/Glob/Read (无 MCP)"
-        model_info = f"via router → {ROUTER_MODEL or 'default'} ({ROUTER_URL})" if USE_ROUTER else "Claude (direct)"
+        model_info = f"direct → {MODEL_NAME or 'default'} ({DIRECT_BASE_URL})" if USE_DIRECT else (f"via router → {ROUTER_MODEL or 'default'} ({ROUTER_URL})" if USE_ROUTER else "Claude (direct)")
         kb_commit_header = get_kb_commit()
         log("=" * 80, lf)
         log(f"🤖 Agentic RAG 测试 (Agent SDK)", lf)
@@ -748,7 +769,7 @@ async def main():
                 "total_time": total_time, "total_cost": total_cost,
                 "kb_commit": kb_commit,
                 "eval_module": "eval_module.py (gate + quality + judge)",
-                "model": ROUTER_MODEL if USE_ROUTER and ROUTER_MODEL else ("router:default" if USE_ROUTER else "claude-sonnet"),
+                "model": MODEL_NAME if USE_DIRECT and MODEL_NAME else (ROUTER_MODEL if USE_ROUTER and ROUTER_MODEL else ("router:default" if USE_ROUTER else "claude-sonnet")),
                 "dataset": EVAL_DATASET,
                 "category_stats": {c: {"total": s["t"], "passed": s["p"]} for c, s in cats.items()},
                 "source_stats": {s: {"total": v["t"], "passed": v["p"]} for s, v in source_stats.items()},
@@ -756,6 +777,8 @@ async def main():
                 "use_mcp": USE_MCP,
                 "use_judge": USE_JUDGE,
                 "use_router": USE_ROUTER,
+                "use_direct": USE_DIRECT,
+                "direct_base_url": DIRECT_BASE_URL if USE_DIRECT else None,
                 "concurrency": EVAL_CONCURRENCY,
                 "results": results,
             }, f, indent=2, ensure_ascii=False)
