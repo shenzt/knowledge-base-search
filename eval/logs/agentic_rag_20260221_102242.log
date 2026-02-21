@@ -92,3 +92,46 @@ CLIENT KILL <addr>       # 关闭指定客户端连接
 CLIENT SETNAME <name>    # 设置客户端名称（便...
   结束: 10:33:01 | 耗时: 377.9s
 --------------------------------------------------------------------------------
+
+============================================================
+[3/5] llm-rag-001 (llm-rag) [?]
+  Q: How to build a local RAG agent with Llama?
+  开始: 10:33:01
+    [INIT] session=32a0507c-3c46-4d90-83c2-320b34ed52ff model=MiniMax-M2.5
+    [TOOL] mcp__knowledge-base__hybrid_search({"query": "build local RAG agent Llama", "top_k": 5})
+    [TOOL_OUT] {"result":"[\n  {\n    \"score\": 4.8945,\n    \"doc_id\": \"dad2b27f\",\n    \"chunk_id\": \"dad2b27f-000\",\n    \"chunk_index\": 0,\n    \"path\": \"../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/local_rag_agent/README.md\",\n    \"title\": \"Readme\",\n    \"section_path\": \"🦙 Local RAG Agent with Llama 3.2 > Note\",\n    \"confidence\": \"medium\",\n    \"text\": \"**👉 [Click here to fol
+    [TOOL] Read({"file_path": "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/local_rag_agent/README.md"})
+    [TOOL_OUT] 1→---
+     2→confidence: medium
+     3→id: dad2b27f
+    ... (67 lines total)
+    [THINK] ## 🦙 Building a Local RAG Agent with Llama (+63 lines)
+    [RESULT] 1716 chars | 3 turns | 124712ms
+  ✅ 通过 | 1716字符 | 138.5s | $0.0470 | 引用✅ 文档✅ | ctx:1
+  🔧 工具: mcp__knowledge-base__hybrid_search
+  📄 检索: ../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/local_rag_agent/README.md, ../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/agentic_rag_embedding_gemma/README.md, ../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/qwen_local_rag/README.md, ../my-agent-kb/docs/awesome-llm-apps/advanced_llm_apps/llm_apps_with_memory_tutorials/local_chatgpt_with_memory/README.md, ../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/deepseek_local_rag_agent/README.md
+  🔑 关键词: RAG, local, Llama
+  🧑‍⚖️ Judge: score=4.8 faith=0.933 rel=0.996
+  📝 答案: ## 🦙 Building a Local RAG Agent with Llama
+
+Based on the knowledge库检索结果, here's how to build a local RAG agent using **Llama 3.2** with **Ollama** and **Qdrant**:
+
+---
+
+### Technology Stack
+| Component | Technology |
+|-----------|------------|
+| **LLM** | Llama 3.2 (via Ollama) |
+| **Embeddings** | OpenHermes (via Ollama) |
+| **Vector Database** | Qdrant |
+| **Agent Framework** | Agno v2.0 |
+
+---
+
+### Step-by-Step Setup
+
+**1. Clone the repository**
+```bash
+git clone https://github.com/Shubhamsab...
+  结束: 10:36:32 | 耗时: 138.5s
+--------------------------------------------------------------------------------
