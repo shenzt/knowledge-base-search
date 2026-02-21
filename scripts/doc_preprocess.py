@@ -21,6 +21,9 @@ from pathlib import Path
 from threading import Semaphore
 from typing import Optional
 
+from dotenv import load_dotenv
+load_dotenv()
+
 import frontmatter
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")

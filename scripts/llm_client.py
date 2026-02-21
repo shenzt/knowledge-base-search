@@ -21,6 +21,9 @@ import os
 from abc import ABC, abstractmethod
 from typing import Optional
 
+from dotenv import load_dotenv
+load_dotenv()
+
 log = logging.getLogger(__name__)
 
 

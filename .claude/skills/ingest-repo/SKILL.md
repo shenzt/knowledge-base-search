@@ -15,7 +15,7 @@ allowed-tools: Read, Write, Bash, Glob, Edit
 - `--target-dir`: 输出目录，默认 `../kb-output/<repo-name>/`（外部独立 Git 目录）
 - `--md-root`: 仓库中 Markdown 文件的根目录，默认 `.`（仓库根目录）
 - `--branch`: 分支名，默认 `main`
-- `--exclude`: 排除的文件 glob 模式，如 `_index.md,CHANGELOG.md`
+- `--exclude`: 排除的文件 glob 模式，如 `CHANGELOG.md,LICENSE.md`（注意：不要排除 `_index.md`，Hugo 项目中这些文件通常包含实质内容）
 - `--rebuild`: 强制 drop + 全量重建（默认行为）
 
 ## 执行流程
