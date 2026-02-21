@@ -51,9 +51,9 @@
 
 ## 当前知识库实际内容
 
-### Qdrant 索引（2662 chunks，heading-based chunking + 预处理元数据）
+### Qdrant 索引（2811 chunks，heading-based chunking + 预处理元数据）
 
-**Redis 官方文档 (234 docs, ~1120 chunks)** — from redis/docs:
+**Redis 官方文档 (294 docs, ~1256 chunks)** — from redis/docs:
 - Data Types, Management (Sentinel, Replication, Persistence, Scaling), Security, Optimization, Develop, Install
 
 **awesome-llm-apps (207 docs, ~979 chunks)** — from Shubhamsaboo/awesome-llm-apps:

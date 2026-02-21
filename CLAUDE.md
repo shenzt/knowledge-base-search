@@ -109,13 +109,13 @@ make test            # 全部测试
 - 文档语言：中英文均支持，回答跟随文档语言
 - 代码变更后必须运行测试验证
 - 编写测试用例前，必须先确认知识库中实际有哪些文档
-- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 2662 chunks（Redis + LLM Apps + 本地 + RAGBench + CRAG）
+- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 2811 chunks（Redis + LLM Apps + 本地 + RAGBench + CRAG）
 - 导入新数据源后，必须运行预处理 + 重建索引才能生效
 
 ## 知识库数据源
 
-### Qdrant 索引（2675 chunks，heading-based chunking + section_path + 预处理元数据）
-- Redis 官方文档 (234 docs, ~1120 chunks): redis/docs
+### Qdrant 索引（2811 chunks，heading-based chunking + section_path + 预处理元数据）
+- Redis 官方文档 (294 docs, ~1256 chunks): redis/docs
   - Data Types: Strings, Lists, Sets, Sorted Sets, Hashes, Streams, JSON, Probabilistic, TimeSeries, Vector Sets
   - Management: Sentinel, Replication, Persistence, Scaling (Cluster), Config, Admin, Debugging, Troubleshooting
   - Security: ACL, Encryption
