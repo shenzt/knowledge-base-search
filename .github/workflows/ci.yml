@@ -127,17 +127,19 @@ jobs:
               'api_key': os.environ['QWEN_API_KEY'],
               'api_base_url': 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
               'models': ['qwen-plus-latest'],
-              'transformer': {'use': ['tooluse']}
+              'transformer': {'use': ['deepseek'], 'qwen-plus-latest': {'use': ['tooluse']}}
             }]
           }
-          with open(os.path.expanduser('~/.claude-code-router/config.json'), 'w') as f:
-            json.dump(config, f, indent=2)
-          print('Config written')
+          for name in ['config.json', 'config-router.json']:
+            path = os.path.expanduser('~/.claude-code-router/' + name)
+            with open(path, 'w') as f:
+              json.dump(config, f, indent=2)
+          print('Config written to both config.json and config-router.json')
+          print('api_key length:', len(os.environ['QWEN_API_KEY']))
           "
-          cat ~/.claude-code-router/config.json
           npx -y claude-code-router@latest start --port 3456 &
           sleep 8
-          curl -sf http://127.0.0.1:3456/ && echo "Router is up" || echo "WARNING: Router may not be ready"
+          curl -v http://127.0.0.1:3456/health 2>&1 || true
         env:
           QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
 
