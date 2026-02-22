@@ -2,13 +2,14 @@
 """分层检索测试 - 对比传统检索 vs 分层检索"""
 
 import json
+import os
 import time
 from pathlib import Path
 from qdrant_client import QdrantClient
 from FlagEmbedding import BGEM3FlagModel
 
 # 初始化
-client = QdrantClient(url="http://localhost:6333")
+client = QdrantClient(url=os.environ.get("QDRANT_URL", "http://localhost:6333"))
 print("加载 BGE-M3 模型...")
 model = BGEM3FlagModel('BAAI/bge-m3', use_fp16=True)
 

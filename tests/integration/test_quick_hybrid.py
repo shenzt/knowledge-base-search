@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """快速混合检索对比测试"""
 
+import os
 import time
 from qdrant_client import QdrantClient
 from qdrant_client.models import SparseVector, Prefetch
 from FlagEmbedding import BGEM3FlagModel
 
 # 初始化
-client = QdrantClient(url="http://localhost:6333")
+client = QdrantClient(url=os.environ.get("QDRANT_URL", "http://localhost:6333"))
 print("加载 BGE-M3 模型...")
 model = BGEM3FlagModel('BAAI/bge-m3', use_fp16=True)
 

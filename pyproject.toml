@@ -53,6 +53,10 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 asyncio_mode = "auto"
 addopts = "-v --tb=short"
+markers = [
+    "integration: 需要 Qdrant + BGE-M3 的集成测试",
+    "e2e: 需要 Agent SDK + LLM API 的端到端测试",
+]
 
 [tool.black]
 line-length = 100

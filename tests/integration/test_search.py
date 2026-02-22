@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """测试向量检索"""
 
+import os
 from qdrant_client import QdrantClient
 from FlagEmbedding import BGEM3FlagModel
 
 # 连接 Qdrant
-client = QdrantClient(url="http://localhost:6333")
+client = QdrantClient(url=os.environ.get("QDRANT_URL", "http://localhost:6333"))
 
 # 加载模型
 print("加载 BGE-M3 模型...")

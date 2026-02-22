@@ -550,6 +550,73 @@ def drop_collection() -> None:
         log.info(f"Collection '{COLLECTION}' 不存在，无需删除")
 
 
+def snapshot_export(output_path: str) -> None:
+    """导出 Qdrant collection 快照到指定路径。"""
+    import shutil
+    import tempfile
+    import urllib.request
+
+    client = get_qdrant()
+    snapshot_info = client.create_snapshot(COLLECTION)
+    snapshot_name = snapshot_info.name
+
+    # 通过 HTTP 下载快照文件
+    url = f"{QDRANT_URL}/collections/{COLLECTION}/snapshots/{snapshot_name}"
+    out = Path(output_path)
+    out.parent.mkdir(parents=True, exist_ok=True)
+
+    with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        tmp_path = tmp.name
+    try:
+        urllib.request.urlretrieve(url, tmp_path)
+        shutil.move(tmp_path, str(out))
+    except Exception:
+        Path(tmp_path).unlink(missing_ok=True)
+        raise
+
+    size_mb = out.stat().st_size / (1024 * 1024)
+    log.info(f"✅ 快照已导出: {out} ({size_mb:.1f} MB)")
+
+    # 清理服务端快照
+    client.delete_snapshot(COLLECTION, snapshot_name)
+
+
+def snapshot_import(snapshot_path: str) -> None:
+    """从快照文件恢复 Qdrant collection。"""
+    import urllib.request
+
+    snap = Path(snapshot_path)
+    if not snap.exists():
+        log.error(f"快照文件不存在: {snap}")
+        sys.exit(1)
+
+    size_mb = snap.stat().st_size / (1024 * 1024)
+    log.info(f"正在恢复快照: {snap} ({size_mb:.1f} MB)")
+
+    # 使用 Qdrant REST API 上传快照恢复
+    url = f"{QDRANT_URL}/collections/{COLLECTION}/snapshots/upload"
+    boundary = "----SnapshotBoundary"
+    filename = snap.name
+
+    with open(str(snap), "rb") as f:
+        file_data = f.read()
+
+    body = (
+        f"--{boundary}\r\n"
+        f'Content-Disposition: form-data; name="snapshot"; filename="{filename}"\r\n'
+        f"Content-Type: application/octet-stream\r\n\r\n"
+    ).encode() + file_data + f"\r\n--{boundary}--\r\n".encode()
+
+    req = urllib.request.Request(
+        url,
+        data=body,
+        method="POST",
+        headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+    )
+    urllib.request.urlopen(req)
+    log.info(f"✅ 快照已恢复到 collection: {COLLECTION}")
+
+
 # ── CLI ───────────────────────────────────────────────────────────
 
 def main() -> None:
@@ -562,9 +629,15 @@ def main() -> None:
     parser.add_argument("--delete-by-repo", metavar="REPO_URL", help="按 source_repo 批量删除某仓库的所有 chunks")
     parser.add_argument("--drop", action="store_true", help="删除整个 collection（清空索引）")
     parser.add_argument("--status", action="store_true", help="查看索引状态")
+    parser.add_argument("--snapshot-export", metavar="PATH", help="导出 collection 快照到指定路径")
+    parser.add_argument("--snapshot-import", metavar="PATH", help="从快照文件恢复 collection")
     args = parser.parse_args()
 
-    if args.drop:
+    if args.snapshot_export:
+        snapshot_export(args.snapshot_export)
+    elif args.snapshot_import:
+        snapshot_import(args.snapshot_import)
+    elif args.drop:
         drop_collection()
     elif args.status:
         show_status()

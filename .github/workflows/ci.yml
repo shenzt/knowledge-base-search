@@ -1,0 +1,146 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # ── Tier 1: Lint + Unit（所有 PR，含 Fork，无 LLM 成本）──
+  lint-and-unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Lint
+        run: ruff check scripts/ tests/
+
+      - name: Unit tests
+        run: pytest tests/unit/ -v
+
+  # ── Tier 2: Integration（仅 main push / dispatch）──
+  integration:
+    needs: lint-and-unit
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    services:
+      qdrant:
+        image: qdrant/qdrant:latest
+        ports: ["6333:6333"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          lfs: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Cache HuggingFace models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface/hub
+          key: hf-bge-m3-reranker-v1
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Restore Qdrant snapshot
+        run: python scripts/index.py --snapshot-import kb/kb-redis-docs/snapshots/knowledge-base.snapshot
+        env:
+          QDRANT_URL: http://localhost:6333
+
+      - name: Integration tests
+        run: pytest tests/integration/ -v -m integration
+        env:
+          QDRANT_URL: http://localhost:6333
+
+  # ── Tier 3: E2E Golden（仅 main push / dispatch）──
+  e2e-golden:
+    needs: integration
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    services:
+      qdrant:
+        image: qdrant/qdrant:latest
+        ports: ["6333:6333"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          lfs: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Cache HuggingFace models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface/hub
+          key: hf-bge-m3-reranker-v1
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Restore Qdrant snapshot
+        run: python scripts/index.py --snapshot-import kb/kb-redis-docs/snapshots/knowledge-base.snapshot
+        env:
+          QDRANT_URL: http://localhost:6333
+
+      - name: Start claude-code-router
+        run: |
+          mkdir -p ~/.claude-code-router
+          cat > ~/.claude-code-router/config.json << 'CONF'
+          {
+            "Router": {
+              "default": "dashscope,qwen-plus-latest",
+              "think": "dashscope,qwen-plus-latest"
+            },
+            "Providers": [{
+              "name": "dashscope",
+              "api_key_env": "QWEN_API_KEY",
+              "api_base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
+              "models": ["qwen-plus-latest"],
+              "transformers": ["tooluse"]
+            }]
+          }
+          CONF
+          npx -y claude-code-router@latest &
+          sleep 5
+          curl -sf http://127.0.0.1:3456/health || echo "Router started (health endpoint may not exist)"
+        env:
+          QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
+
+      - name: Run E2E golden tests
+        run: |
+          USE_ROUTER=1 ROUTER_URL=http://127.0.0.1:3456 \
+          USE_MCP=1 EVAL_DATASET=v5 EVAL_SUBSET=golden \
+          python tests/e2e/test_agentic_rag_sdk.py
+        env:
+          QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
+          ANTHROPIC_AUTH_TOKEN: "ci-placeholder"
+          QDRANT_URL: http://localhost:6333
+
+      - name: Upload eval results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: eval/

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """简化的性能测试 - 验证检索功能"""
 
+import os
 import time
 from qdrant_client import QdrantClient
 from FlagEmbedding import BGEM3FlagModel
 
 # 初始化
-client = QdrantClient(url="http://localhost:6333")
+client = QdrantClient(url=os.environ.get("QDRANT_URL", "http://localhost:6333"))
 print("加载 BGE-M3 模型...")
 model = BGEM3FlagModel('BAAI/bge-m3', use_fp16=True)
 

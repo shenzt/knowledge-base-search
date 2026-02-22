@@ -16,6 +16,43 @@ sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
 
 
+def pytest_configure(config):
+    """注册自定义 markers。"""
+    config.addinivalue_line("markers", "integration: 需要 Qdrant + BGE-M3 的集成测试")
+    config.addinivalue_line("markers", "e2e: 需要 Agent SDK + LLM API 的端到端测试")
+
+
+def _qdrant_reachable(url: str) -> bool:
+    """检查 Qdrant 是否可达。"""
+    import urllib.request
+    try:
+        urllib.request.urlopen(f"{url}/healthz", timeout=3)
+        return True
+    except Exception:
+        return False
+
+
+def pytest_collection_modifyitems(config, items):
+    """对 integration/e2e 测试自动添加 marker 并在基础设施不可达时 skip。"""
+    qdrant_url = os.getenv("QDRANT_URL", "http://localhost:6333")
+    qdrant_ok = _qdrant_reachable(qdrant_url)
+
+    skip_qdrant = pytest.mark.skip(reason=f"Qdrant 不可达: {qdrant_url}")
+
+    for item in items:
+        # 按目录自动打 marker
+        rel = Path(item.fspath).relative_to(PROJECT_ROOT / "tests")
+        parts = rel.parts
+        if parts and parts[0] == "integration":
+            item.add_marker(pytest.mark.integration)
+            if not qdrant_ok:
+                item.add_marker(skip_qdrant)
+        elif parts and parts[0] == "e2e":
+            item.add_marker(pytest.mark.e2e)
+            if not qdrant_ok:
+                item.add_marker(skip_qdrant)
+
+
 @pytest.fixture(scope="session")
 def project_root():
     """Return the project root directory."""
