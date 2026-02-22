@@ -514,7 +514,25 @@ async def run_single_case(i: int, tc: Dict, sem: asyncio.Semaphore,
             def write(self, s): buf.write(s)
             def flush(self): pass
 
-        result = await run_query(prompt, None, BufWriter())
+        # 单次 call 超时保护（防止 API hang 住，如 Kimi K2.5 case 16）
+        QUERY_TIMEOUT = int(os.environ.get("EVAL_QUERY_TIMEOUT", "600"))  # 默认 10 分钟
+        try:
+            result = await asyncio.wait_for(
+                run_query(prompt, None, BufWriter()),
+                timeout=QUERY_TIMEOUT,
+            )
+        except asyncio.TimeoutError:
+            result = {
+                "status": "error",
+                "error": f"TimeoutError: query exceeded {QUERY_TIMEOUT}s",
+                "answer": "",
+                "session_id": None,
+                "cost_usd": 0,
+                "num_turns": 0,
+                "elapsed": QUERY_TIMEOUT,
+                "messages": [],
+            }
+            clog(f"  ⏰ 超时: query 超过 {QUERY_TIMEOUT}s，跳过")
 
         # 追加 run_query 的详细日志
         detail_lines = buf.getvalue()
