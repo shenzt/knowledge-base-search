@@ -445,3 +445,19 @@ GLM-5 vs Claude Sonnet 关键差异：
 **规则**：
 - 工具使用约束必须给出具体的正确/错误参数示例，不能只用自然语言描述
 - Qwen 3.5 能遵循模糊指令（0 次违规），但 Sonnet 需要显式示例
+
+## 教训 23：API Key 安全 — 绝对不能硬编码到代码文件
+
+**问题**：`smoke_test_minimax.sh` 中硬编码了 MiniMax API key（`sk-api-...`），被 commit 并 push 到 GitHub。即使后来删除文件，key 仍在 git 历史中。
+
+**修复**：
+- 用 `git-filter-repo --replace-text` 从全部历史中替换 key 为 `***REDACTED***`
+- `git push --force` 覆盖远程历史
+- 去 MiniMax 控制台轮换泄露的 key
+
+**规则**：
+- API key / token 只能放在 `.env`（已 gitignore）或环境变量中
+- 脚本中用 `${VAR:?请设置环境变量}` 引用，不要写明文值
+- 提交前检查：`git diff --cached | grep -iE "sk-|api.key|token|secret|password"`
+- `.env`、`config.json`（含 key 的）必须在 `.gitignore` 中
+- 发现泄露后：1) 立即从文件中移除 2) `git-filter-repo` 清历史 3) force push 4) 轮换 key
