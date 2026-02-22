@@ -118,7 +118,7 @@ jobs:
         if: env.QWEN_API_KEY != ''
         run: |
           mkdir -p ~/.claude-code-router
-          cat > ~/.claude-code-router/config.json << 'CONF'
+          cat > ~/.claude-code-router/config.json << EOF
           {
             "Router": {
               "default": "dashscope,qwen-plus-latest",
@@ -126,13 +126,13 @@ jobs:
             },
             "Providers": [{
               "name": "dashscope",
-              "api_key_env": "QWEN_API_KEY",
+              "api_key": "${QWEN_API_KEY}",
               "api_base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
               "models": ["qwen-plus-latest"],
               "transformers": ["tooluse"]
             }]
           }
-          CONF
+          EOF
           npx -y claude-code-router@latest start --port 3456 &
           sleep 8
           curl -sf http://127.0.0.1:3456/ && echo "Router is up" || echo "WARNING: Router may not be ready"
