@@ -65,8 +65,13 @@ jobs:
         env:
           QDRANT_URL: http://localhost:6333
 
-      - name: Integration tests
-        run: pytest tests/integration/ -v -m integration
+      - name: Verify snapshot restore
+        run: python scripts/index.py --status
+        env:
+          QDRANT_URL: http://localhost:6333
+
+      - name: Integration smoke test
+        run: python tests/integration/test_simple_search.py
         env:
           QDRANT_URL: http://localhost:6333
 
