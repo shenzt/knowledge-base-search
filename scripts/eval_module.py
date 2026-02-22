@@ -285,6 +285,12 @@ def gate_check(tc: dict, answer: str, contexts: list[dict]) -> dict:
     reasons = []
     source = tc.get("source", "unknown")
 
+    # 0. 空答案硬约束 — 任何模型输出空答案都不应通过 gate
+    if not answer or len(answer.strip()) == 0:
+        checks["answer_empty"] = True
+        reasons.append("空答案 (answer_length=0)")
+        return {"passed": False, "checks": checks, "reasons": reasons}
+
     # 1. 工具调用检查
     tools_used = get_tools_used(contexts)
     checks["tools_used"] = tools_used

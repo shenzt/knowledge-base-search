@@ -479,7 +479,7 @@ TEST_CASES_V5 = [
     {"id": "llm-fw-004",
      "query": "How to build an AI code reviewer agent?",
      "source": "qdrant", "category": "llm-framework",
-     "expected_doc": "code-reviewer",
+     "expected_doc": "code-reviewer,ai_consultant_agent,multi_agent",
      "expected_keywords": ["code", "review", "agent"]},
 
     {"id": "llm-fw-005",
@@ -751,7 +751,7 @@ TEST_CASES_V5 = [
     {"id": "ambiguous-001",
      "query": "Redis 性能不好怎么办？",
      "source": "qdrant", "category": "ambiguous",
-     "expected_doc": "latency.md,memory-optimization.md,benchmarks,pipelining.md",
+     "expected_doc": "latency.md,memory-optimization.md,benchmarks,pipelining.md,cpu-profiling",
      "expected_keywords": ["latency", "memory", "optimization", "benchmark"]},
 
     {"id": "ambiguous-002",

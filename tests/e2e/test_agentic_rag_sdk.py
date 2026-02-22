@@ -144,7 +144,7 @@ if USE_MCP:
 
 ## 知识库目录（所有文档都在这里）
 
-1. Redis 官方文档（234 docs，在 Qdrant 索引中）：
+1. Redis 官方文档（294 docs，在 Qdrant 索引中）：
    - develop/: data-types/, programmability/, reference/, pubsub/, get-started/
    - operate/: management/(sentinel, security, optimization), install/, reference/
    路径示例: ../my-agent-kb/docs/redis-docs/develop/data-types/streams.md
@@ -154,11 +154,25 @@ if USE_MCP:
    路径示例: ../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/xxx/README.md
 
 3. 本地文档（Grep 可搜索）：
-   - docs/runbook/: Redis 运维手册、K8s 故障排查
-   - docs/api/: API 认证、OAuth 文档
-   - docs/guides/: 配置指南
+   - docs/runbook/    — 运维 runbook（Redis 故障恢复、K8s 排障）
+   - docs/api/        — API 设计文档（认证、授权）
 
 4. RAGBench techqa（245 docs）、CRAG finance（119 docs）— 在 Qdrant 索引中
+
+## 本地文件搜索范围（Grep/Glob/Read）
+
+知识库文件只在以下目录：
+- docs/runbook/    — 运维 runbook（Redis 故障恢复、K8s 排障）
+- docs/api/        — API 设计文档（认证、授权）
+- ../my-agent-kb/docs/  — Qdrant 索引的完整文档（hybrid_search 返回的 path）
+
+正确: Grep(pattern="sentinel", path="docs/runbook/")
+正确: Grep(pattern="OAuth", path="docs/api/")
+正确: Read(file_path="../my-agent-kb/docs/redis-docs/operate/...")  ← 来自 hybrid_search 返回的 path
+错误: Grep(pattern="sentinel", path="docs/")  ← 会搜到 ragbench/crag 噪声
+错误: Grep(pattern="sentinel", path=".")  ← 会搜到 tests/eval/scripts
+错误: Read(file_path="docs/ragbench-techqa/...")  ← 评测数据，不是知识库
+错误: Read(file_path="tests/fixtures/...")  ← 测试代码，不是知识库
 
 ## 检索方法（第一步，必须执行）
 
@@ -168,12 +182,11 @@ if USE_MCP:
   Grep(pattern="<关键词>", path="docs/runbook/")
 
 hybrid_search 搜索 Qdrant 索引（Redis 文档、LLM 文档等全部在这里）。
-Grep 搜索本地 docs/ 子目录（仅 runbook/api/guides 三个目录）。
+Grep 搜索本地 docs/ 子目录（仅 runbook/api 两个目录）。
 
 Grep path 选择：
 - Redis/K8s → path="docs/runbook/"
 - API/OAuth → path="docs/api/"
-- 其他 → path="docs/guides/"
 
 ## 扩展阅读（第二步，按需执行）
 
@@ -195,8 +208,10 @@ hybrid_search 返回的 path 字段是文档的实际路径，用 Read(file_path
 
 ## 禁止
 
-- 禁止 Grep(path="docs/") 或 Grep(path=".") — 会命中噪声文件
+- 禁止 Grep(path="docs/") — 会命中 ragbench/crag 噪声文件
+- 禁止 Grep(path=".") 或 Grep 不带 path — 会搜到 tests/eval/scripts
 - 禁止 Grep 扫描 docs/ragbench-techqa/、docs/crag-finance/、eval/、tests/、scripts/
+- 禁止 Read tests/fixtures/kb-sources/ 下的文件 — 那是测试 fixtures，不是知识库
 - 禁止猜测文件路径 — Read 的路径必须来自工具返回值
 - 禁止只用 Grep 不用 hybrid_search — Redis 文档不在本地 docs/ 下，只有 hybrid_search 能找到
 """
@@ -897,6 +912,57 @@ async def main():
                     for r in low_quality[:5]:
                         log(f"    - {r['test_id']}: score={r['judge_score']} {r.get('query', '')[:40]}", lf)
 
+        # ── 质量指标（独立于 gate，衡量回答质量）──
+        # 只统计 gate_passed=True 且有 judge 分数的 case
+        judged_results = [r for r in results if r.get("gate_passed") and r.get("faithfulness") is not None]
+        if judged_results:
+            faith_ge_05 = sum(1 for r in judged_results if (r.get("faithfulness") or 0) >= 0.5)
+            judge_ge_3 = sum(1 for r in judged_results if (r.get("judge_score") or 0) >= 3.0)
+            pct_faith = faith_ge_05 / len(judged_results) * 100
+            pct_judge = judge_ge_3 / len(judged_results) * 100
+            log("", lf)
+            log(f"📊 质量指标 ({len(judged_results)} judged cases):", lf)
+            log(f"  pct_faith_ge_05: {faith_ge_05}/{len(judged_results)} ({pct_faith:.1f}%)", lf)
+            log(f"  pct_judge_ge_3:  {judge_ge_3}/{len(judged_results)} ({pct_judge:.1f}%)", lf)
+        else:
+            pct_faith = None
+            pct_judge = None
+
+        # ── 越界检测（boundary violation）──
+        BOUNDARY_PREFIXES = [
+            "tests/", "eval/", "scripts/",
+            "docs/ragbench-techqa/", "docs/crag-finance/", "docs/archive/",
+        ]
+        BOUNDARY_PATTERNS = [
+            "docs/design", "docs/dual-", "docs/e2e-", "docs/eval-", "docs/progress-",
+        ]
+        boundary_violations = []
+        for r in results:
+            paths = r.get("retrieved_paths", [])
+            violated_paths = []
+            for p in paths:
+                for prefix in BOUNDARY_PREFIXES:
+                    if p.startswith(prefix) or f"/{prefix}" in p:
+                        violated_paths.append(p)
+                        break
+                else:
+                    for pat in BOUNDARY_PATTERNS:
+                        if pat in p:
+                            violated_paths.append(p)
+                            break
+            if violated_paths:
+                r["boundary_violation"] = True
+                r["violated_paths"] = violated_paths
+                boundary_violations.append(r)
+            else:
+                r["boundary_violation"] = False
+
+        if boundary_violations:
+            log("", lf)
+            log(f"⚠️  越界检测: {len(boundary_violations)} cases 访问了非知识库路径:", lf)
+            for r in boundary_violations:
+                log(f"  - {r['test_id']}: {r.get('violated_paths', [])[:3]}", lf)
+
         # 保存汇总 JSON
         kb_commit = get_kb_commit()
         out_dir = PROJECT_ROOT / "eval"
@@ -953,6 +1019,15 @@ async def main():
                 "category_stats": {c: {"total": s["t"], "passed": s["p"]} for c, s in cats.items()},
                 "source_stats": {s: {"total": v["t"], "passed": v["p"]} for s, v in source_stats.items()},
                 "judge_summary": judge_summary,
+                "quality_metrics": {
+                    "pct_faith_ge_05": round(pct_faith, 1) if pct_faith is not None else None,
+                    "pct_judge_ge_3": round(pct_judge, 1) if pct_judge is not None else None,
+                    "judged_count": len(judged_results) if judged_results else 0,
+                },
+                "boundary_violations": {
+                    "count": len(boundary_violations),
+                    "cases": [{"test_id": r["test_id"], "violated_paths": r.get("violated_paths", [])} for r in boundary_violations],
+                },
                 "speed_summary": speed_summary,
                 "early_stop_summary": {
                     "avg_turns": round(avg_turns, 1),

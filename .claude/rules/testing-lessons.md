@@ -461,3 +461,42 @@ GLM-5 vs Claude Sonnet 关键差异：
 - 提交前检查：`git diff --cached | grep -iE "sk-|api.key|token|secret|password"`
 - `.env`、`config.json`（含 key 的）必须在 `.gitignore` 中
 - 发现泄露后：1) 立即从文件中移除 2) `git-filter-repo` 清历史 3) force push 4) 轮换 key
+
+## 教训 24：Gate 和质量指标必须解耦
+
+**问题**：gate_passed=true 但质量极差的 case 存在（如 redis-ops-009 Sonnet: gate=true, faith=0.0, judge=1.9）。Gate 只检查"是否检索到 + 是否引用 + expected_doc 命中"，不检查答案质量。
+
+**修复**：
+- summary 中增加 `pct_faith_ge_05`（faithfulness >= 0.5 的比例）和 `pct_judge_ge_3`（judge_score >= 3.0 的比例）
+- 两个指标独立展示，不急着定组合阈值
+- Gate 是检索能力指标，quality 是回答质量指标，两者独立
+
+**规则**：
+- Gate 通过 ≠ 回答质量好，必须同时看质量指标
+- 空答案（answer_length=0）必须 fail gate — 这是硬约束
+- GLM-5 等模型可能因内容审查/上下文溢出输出空答案，gate 必须拦截
+
+## 教训 25：搜索路径约束必须精确到子目录
+
+**问题**：`docs/` 下有 370+ 个文件，但只有 `docs/runbook/` 和 `docs/api/` 是 v5 评测的本地知识库。其余都是噪声（ragbench-techqa 245 个、crag-finance 119 个、项目设计文档等）。Qwen notfound-003 越界读取了 `tests/fixtures/kb-sources/` 路径。
+
+**修复**：
+- prompt 中定义精确搜索 root（`docs/runbook/`、`docs/api/`），不是笼统的 `docs/`
+- 显式正确/错误示例（教训 22 已验证对 Sonnet 有效）
+- eval 增加越界检测：retrieved_paths 包含 `tests/`、`eval/`、`scripts/`、`docs/ragbench-techqa/` 等路径时标记 `boundary_violation=true`
+
+**规则**：
+- Grep path 必须精确到知识库子目录，不能用 `docs/` 或 `.`
+- 路径约束靠 prompt 显式示例（对 Sonnet 有效），不下沉到工具层（违反 MCP 架构原则）
+- eval 层做越界检测但不干涉 Agent 行为（eval 是裁判不是选手）
+
+## 教训 26：max_turns 在 claude-code-router 模式下可能不生效
+
+**问题**：Qwen notfound-003 跑了 19 turns，但代码中 max_turns=10。Golden eval 数据来自 2026-02-22 10:07 的 Qwen 3.5 Plus 运行。
+
+**确认**：max_turns=10 对 router 模式不完全生效。claude-code-router 是第三方代理，Agent SDK 的 max_turns 参数可能被 router 的 turn 计数逻辑覆盖或忽略。
+
+**兜底**：
+- `asyncio.wait_for` 600s 超时是物理兜底，已在代码中实现
+- 不在 eval 层加 turn 计数器（eval 是裁判不应干涉选手）
+- 记录为已知限制：router 模式下 max_turns 不可靠，依赖超时兜底
