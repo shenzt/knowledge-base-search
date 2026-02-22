@@ -138,8 +138,8 @@ jobs:
               json.dump(config, f, indent=2)
             print(f'Wrote: {path}')
           "
-          # 2. 启动 router
-          npx -y claude-code-router@latest start --port 3456 &
+          # 2. 启动 router（显式指定 config 路径）
+          npx -y claude-code-router@latest start --port 3456 --config ~/.claude-code-router/config-router.json &
           sleep 10
           curl -sf http://127.0.0.1:3456/health && echo "Router is up" || echo "WARNING: Router may not be ready"
         env:
