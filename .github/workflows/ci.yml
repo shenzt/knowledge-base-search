@@ -133,21 +133,22 @@ jobs:
             }]
           }
           CONF
-          npx -y claude-code-router@latest &
-          sleep 5
-          curl -sf http://127.0.0.1:3456/health || echo "Router started (health endpoint may not exist)"
+          npx -y claude-code-router@latest --port 3456 &
+          sleep 8
+          curl -sf http://127.0.0.1:3456/ && echo "Router is up" || echo "WARNING: Router may not be ready"
         env:
           QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
 
       - name: Run E2E golden tests
         if: env.QWEN_API_KEY != ''
+        timeout-minutes: 30
         run: |
           USE_ROUTER=1 ROUTER_URL=http://127.0.0.1:3456 \
-          USE_MCP=1 EVAL_DATASET=v5 EVAL_SUBSET=golden \
+          USE_MCP=1 EVAL_DATASET=golden \
           python tests/e2e/test_agentic_rag_sdk.py
         env:
           QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
-          ANTHROPIC_AUTH_TOKEN: "ci-placeholder"
+          ANTHROPIC_AUTH_TOKEN: "router-placeholder"
           QDRANT_URL: http://localhost:6333
 
       - name: Skip E2E (no QWEN_API_KEY)
