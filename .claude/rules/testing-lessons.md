@@ -101,6 +101,25 @@
 | CRAG | R2 | - | - | 429 | - | - | 周费用限额 $280 |
 | v5 | R12 | - | - | 429 | - | - | 周费用限额 $280 |
 
+#### Qwen 3.5 Plus + Early Stopping 评测（2026-02-22）
+
+| Run | Model | Gate | Avg Turns | Avg Time | hit_first_search | max_turns_reached | 备注 |
+|-----|-------|------|-----------|----------|-----------------|-------------------|------|
+| Golden | Qwen 3.5 Plus | 20/20 (100%) | 5.8 | 195s | 6/20 (30%) | 1/20 | streams fix + early stop rules |
+| Full | Qwen 3.5 Plus | 118/120 (98%) | 5.6 | 231s | 53/120 (44%) | 11/120 | ✅ 最佳 Qwen 结果 |
+
+vs Qwen R1 baseline: 74% → 98% gate, ~7.0 → 5.6 avg turns
+
+优化内容:
+- 3 条检索效率 prompt 规则（见好就收/快速放弃/禁止循环）
+- max_turns 15 → 10
+- _index.md 数据导入修复（Redis 234→294 docs, +60 index pages）
+- ambiguous expected_doc 修复
+
+Failed (2):
+- llm-agent-011: 空答案，voice RAG agent 搜不到
+- multi-hop-004: expected_doc mismatch（找到 rag.md 但 expected 是 vector-sets/client-side-caching）
+
 #### Sonnet R15 + RAGAS 修复评测（2026-02-20）
 
 | Run | Model | Gate | Faith (raw) | Faith (corrected) | Rel | Cost | 备注 |
