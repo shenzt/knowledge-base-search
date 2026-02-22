@@ -133,7 +133,7 @@ jobs:
             }]
           }
           CONF
-          npx -y claude-code-router@latest --port 3456 &
+          npx -y claude-code-router@latest start --port 3456 &
           sleep 8
           curl -sf http://127.0.0.1:3456/ && echo "Router is up" || echo "WARNING: Router may not be ready"
         env:
