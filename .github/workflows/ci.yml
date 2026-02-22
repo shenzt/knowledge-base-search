@@ -118,21 +118,23 @@ jobs:
         if: env.QWEN_API_KEY != ''
         run: |
           mkdir -p ~/.claude-code-router
-          cat > ~/.claude-code-router/config.json << EOF
-          {
-            "Router": {
-              "default": "dashscope,qwen-plus-latest",
-              "think": "dashscope,qwen-plus-latest"
-            },
-            "Providers": [{
-              "name": "dashscope",
-              "api_key": "${QWEN_API_KEY}",
-              "api_base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions",
-              "models": ["qwen-plus-latest"],
-              "transformers": ["tooluse"]
+          python3 -c "
+          import json, os
+          config = {
+            'Router': {'default': 'dashscope,qwen-plus-latest', 'think': 'dashscope,qwen-plus-latest'},
+            'Providers': [{
+              'name': 'dashscope',
+              'api_key': os.environ['QWEN_API_KEY'],
+              'api_base_url': 'https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions',
+              'models': ['qwen-plus-latest'],
+              'transformer': {'use': ['tooluse']}
             }]
           }
-          EOF
+          with open(os.path.expanduser('~/.claude-code-router/config.json'), 'w') as f:
+            json.dump(config, f, indent=2)
+          print('Config written')
+          "
+          cat ~/.claude-code-router/config.json
           npx -y claude-code-router@latest start --port 3456 &
           sleep 8
           curl -sf http://127.0.0.1:3456/ && echo "Router is up" || echo "WARNING: Router may not be ready"
