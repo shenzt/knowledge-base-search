@@ -20,3 +20,8 @@ langchain-openai>=0.3.0
 
 # 数据集导入
 markdownify>=0.12.0
+
+# 开发 / CI
+ruff>=0.1.0
+pytest>=7.0.0
+python-dotenv>=1.0.0
