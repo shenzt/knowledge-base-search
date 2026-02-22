@@ -117,16 +117,10 @@ jobs:
       - name: Start claude-code-router
         if: env.QWEN_API_KEY != ''
         run: |
-          # 1. 先启动 router 让它创建默认 config
-          npx -y claude-code-router@latest start --port 3456 &
-          ROUTER_PID=$!
-          sleep 5
-          # 2. 找到实际的 config 文件路径并覆盖
-          echo "=== Finding config files ==="
-          find ~/.claude-code-router/ -name "*.json" -exec echo "Found: {}" \; -exec cat {} \;
-          # 3. 用 Python 覆盖所有 config 文件
+          # 1. 写 config（两个文件名都写，确保 router 能找到）
+          mkdir -p ~/.claude-code-router
           python3 -c "
-          import json, os, glob
+          import json, os
           config = {
             'PORT': 3456,
             'Router': {'default': 'dashscope,qwen-plus-latest', 'think': 'dashscope,qwen-plus-latest'},
@@ -138,18 +132,16 @@ jobs:
               'transformer': {'use': ['deepseek'], 'qwen-plus-latest': {'use': ['tooluse']}}
             }]
           }
-          config_dir = os.path.expanduser('~/.claude-code-router/')
-          for f in glob.glob(config_dir + '*.json'):
-            with open(f, 'w') as fh:
-              json.dump(config, fh, indent=2)
-            print(f'Overwrote: {f}')
+          for name in ['config.json', 'config-router.json']:
+            path = os.path.expanduser('~/.claude-code-router/' + name)
+            with open(path, 'w') as f:
+              json.dump(config, f, indent=2)
+            print(f'Wrote: {path}')
           "
-          # 4. Kill 并重启 router
-          kill $ROUTER_PID 2>/dev/null || true
-          sleep 2
+          # 2. 启动 router
           npx -y claude-code-router@latest start --port 3456 &
-          sleep 5
-          curl -v http://127.0.0.1:3456/health 2>&1 || true
+          sleep 10
+          curl -sf http://127.0.0.1:3456/health && echo "Router is up" || echo "WARNING: Router may not be ready"
         env:
           QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
 
