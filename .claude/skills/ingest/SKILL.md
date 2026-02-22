@@ -2,6 +2,7 @@
 name: ingest
 description: 导入文档到知识库。支持 PDF、网页、DOCX 等。当用户提到"导入"、"添加文档"、"解析 PDF"、"抓取网页" 时触发。
 argument-hint: <文件路径或URL> [目标目录]
+disable-model-invocation: true
 allowed-tools: Read, Bash, Glob, Write
 ---
 

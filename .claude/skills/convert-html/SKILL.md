@@ -2,6 +2,7 @@
 name: convert-html
 description: 批量转换 HTML 文档为 Markdown 格式并添加 front-matter。当用户提到"转换 HTML"、"HTML 转 Markdown"、"准备文档" 时触发。
 argument-hint: <HTML目录路径> <输出目录路径>
+disable-model-invocation: true
 allowed-tools: Read, Bash, Glob, Write, Grep
 ---
 

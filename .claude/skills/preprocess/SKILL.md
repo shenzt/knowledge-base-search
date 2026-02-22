@@ -2,6 +2,7 @@
 name: preprocess
 description: 对知识库文档进行 LLM 预处理，生成元数据。当用户提到"预处理"、"preprocess"、"文档分析" 时触发。
 argument-hint: [--dir <path>] [--file <path>] [--status <path>] [--force]
+disable-model-invocation: true
 allowed-tools: Bash, Read, Glob
 ---
 

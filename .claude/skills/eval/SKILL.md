@@ -1,3 +1,11 @@
+---
+name: eval
+description: RAG 评测。运行评测用例，分析结果，生成报告。当用户提到"评测"、"eval"、"跑测试" 时触发。
+argument-hint: [--mcp] [--quick] [--analyze <file>] [--re-eval] [--status]
+disable-model-invocation: true
+allowed-tools: Bash, Read, Grep, Glob
+---
+
 # /eval — RAG 评测
 
 触发: `/eval [选项]`

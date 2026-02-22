@@ -2,6 +2,7 @@
 name: ingest-repo
 description: 从 Git 仓库导入文档到知识库。Clone 整个 repo，提取 Markdown 文件，注入溯源 front-matter，建立向量索引。当用户提到"导入仓库"、"ingest repo"、"添加 Git 仓库"时触发。
 argument-hint: <repo-url> [--target-dir <path>] [--md-root <subdir>] [--branch <branch>]
+disable-model-invocation: true
 allowed-tools: Read, Write, Bash, Glob, Edit
 ---
 

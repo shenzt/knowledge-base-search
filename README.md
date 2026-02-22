@@ -177,18 +177,22 @@ make test                                         # 运行测试
 knowledge-base-search/
 ├── .claude/
 │   ├── skills/                  # Agent Skills
-│   │   ├── search/              # 知识库检索（含预处理元数据使用指南）
-│   │   ├── preprocess/          # LLM 文档预处理
-│   │   ├── ingest/              # 单文档导入
-│   │   ├── ingest-repo/         # Git 仓库导入
-│   │   ├── index-docs/          # 索引管理
-│   │   ├── review/              # 文档审查
-│   │   └── eval/                # RAG 评测
+│   │   ├── search/              # 知识库检索（自动触发）
+│   │   ├── review/              # 文档审查（自动触发）
+│   │   ├── build-index/         # 分层索引构建/更新（自动触发）
+│   │   ├── ingest/              # 单文档导入（手动触发）
+│   │   ├── ingest-repo/         # Git 仓库导入（手动触发）
+│   │   ├── preprocess/          # LLM 文档预处理（手动触发）
+│   │   ├── index-docs/          # 向量索引管理（手动触发）
+│   │   ├── eval/                # RAG 评测（手动触发）
+│   │   ├── convert-html/        # HTML → Markdown（手动触发）
+│   │   └── sync-from-raw/       # 双仓同步（手动触发）
 │   └── rules/                   # 约束规则
-│       ├── agent-architecture.md  # Skill vs Python vs Subagent 规范
+│       ├── agent-architecture.md  # Skill vs Python vs Agent SDK 规范
 │       ├── retrieval-strategy.md
 │       ├── doc-frontmatter.md
 │       ├── python-style.md
+│       ├── security.md
 │       └── testing-lessons.md
 ├── scripts/
 │   ├── mcp_server.py            # MCP Server (hybrid_search + keyword_search + agent_hint)

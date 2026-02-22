@@ -2,6 +2,7 @@
 name: sync-from-raw
 description: 从原始文档仓同步并转换文档到 Agent KB 仓。检测变更、转换格式、增强元数据、更新索引。当用户提到"同步文档"、"更新知识库"、"从原始仓同步" 时触发。
 argument-hint: <原始仓路径> [--incremental|--full]
+disable-model-invocation: true
 allowed-tools: Read, Bash, Glob, Write, Grep
 ---
 
