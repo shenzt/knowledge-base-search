@@ -108,13 +108,14 @@
 | Golden | Qwen 3.5 Plus | 20/20 (100%) | 5.8 | 195s | 6/20 (30%) | 1/20 | streams fix + early stop rules |
 | Full | Qwen 3.5 Plus | 118/120 (98%) | 5.6 | 231s | 53/120 (44%) | 11/120 | ✅ 最佳 Qwen 结果 |
 
-vs Qwen R1 baseline: 74% → 98% gate, ~7.0 → 5.6 avg turns
+vs Qwen R3 baseline (120 cases): 116/120 (97%) → 118/120 (98%), avg time 241s → 231s
+R3 的 3/4 fail 是 ambiguous expected_doc 问题，本次已修复
 
 优化内容:
 - 3 条检索效率 prompt 规则（见好就收/快速放弃/禁止循环）
 - max_turns 15 → 10
 - _index.md 数据导入修复（Redis 234→294 docs, +60 index pages）
-- ambiguous expected_doc 修复
+- ambiguous expected_doc 修复（ambiguous-002/004/005）
 
 Failed (2):
 - llm-agent-011: 空答案，voice RAG agent 搜不到
