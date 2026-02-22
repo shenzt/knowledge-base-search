@@ -1,0 +1,1359 @@
+{
+  "timestamp": "2026-02-22T13:04:14.569480",
+  "test_type": "agentic_rag_v5",
+  "method": "claude_agent_sdk",
+  "total": 20,
+  "passed": 17,
+  "failed": 3,
+  "errors": 0,
+  "total_time": 3614.32817029953,
+  "total_cost": 3.944822,
+  "kb_commit": "5745eba",
+  "eval_module": "eval_module.py (gate + quality + judge)",
+  "model": "glm-5",
+  "dataset": "golden",
+  "category_stats": {
+    "redis-data-types": {
+      "total": 2,
+      "passed": 2
+    },
+    "redis-ops": {
+      "total": 2,
+      "passed": 2
+    },
+    "redis-so": {
+      "total": 2,
+      "passed": 2
+    },
+    "llm-rag": {
+      "total": 1,
+      "passed": 1
+    },
+    "llm-agent": {
+      "total": 1,
+      "passed": 0
+    },
+    "llm-framework": {
+      "total": 1,
+      "passed": 1
+    },
+    "k8s-crashloop": {
+      "total": 1,
+      "passed": 1
+    },
+    "api-auth": {
+      "total": 1,
+      "passed": 0
+    },
+    "redis-failover": {
+      "total": 1,
+      "passed": 1
+    },
+    "notfound": {
+      "total": 2,
+      "passed": 2
+    },
+    "multi-hop": {
+      "total": 2,
+      "passed": 2
+    },
+    "cross-source": {
+      "total": 1,
+      "passed": 1
+    },
+    "ambiguous": {
+      "total": 2,
+      "passed": 2
+    },
+    "long-answer": {
+      "total": 1,
+      "passed": 0
+    }
+  },
+  "source_stats": {
+    "qdrant": {
+      "total": 15,
+      "passed": 13
+    },
+    "local": {
+      "total": 3,
+      "passed": 2
+    },
+    "notfound": {
+      "total": 2,
+      "passed": 2
+    }
+  },
+  "judge_summary": {
+    "count": 14,
+    "avg_score": 3.91,
+    "avg_faithfulness": 0.73,
+    "avg_relevancy": 0.859,
+    "avg_context_precision": 0.509,
+    "avg_context_recall": 0.72,
+    "avg_answer_correctness": null,
+    "low_quality_count": 1
+  },
+  "speed_summary": {
+    "avg_seconds": 180.7,
+    "p50_seconds": 154.6,
+    "p95_seconds": 273.1,
+    "min_seconds": 120.0,
+    "max_seconds": 299.8
+  },
+  "early_stop_summary": {
+    "avg_turns": 4.7,
+    "avg_search_calls": 1.0,
+    "avg_max_consec_same_tool": 1.0,
+    "stop_reasons": {
+      "hit_first_search": 11,
+      "normal": 8,
+      "notfound_slow": 1
+    },
+    "high_turn_count": 5
+  },
+  "use_mcp": true,
+  "use_judge": true,
+  "use_router": true,
+  "use_direct": false,
+  "direct_base_url": null,
+  "concurrency": 1,
+  "results": [
+    {
+      "test_id": "redis-dt-001",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is the difference between Redis Sorted Sets and regular Sets?",
+      "status": "passed",
+      "elapsed_seconds": 124.37446451187134,
+      "cost_usd": 0.14341,
+      "num_turns": 2,
+      "answer_length": 2215,
+      "tools_used": [
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/index.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sorted-sets.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/timeseries/index.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/sets.md"
+      ],
+      "contexts_count": 1,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "sorted set",
+        "score"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the retrieved documents, here are the key differences between **Redis Sorted Sets** and **regular Sets**:\n\n## 1. Ordering\n\n| Feature | Regular Sets | Sorted Sets |\n|---------|-------------|-------------|\n| **Order** | Unordered collection | Ordered by score |\n| **Ordering rule** | N/A | Ele",
+      "judge_score": 4.4,
+      "faithfulness": 0.789,
+      "relevancy": 0.994,
+      "context_precision": 0.75,
+      "context_recall": 0.6,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "hit_first_search"
+      }
+    },
+    {
+      "test_id": "redis-dt-002",
+      "category": "redis-data-types",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How do I use Redis Streams for message queuing?",
+      "status": "passed",
+      "elapsed_seconds": 146.48360967636108,
+      "cost_usd": 0.294636,
+      "num_turns": 4,
+      "answer_length": 3594,
+      "tools_used": [
+        "Grep",
+        "Read",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/streams/index.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "stream",
+        "XADD",
+        "consumer"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "# Using Redis Streams for Message Queuing\n\nRedis Streams is a data structure that acts like an **append-only log** and is well-suited for message queuing use cases such as event sourcing, sensor monitoring, and notifications [来源: ../my-agent-kb/docs/redis-docs/develop/data-types/streams/index.md].\n\n",
+      "judge_score": 4.9,
+      "faithfulness": 1.0,
+      "relevancy": 0.957,
+      "context_precision": 0.83,
+      "context_recall": 0.75,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        },
+        {
+          "turn": 3,
+          "tool": "Read"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "hit_first_search"
+      }
+    },
+    {
+      "test_id": "redis-ops-002",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis cluster 是怎么做数据分片的？hash slot 机制是什么？",
+      "status": "passed",
+      "elapsed_seconds": 136.4558916091919,
+      "cost_usd": 0.074847,
+      "num_turns": 3,
+      "answer_length": 1818,
+      "tools_used": [
+        "Grep",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "cluster",
+        "hash slot",
+        "16384"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，我来详细解答 Redis Cluster 的数据分片和 hash slot 机制：\n\n---\n\n## Redis Cluster 数据分片机制\n\nRedis Cluster **不使用一致性哈希**，而是采用一种不同的分片方式——**Hash Slot（哈希槽）**。\n\n### 核心原理\n\n- **总槽数**：16384 个 hash slots\n- **计算公式**：`HASH_SLOT = CRC16(key) mod 16384`\n\n> 每个键都概念上属于一个 hash slot，通过 CRC16 校验和取模确定 [来源: ../my-agent-kb/docs/red",
+      "judge_score": 4.4,
+      "faithfulness": 0.9,
+      "relevancy": 0.855,
+      "context_precision": 0.887,
+      "context_recall": 1.0,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "hit_first_search"
+      }
+    },
+    {
+      "test_id": "redis-ops-009",
+      "category": "redis-ops",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis debugging 有哪些常用工具和命令？",
+      "status": "passed",
+      "elapsed_seconds": 218.23682975769043,
+      "cost_usd": 0.306099,
+      "num_turns": 7,
+      "answer_length": 2248,
+      "tools_used": [
+        "Grep",
+        "Read",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisgraph/redisgraph-2.2-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/clients.md",
+        "../my-agent-kb/docs/redis-docs/develop/programmability/lua-debugging.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.0-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/troubleshooting.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/latency-monitor.md"
+      ],
+      "contexts_count": 6,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "debug",
+        "MEMORY"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的文档，Redis 提供了多种 debugging 工具和命令：\n\n---\n\n## 1. Lua 调试器 (LDB)\n\nRedis 3.2+ 内置了完整的 Lua 调试器，通过 `redis-cli` 使用：\n\n**启动调试会话：**\n```bash\n./redis-cli --ldb --eval /tmp/script.lua\n# 传递参数\n./redis-cli --ldb --eval /tmp/script.lua mykey somekey , arg1 arg2\n```\n\n**同步模式（保留数据变更，服务器会阻塞）：**\n```bash\n./redis-cli --ld",
+      "judge_score": 3.4,
+      "faithfulness": 0.523,
+      "relevancy": 0.917,
+      "context_precision": 0.0,
+      "context_recall": 0.125,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        },
+        {
+          "turn": 3,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 4,
+          "tool": "Read"
+        },
+        {
+          "turn": 5,
+          "tool": "Read"
+        },
+        {
+          "turn": 6,
+          "tool": "Read"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "normal"
+      }
+    },
+    {
+      "test_id": "redis-so-003",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "I need to run SORT and SUNION across different Redis cluster nodes, but getting CROSSSLOT error",
+      "status": "passed",
+      "elapsed_seconds": 187.80955171585083,
+      "cost_usd": 0.13876500000000003,
+      "num_turns": 4,
+      "answer_length": 2243,
+      "tools_used": [
+        "Read",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/using-commands/multi-key-operations.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "cluster",
+        "hash slot",
+        "CROSSSLOT"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## Answer: CROSSSLOT Error with SORT and SUNION in Redis Cluster\n\n### Root Cause\n\nIn Redis Cluster, **SUNION** requires **single-slot** operation - all keys must belong to the same hash slot [来源: multi-key-operations.md]. The error occurs because your keys are distributed across different cluster no",
+      "judge_score": 4.8,
+      "faithfulness": 1.0,
+      "relevancy": 0.915,
+      "context_precision": 0.775,
+      "context_recall": 1.0,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 3,
+          "tool": "Read"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "hit_first_search"
+      }
+    },
+    {
+      "test_id": "redis-so-010",
+      "category": "redis-so",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "我的 Redis 用了 10GB 内存但只存了 2GB 数据，内存碎片怎么处理？",
+      "status": "passed",
+      "elapsed_seconds": 130.44466352462769,
+      "cost_usd": 0.155659,
+      "num_turns": 4,
+      "answer_length": 1077,
+      "tools_used": [
+        "Grep",
+        "Read",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-native-types.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/index.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/admin.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "memory"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据检索到的 Redis 官方文档，我来回答你的问题：\n\n---\n\n## 🔍 这是正常现象，不是真正的\"碎片\"\n\n你的情况（10GB 内存占用但只存 2GB 数据）完全符合文档描述的场景：\n\n> \"如果你往一个实例填充 5GB 数据，然后删除相当于 2GB 的数据，**RSS（实际物理内存）可能仍然维持在 5GB 左右**，即使 Redis 报告用户内存只有 3GB。这是因为底层分配器无法轻易释放内存——被删除的 key 往往和仍然存在的 key 分配在同一个内存页上。\"\n> \n> [来源: ../my-agent-kb/docs/redis-docs/operate/oss_and_stac",
+      "judge_score": 3.0,
+      "faithfulness": 0.452,
+      "relevancy": 0.835,
+      "context_precision": 0.0,
+      "context_recall": 0.286,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        },
+        {
+          "turn": 3,
+          "tool": "Read"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "hit_first_search"
+      }
+    },
+    {
+      "test_id": "llm-rag-002",
+      "category": "llm-rag",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What is Corrective RAG and how does it improve retrieval quality?",
+      "status": "passed",
+      "elapsed_seconds": 136.39295625686646,
+      "cost_usd": 0.16898599999999997,
+      "num_turns": 4,
+      "answer_length": 1745,
+      "tools_used": [
+        "Grep",
+        "Read",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "docs/design-review.md",
+        "../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/corrective_rag/README.md",
+        "docs/eval-review.md"
+      ],
+      "contexts_count": 3,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "corrective",
+        "RAG",
+        "retrieval"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## What is Corrective RAG?\n\n**Corrective RAG** is a sophisticated Retrieval-Augmented Generation (RAG) system that implements a **corrective multi-stage workflow** using LangGraph. It combines document retrieval, relevance grading, query transformation, and web search to provide comprehensive and ac",
+      "judge_score": 3.4,
+      "faithfulness": 0.464,
+      "relevancy": 1.0,
+      "context_precision": -1,
+      "context_recall": -1,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        },
+        {
+          "turn": 3,
+          "tool": "Read"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "hit_first_search"
+      }
+    },
+    {
+      "test_id": "llm-agent-001",
+      "category": "llm-agent",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build a multi-agent finance team with AI?",
+      "status": "failed",
+      "elapsed_seconds": 135.76414942741394,
+      "cost_usd": 0.08308099999999999,
+      "num_turns": 3,
+      "answer_length": 0,
+      "tools_used": [
+        "Grep",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_travel_planner_agent_team/backend/agents/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_finance_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_financial_coach_agent/README.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [
+        "答案过短 (0)"
+      ],
+      "answer_preview": "",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null,
+      "context_precision": null,
+      "context_recall": null,
+      "answer_correctness": null,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "hit_first_search"
+      }
+    },
+    {
+      "test_id": "llm-fw-004",
+      "category": "llm-framework",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to build an AI code reviewer agent?",
+      "status": "passed",
+      "elapsed_seconds": 273.0596466064453,
+      "cost_usd": 0.347459,
+      "num_turns": 8,
+      "answer_length": 4763,
+      "tools_used": [
+        "mcp__knowledge-base__keyword_search",
+        "Grep",
+        "Read",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_legal_agent_team/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/awesome_agent_skills/code-reviewer/AGENTS.md",
+        "../my-agent-kb/docs/awesome-llm-apps/awesome_agent_skills/code-reviewer/SKILL.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_domain_deep_research_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/awesome_agent_skills/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_home_renovation_agent/README.md",
+        "../my-agent-kb/docs/awesome-llm-apps/mcp_ai_agents/github_mcp_agent/README.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/index.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/single_agent_apps/ai_consultant_agent/README.md",
+        "docs/design.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/single_agent_apps/ai_investment_agent/README.md"
+      ],
+      "contexts_count": 7,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "code",
+        "review",
+        "agent"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the retrieved documentation, here's how to build an **AI Code Reviewer Agent**:\n\n---\n\n## Overview\n\nThe knowledge base contains a complete **Code Reviewer Skill** following the [Agent Skills specification](https://agentskills.io). This skill can be integrated into any AI agent to give it exp",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null,
+      "context_precision": null,
+      "context_recall": null,
+      "answer_correctness": null,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        },
+        {
+          "turn": 3,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 4,
+          "tool": "mcp__knowledge-base__keyword_search"
+        },
+        {
+          "turn": 5,
+          "tool": "Read"
+        },
+        {
+          "turn": 6,
+          "tool": "Read"
+        },
+        {
+          "turn": 7,
+          "tool": "Read"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "normal"
+      }
+    },
+    {
+      "test_id": "local-002",
+      "category": "k8s-crashloop",
+      "type": "unknown",
+      "source": "local",
+      "query": "kubectl describe pod 显示 OOMKilled 怎么办",
+      "status": "passed",
+      "elapsed_seconds": 120.00905990600586,
+      "cost_usd": 0.09153099999999999,
+      "num_turns": 3,
+      "answer_length": 946,
+      "tools_used": [
+        "Grep",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "docs/e2e-testing.md",
+        "docs/runbook/kubernetes-pod-crashloop.md",
+        "docs/ragbench-techqa/c37e4a3b.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "OOMKilled",
+        "memory",
+        "limit"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## OOMKilled 问题排查与解决\n\n根据检索到的文档，`OOMKilled` 表示**容器内存使用超过了配置的内存限制**，被 Kubernetes 强制终止。\n\n---\n\n### 诊断步骤\n\n**1. 确认 OOMKilled 状态**\n```bash\nkubectl describe pod <pod-name> -n <namespace>\n```\n在输出中查找 `OOMKilled` 标记 [来源: docs/runbook/kubernetes-pod-crashloop.md]\n\n**2. 查看容器崩溃日志**\n```bash\n# 当前崩溃日志\nkubectl logs <",
+      "judge_score": 4.2,
+      "faithfulness": 0.913,
+      "relevancy": 0.753,
+      "context_precision": -1,
+      "context_recall": -1,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "hit_first_search"
+      }
+    },
+    {
+      "test_id": "local-003",
+      "category": "api-auth",
+      "type": "unknown",
+      "source": "local",
+      "query": "API 返回 401 TOKEN_EXPIRED，前端该怎么处理",
+      "status": "failed",
+      "elapsed_seconds": 121.83509469032288,
+      "cost_usd": 0.078331,
+      "num_turns": 3,
+      "answer_length": 0,
+      "tools_used": [
+        "Grep",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "docs/api/authentication.md",
+        "docs/ragbench-techqa/8aa1cb76.md",
+        "../my-agent-kb/docs/awesome-llm-apps/awesome_agent_skills/code-reviewer/rules/correctness-error-handling.md",
+        "docs/doc-preprocess-plan.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [
+        "答案过短 (0)"
+      ],
+      "answer_preview": "",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null,
+      "context_precision": null,
+      "context_recall": null,
+      "answer_correctness": null,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "hit_first_search"
+      }
+    },
+    {
+      "test_id": "local-015",
+      "category": "redis-failover",
+      "type": "unknown",
+      "source": "local",
+      "query": "Redis failover 后数据会丢失吗？怎么保证数据一致性？",
+      "status": "passed",
+      "elapsed_seconds": 160.96329760551453,
+      "cost_usd": 0.28208599999999995,
+      "num_turns": 6,
+      "answer_length": 2670,
+      "tools_used": [
+        "Grep",
+        "Read",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/streams/index.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+        "docs/runbook/redis-failover.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "failover",
+        "数据丢失",
+        "一致性"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## Redis Failover 后数据会丢失吗？\n\n**是的，存在数据丢失风险。** Redis 使用**异步复制**，因此 failover 时存在数据丢失窗口。\n\n---\n\n### 数据丢失的原因\n\n#### 1. 异步复制机制\nRedis 默认使用异步复制，写入流程如下：\n\n1. 客户端写入 master\n2. Master 立即回复 OK 给客户端\n3. Master **异步**传播写入到 replicas\n\n**如果 master 在步骤 2 后、步骤 3 前崩溃**，未传播的写入就会丢失 [来源: replication.md]。\n\n> \"because Redis uses",
+      "judge_score": 3.6,
+      "faithfulness": 0.582,
+      "relevancy": 0.912,
+      "context_precision": -1,
+      "context_recall": -1,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        },
+        {
+          "turn": 5,
+          "tool": "Read"
+        },
+        {
+          "turn": 3,
+          "tool": "Read"
+        },
+        {
+          "turn": 4,
+          "tool": "Read"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "normal"
+      }
+    },
+    {
+      "test_id": "notfound-002",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "Kafka consumer group rebalancing 怎么优化？",
+      "status": "passed",
+      "elapsed_seconds": 299.78111004829407,
+      "cost_usd": 0.255066,
+      "num_turns": 7,
+      "answer_length": 935,
+      "tools_used": [
+        "mcp__knowledge-base__keyword_search",
+        "Grep",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/agent_teams/ai_vc_due_diligence_agent_team/README.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/streams/index.md",
+        "../my-agent-kb/docs/awesome-llm-apps/advanced_ai_agents/multi_agent_apps/ai_Self-Evolving_agent/README.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisstack/redisstack-7.2-release-notes.md",
+        "docs/archive/COMPLETE_SUMMARY.md"
+      ],
+      "contexts_count": 6,
+      "has_citation": true,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## ❌ 未找到相关文档\n\n经过多次检索（hybrid_search 和 keyword_search），知识库中没有找到关于 **Kafka consumer group rebalancing 优化** 的相关文档。\n\n### 检索结果说明\n\n| 搜索关键词 | 结果 |\n|-----------|------|\n| Kafka consumer group rebalancing optimization | 无相关文档 |\n| Kafka rebalance consumer optimization performance | 无相关文档 |\n| Kafka consumer gro",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null,
+      "context_precision": null,
+      "context_recall": null,
+      "answer_correctness": null,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        },
+        {
+          "turn": 3,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 4,
+          "tool": "mcp__knowledge-base__keyword_search"
+        },
+        {
+          "turn": 5,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 6,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "notfound_slow"
+      }
+    },
+    {
+      "test_id": "notfound-003",
+      "category": "notfound",
+      "type": "unknown",
+      "source": "notfound",
+      "query": "How to set up Prometheus alerting rules for CPU usage?",
+      "status": "passed",
+      "elapsed_seconds": 268.4327998161316,
+      "cost_usd": 0.214,
+      "num_turns": 7,
+      "answer_length": 1519,
+      "tools_used": [
+        "mcp__knowledge-base__keyword_search",
+        "Grep",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/10_tracing_observability/10_1_default_tracing/README.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/gears-v1/jvm/recipes/write-behind.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/cpu-profiling.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/timeseries/configuration.md",
+        "docs/ragbench-techqa/e2b65de8.md",
+        "../my-agent-kb/docs/awesome-llm-apps/ai_agent_framework_crash_course/openai_sdk_crash_course/10_tracing_observability/README.md",
+        "docs/dual-repo-architecture.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/search/query-performance-factor.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/timeseries/index.md"
+      ],
+      "contexts_count": 6,
+      "has_citation": true,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on my search of the knowledge base, I could not find documentation specifically about **setting up Prometheus alerting rules for CPU usage**.\n\n## Search Summary\n\nI searched the knowledge base using:\n- `hybrid_search` for \"Prometheus alerting rules CPU usage\" and \"Prometheus alert rule configur",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null,
+      "context_precision": null,
+      "context_recall": null,
+      "answer_correctness": null,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        },
+        {
+          "turn": 3,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 4,
+          "tool": "mcp__knowledge-base__keyword_search"
+        },
+        {
+          "turn": 5,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 6,
+          "tool": "Grep"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "normal"
+      }
+    },
+    {
+      "test_id": "multi-hop-002",
+      "category": "multi-hop",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "If I use RDB persistence with Redis replication, what happens during a failover? Will I lose data?",
+      "status": "passed",
+      "elapsed_seconds": 213.3192274570465,
+      "cost_usd": 0.157478,
+      "num_turns": 5,
+      "answer_length": 3043,
+      "tools_used": [
+        "Grep",
+        "Read",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/streams/index.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "RDB",
+        "replication",
+        "failover",
+        "data loss",
+        "stream"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the Redis documentation I retrieved, here's what happens with RDB persistence during failover:\n\n## RDB Persistence + Replication During Failover\n\n### Data Loss Risk: **Yes, data loss is possible**\n\nThe documentation clearly states there are **two sources of potential data loss**:\n\n---\n\n### ",
+      "judge_score": 4.8,
+      "faithfulness": 0.952,
+      "relevancy": 0.966,
+      "context_precision": 0.75,
+      "context_recall": 1.0,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        },
+        {
+          "turn": 3,
+          "tool": "Read"
+        },
+        {
+          "turn": 4,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "normal"
+      }
+    },
+    {
+      "test_id": "multi-hop-003",
+      "category": "multi-hop",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "怎么用 Redis Streams 的消费者组配合 ACL 做多租户消息隔离？",
+      "status": "passed",
+      "elapsed_seconds": 207.34817790985107,
+      "cost_usd": 0.46604700000000004,
+      "num_turns": 7,
+      "answer_length": 1152,
+      "tools_used": [
+        "mcp__knowledge-base__keyword_search",
+        "Grep",
+        "Read",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/develop/data-types/streams/index.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md"
+      ],
+      "contexts_count": 6,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "stream",
+        "ACL",
+        "tenant"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "根据我对知识库的检索，**文档中没有直接提供\"如何用 Redis Streams 消费者组配合 ACL 做多租户消息隔离\"的具体方案**。\n\n## 文档提供的相关信息\n\n### 1. Redis Streams 消费者组功能 [来源: streams/index.md]\n\n消费者组的核心特性：\n- **消息分区投递**：同一个 stream 的消息会被分配给不同消费者，每条消息只投递给一个消费者\n- **消息确认机制**：使用 `XACK` 标记消息已处理\n- **多消费者组**：一个 stream 可以有多个消费者组，每个组独立处理所有消息\n- **相关命令**：`XGROUP`（创建/管理",
+      "judge_score": 2.6,
+      "faithfulness": 0.865,
+      "relevancy": 0.0,
+      "context_precision": 0.083,
+      "context_recall": 1.0,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        },
+        {
+          "turn": 3,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 4,
+          "tool": "mcp__knowledge-base__keyword_search"
+        },
+        {
+          "turn": 5,
+          "tool": "Read"
+        },
+        {
+          "turn": 6,
+          "tool": "Read"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "normal"
+      }
+    },
+    {
+      "test_id": "cross-src-002",
+      "category": "cross-source",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "How to handle Redis failover in a Kubernetes environment? Pod restarts and Sentinel together?",
+      "status": "passed",
+      "elapsed_seconds": 224.93360209465027,
+      "cost_usd": 0.250062,
+      "num_turns": 6,
+      "answer_length": 3492,
+      "tools_used": [
+        "Grep",
+        "Read",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "docs/runbook/redis-failover.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/sentinel-clients.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "failover",
+        "Kubernetes",
+        "Sentinel",
+        "pod"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "Based on the retrieved documents, here's how to handle Redis failover in Kubernetes with Sentinel and Pod restarts:\n\n---\n\n## Redis Failover in Kubernetes: Sentinel + Pod Restarts\n\n### 1. Two Recovery Approaches\n\n#### ✅ **Automatic Recovery (Recommended)**\nIf your application uses **Sentinel-aware cl",
+      "judge_score": 3.5,
+      "faithfulness": 0.5,
+      "relevancy": 0.977,
+      "context_precision": -1,
+      "context_recall": -1,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 3,
+          "tool": "Grep"
+        },
+        {
+          "turn": 4,
+          "tool": "Read"
+        },
+        {
+          "turn": 5,
+          "tool": "Read"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "normal"
+      }
+    },
+    {
+      "test_id": "ambiguous-001",
+      "category": "ambiguous",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "Redis 性能不好怎么办？",
+      "status": "passed",
+      "elapsed_seconds": 154.64904808998108,
+      "cost_usd": 0.11673700000000001,
+      "num_turns": 3,
+      "answer_length": 2264,
+      "tools_used": [
+        "Grep",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "docs/runbook/redis-failover.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisstack/redisstack-7.2-release-notes.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/latency.md",
+        "docs/runbook/kubernetes-pod-crashloop.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/latency-monitor.md",
+        "../my-agent-kb/docs/redis-docs/develop/using-commands/pipelining.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.2-release-notes.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "latency",
+        "optimization",
+        "Redis"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "找到了非常详细的 Redis 性能问题排查文档。基于检索结果，我为您整理 Redis 性能问题的排查和解决方案：\n\n---\n\n## Redis 性能问题排查指南\n\n### 📋 快速检查清单\n\n根据官方文档，按以下步骤快速排查：\n\n1. **检查慢命令** - 使用 `SLOWLOG` 查看是否有阻塞服务器的慢命令 [来源: latency.md]\n2. **EC2 用户** - 确保使用 HVM 实例（如 m3.medium），否则 `fork()` 太慢\n3. **禁用透明大页** - 执行：\n   ```bash\n   echo never > /sys/kernel/mm/transpa",
+      "judge_score": 3.4,
+      "faithfulness": 0.494,
+      "relevancy": 0.942,
+      "context_precision": -1,
+      "context_recall": -1,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "hit_first_search"
+      }
+    },
+    {
+      "test_id": "ambiguous-004",
+      "category": "ambiguous",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "What's the best way to use Redis?",
+      "status": "passed",
+      "elapsed_seconds": 221.07461047172546,
+      "cost_usd": 0.241176,
+      "num_turns": 5,
+      "answer_length": 3493,
+      "tools_used": [
+        "Read",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/json/ram.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/streams/index.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/vector-database.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/install/archive/install-redis/index.md",
+        "../my-agent-kb/docs/redis-docs/develop/data-types/vector-sets/memory.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/search/scalable-query-best-practices.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/index.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/data-store.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/document-database.md",
+        "../my-agent-kb/docs/redis-docs/develop/get-started/faq.md"
+      ],
+      "contexts_count": 4,
+      "has_citation": true,
+      "correct_doc": true,
+      "matched_keywords": [
+        "memory",
+        "optimization",
+        "Redis",
+        "best practice"
+      ],
+      "gate_passed": true,
+      "failure_reasons": [],
+      "answer_preview": "## What's the Best Way to Use Redis?\n\nBased on the Redis official documentation, here are the key best practices and usage patterns:\n\n---\n\n### 1. **Choose the Right Use Case**\n\nRedis can be used in multiple ways. Select the guide that aligns with your scenario [来源: ../my-agent-kb/docs/redis-docs/dev",
+      "judge_score": 4.3,
+      "faithfulness": 0.783,
+      "relevancy": 0.999,
+      "context_precision": -1,
+      "context_recall": -1,
+      "answer_correctness": -1,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 3,
+          "tool": "Read"
+        },
+        {
+          "turn": 4,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "normal"
+      }
+    },
+    {
+      "test_id": "long-ans-003",
+      "category": "long-answer",
+      "type": "unknown",
+      "source": "qdrant",
+      "query": "详细介绍 Redis Sentinel 的完整工作机制：监控、通知、自动故障转移、配置传播",
+      "status": "failed",
+      "elapsed_seconds": 132.96037912368774,
+      "cost_usd": 0.07936599999999999,
+      "num_turns": 3,
+      "answer_length": 0,
+      "tools_used": [
+        "Grep",
+        "mcp__knowledge-base__hybrid_search"
+      ],
+      "retrieved_paths": [
+        "docs/runbook/redis-failover.md",
+        "../my-agent-kb/docs/redis-docs/develop/reference/sentinel-clients.md",
+        "../my-agent-kb/docs/redis-docs/operate/oss_and_stack/management/sentinel.md"
+      ],
+      "contexts_count": 2,
+      "has_citation": false,
+      "correct_doc": null,
+      "matched_keywords": [],
+      "gate_passed": true,
+      "failure_reasons": [
+        "答案过短 (0)"
+      ],
+      "answer_preview": "",
+      "judge_score": null,
+      "faithfulness": null,
+      "relevancy": null,
+      "context_precision": null,
+      "context_recall": null,
+      "answer_correctness": null,
+      "turn_timings": [
+        {
+          "turn": 1,
+          "tool": "mcp__knowledge-base__hybrid_search"
+        },
+        {
+          "turn": 2,
+          "tool": "Grep"
+        }
+      ],
+      "early_stop": {
+        "search_calls": 1,
+        "max_consecutive_same_tool": 1,
+        "stop_reason": "hit_first_search"
+      }
+    }
+  ]
+}
