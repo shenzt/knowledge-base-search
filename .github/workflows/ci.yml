@@ -30,8 +30,8 @@ jobs:
       - name: Unit tests
         run: python -m pytest tests/unit/ -v
 
-  # ── Tier 2: Integration（仅 main push / dispatch）──
-  integration:
+  # ── Tier 2: Integration + E2E Golden（仅 main push / dispatch）──
+  integration-and-e2e:
     needs: lint-and-unit
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
@@ -60,6 +60,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
 
+      # ── Integration ──
       - name: Restore Qdrant snapshot
         run: python scripts/index.py --snapshot-import kb/kb-redis-docs/snapshots/knowledge-base.snapshot
         env:
@@ -75,49 +76,17 @@ jobs:
         env:
           QDRANT_URL: http://localhost:6333
 
-  # ── Tier 3: E2E Golden（仅 main push / dispatch）──
-  e2e-golden:
-    needs: integration
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
-    services:
-      qdrant:
-        image: qdrant/qdrant:latest
-        ports: ["6333:6333"]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          lfs: true
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: scripts/requirements.txt
-
-      - name: Cache HuggingFace models
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/huggingface/hub
-          key: hf-bge-m3-reranker-v1
-
-      - name: Install dependencies
-        run: pip install -r scripts/requirements.txt
-
+      # ── E2E Golden ──
       - name: Install Claude Code
         run: npm install -g @anthropic-ai/claude-code@latest
         continue-on-error: true
 
-      - name: Restore Qdrant snapshot
-        run: python scripts/index.py --snapshot-import kb/kb-redis-docs/snapshots/knowledge-base.snapshot
-        env:
-          QDRANT_URL: http://localhost:6333
+      - name: Install claude-code-router
+        run: npm install -g @musistudio/claude-code-router
 
       - name: Start claude-code-router
         if: env.QWEN_API_KEY != ''
         run: |
-          # 1. 写 config（两个文件名都写，确保 router 能找到）
           mkdir -p ~/.claude-code-router
           python3 -c "
           import json, os
@@ -138,8 +107,7 @@ jobs:
               json.dump(config, f, indent=2)
             print(f'Wrote: {path}')
           "
-          # 2. 启动 router（显式指定 config 路径）
-          npx -y claude-code-router@latest start --port 3456 --config ~/.claude-code-router/config-router.json &
+          ccr start &
           sleep 10
           curl -sf http://127.0.0.1:3456/health && echo "Router is up" || echo "WARNING: Router may not be ready"
         env:
