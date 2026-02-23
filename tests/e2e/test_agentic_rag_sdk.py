@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Agentic RAG 自动化测试 v5 — 多数据集支持
 
-数据源: redis-docs + awesome-llm-apps + local docs/ + RAGBench techqa + CRAG finance
+数据源: redis-docs (Qdrant 索引, 294 docs)
 评估: eval_module (Gate 门禁 + RAGAS faithfulness/relevancy)
 
 环境变量:
@@ -142,51 +142,20 @@ if USE_MCP:
     # 改用 system_prompt 注入关键指令 + 手动配置 MCP server
     SEARCH_SYSTEM_PROMPT = """你是知识库检索助手。收到问题后，用工具检索文档，基于文档内容回答。
 
-## 知识库目录（所有文档都在这里）
+## 知识库目录
 
-1. Redis 官方文档（294 docs，在 Qdrant 索引中）：
-   - develop/: data-types/, programmability/, reference/, pubsub/, get-started/
-   - operate/: management/(sentinel, security, optimization), install/, reference/
-   路径示例: kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams.md
-
-2. awesome-llm-apps（207 docs，在 Qdrant 索引中）：
-   - rag_tutorials/, advanced_ai_agents/, starter_ai_agents/, ai_agent_framework_crash_course/
-   路径示例: kb/kb-awesome-llm-apps/docs/awesome-llm-apps/rag_tutorials/xxx/README.md
-
-3. 本地文档（Grep 可搜索）：
-   - docs/runbook/    — 运维 runbook（Redis 故障恢复、K8s 排障）
-   - docs/api/        — API 设计文档（认证、授权）
-
-4. RAGBench techqa（245 docs）、CRAG finance（119 docs）— 在 Qdrant 索引中
-
-## 本地文件搜索范围（Grep/Glob/Read）
-
-知识库文件只在以下目录：
-- docs/runbook/    — 运维 runbook（Redis 故障恢复、K8s 排障）
-- docs/api/        — API 设计文档（认证、授权）
-- kb/kb-redis-docs/docs/  — Qdrant 索引的完整文档（hybrid_search 返回的 path）
-
-正确: Grep(pattern="sentinel", path="docs/runbook/")
-正确: Grep(pattern="OAuth", path="docs/api/")
-正确: Read(file_path="kb/kb-redis-docs/docs/redis-docs/operate/...")  ← 来自 hybrid_search 返回的 path
-错误: Grep(pattern="sentinel", path="docs/")  ← 会搜到 ragbench/crag 噪声
-错误: Grep(pattern="sentinel", path=".")  ← 会搜到 tests/eval/scripts
-错误: Read(file_path="docs/ragbench-techqa/...")  ← 评测数据，不是知识库
-错误: Read(file_path="tests/fixtures/...")  ← 测试代码，不是知识库
+Redis 官方文档（294 docs，在 Qdrant 索引中）：
+- develop/: data-types/, programmability/, reference/, pubsub/, get-started/
+- operate/: management/(sentinel, security, optimization), install/, reference/
+路径示例: kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams.md
 
 ## 检索方法（第一步，必须执行）
 
-每次收到问题，立即并行调用这两个工具：
+收到问题后，立即调用：
 
   mcp__knowledge-base__hybrid_search(query="<问题关键词>", top_k=5)
-  Grep(pattern="<关键词>", path="docs/runbook/")
 
-hybrid_search 搜索 Qdrant 索引（Redis 文档、LLM 文档等全部在这里）。
-Grep 搜索本地 docs/ 子目录（仅 runbook/api 两个目录）。
-
-Grep path 选择：
-- Redis/K8s → path="docs/runbook/"
-- API/OAuth → path="docs/api/"
+hybrid_search 搜索 Qdrant 索引，Redis 文档全部在这里。
 
 ## 扩展阅读（第二步，按需执行）
 
@@ -197,7 +166,7 @@ hybrid_search 返回的 path 字段是文档的实际路径，用 Read(file_path
 
 1. **见好就收**：hybrid_search 的 top-1 title/path 与问题直接相关 → Read 后，如果能引用到回答问题的关键句（定义/步骤/命令/配置）→ 直接回答。如果 Read 后只有概念没有细节，且问题是"怎么做/配置/排障" → 再搜一次补证据，或声明"文档未提供具体步骤"
 2. **快速放弃**：第一次 hybrid_search 无相关结果（top-5 的 title/path 都不含问题核心词）→ 改写 query 再搜一次（换语言/提取核心名词）。第二次 top-5 title/path 仍不含核心词 → 回答"❌ 未找到"
-3. **禁止循环**：连续 Grep/Glob 2 次未命中 → 必须换到 hybrid_search/keyword_search，或直接回答/notfound。禁止继续换 pattern 堆叠
+3. **禁止循环**：连续搜索 2 次未命中 → 直接回答/notfound。禁止继续换 pattern 堆叠
 
 ## 回答规则
 
@@ -208,12 +177,8 @@ hybrid_search 返回的 path 字段是文档的实际路径，用 Read(file_path
 
 ## 禁止
 
-- 禁止 Grep(path="docs/") — 会命中 ragbench/crag 噪声文件
-- 禁止 Grep(path=".") 或 Grep 不带 path — 会搜到 tests/eval/scripts
-- 禁止 Grep 扫描 docs/ragbench-techqa/、docs/crag-finance/、eval/、tests/、scripts/
-- 禁止 Read tests/fixtures/kb-sources/ 下的文件 — 那是测试 fixtures，不是知识库
 - 禁止猜测文件路径 — Read 的路径必须来自工具返回值
-- 禁止只用 Grep 不用 hybrid_search — Redis 文档不在本地 docs/ 下，只有 hybrid_search 能找到
+- 禁止只用 Grep 不用 hybrid_search — Redis 文档只有 hybrid_search 能找到
 """
     BASE_OPTIONS = dict(
         allowed_tools=[
