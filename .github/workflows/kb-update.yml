@@ -1,11 +1,11 @@
 name: KB Update
 
-# Sync source docs to KB repo. Indexing + snapshot export must be done
-# locally (BGE-M3 on CPU is too slow for CI — 294 docs ≈ 2.5h).
+# Sync source docs to KB repo + LLM preprocess.
+# Indexing + snapshot export must be done locally (BGE-M3 on CPU is too slow for CI).
 #
 # Usage:
-#   1. Trigger this workflow to sync latest docs from source repo
-#   2. Run locally: scripts/preprocess_pipeline.sh --kb-repo kb/kb-redis-docs --source kb/kb-redis-docs/docs/redis-docs --skip-preprocess
+#   1. Trigger this workflow to sync latest docs + preprocess
+#   2. Pull locally, run indexing: scripts/preprocess_pipeline.sh --kb-repo kb/kb-redis-docs --source kb/kb-redis-docs/docs/redis-docs --skip-preprocess
 #   3. Push snapshot to KB repo
 
 on:
@@ -30,17 +30,31 @@ on:
         description: "Only sync these subdirs (comma-separated, empty = all)"
         required: false
         default: "develop,operate"
+      skip_preprocess:
+        description: "Skip LLM preprocessing"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   sync-docs:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
           lfs: true
           token: ${{ secrets.KB_PUSH_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
 
       - name: Clone source repo
         run: |
@@ -89,6 +103,16 @@ jobs:
           echo "KB_REPO=$KB_REPO" >> $GITHUB_ENV
           echo "DOC_COUNT=$DOC_COUNT" >> $GITHUB_ENV
 
+      - name: Preprocess docs (LLM analysis)
+        if: ${{ !inputs.skip_preprocess }}
+        run: |
+          python scripts/doc_preprocess.py --dir "$KB_REPO/docs/$DOC_SUBDIR"
+        env:
+          DOC_PROCESS_PROVIDER: openai
+          DOC_PROCESS_MODEL: deepseek-chat
+          DOC_PROCESS_BASE_URL: https://api.deepseek.com
+          DOC_PROCESS_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
       - name: Commit and push KB repo
         run: |
           cd "$KB_REPO"
@@ -98,7 +122,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # Set push URL with token for auth
           git remote set-url origin "https://x-access-token:${{ secrets.KB_PUSH_TOKEN }}@github.com/shenzt/${{ inputs.kb_name }}.git"
-          git add docs/
+          git add -A
           if git diff --cached --quiet; then
             echo "No doc changes"
           else
@@ -132,6 +156,7 @@ jobs:
           echo "- Source: ${{ inputs.source_repo }}" >> $GITHUB_STEP_SUMMARY
           echo "- Filter: ${{ inputs.doc_filter || 'all' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Docs synced: $DOC_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "- Preprocess: ${{ inputs.skip_preprocess && 'skipped' || 'done' }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Next step**: Run locally to rebuild index + snapshot:" >> $GITHUB_STEP_SUMMARY
           echo '```bash' >> $GITHUB_STEP_SUMMARY
