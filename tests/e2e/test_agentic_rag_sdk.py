@@ -225,7 +225,7 @@ hybrid_search 返回的 path 字段是文档的实际路径，用 Read(file_path
         disallowed_tools=["Bash", "Write", "Edit", "NotebookEdit", "Task"],
         mcp_servers={
             "knowledge-base": {
-                "command": str(PROJECT_ROOT / ".venv" / "bin" / "python"),
+                "command": sys.executable,
                 "args": [str(PROJECT_ROOT / "scripts" / "mcp_server.py")],
                 "env": {
                     "QDRANT_URL": os.environ.get("QDRANT_URL", "http://localhost:6333"),
