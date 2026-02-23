@@ -103,6 +103,24 @@ jobs:
           echo "KB_REPO=$KB_REPO" >> $GITHUB_ENV
           echo "DOC_COUNT=$DOC_COUNT" >> $GITHUB_ENV
 
+      - name: Clean stale preprocess files
+        run: |
+          # Remove .preprocess/ sidecar files whose source doc no longer exists
+          find "$KB_REPO/docs/$DOC_SUBDIR" -type d -name ".preprocess" | while read pdir; do
+            parent=$(dirname "$pdir")
+            removed=0
+            for json in "$pdir"/*.json; do
+              [ -f "$json" ] || continue
+              base=$(basename "$json" .json)
+              if [ ! -f "$parent/$base" ]; then
+                rm -f "$json"
+                removed=$((removed + 1))
+              fi
+            done
+            [ "$removed" -gt 0 ] && echo "Cleaned $removed stale files in $pdir"
+            rmdir "$pdir" 2>/dev/null || true
+          done
+
       - name: Preprocess docs (LLM analysis)
         if: ${{ !inputs.skip_preprocess }}
         run: |
