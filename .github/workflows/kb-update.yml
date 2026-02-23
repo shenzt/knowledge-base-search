@@ -134,22 +134,23 @@ jobs:
       - name: Commit and push KB repo
         run: |
           cd "$KB_REPO"
-          # Submodule is in detached HEAD — checkout main branch
-          git checkout main
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           # Set push URL with token for auth
           git remote set-url origin "https://x-access-token:${{ secrets.KB_PUSH_TOKEN }}@github.com/shenzt/${{ inputs.kb_name }}.git"
+          # Add all files first (while in detached HEAD), then create branch
           git add -A
           if git diff --cached --quiet; then
             echo "No doc changes"
           else
+            # Create main branch from current detached HEAD with staged changes
+            git checkout -B main
             git commit -m "docs: sync $DOC_SUBDIR from upstream ($(date +%Y-%m-%d))
 
           $DOC_COUNT markdown files
           Source: ${{ inputs.source_repo }}
           Filter: ${{ inputs.doc_filter || 'all' }}"
-            git push origin main
+            git push origin main --force
             echo "Pushed docs to KB repo"
           fi
 
