@@ -92,8 +92,12 @@ jobs:
       - name: Commit and push KB repo
         run: |
           cd "$KB_REPO"
+          # Submodule is in detached HEAD — checkout main branch
+          git checkout main
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Set push URL with token for auth
+          git remote set-url origin "https://x-access-token:${{ secrets.KB_PUSH_TOKEN }}@github.com/shenzt/${{ inputs.kb_name }}.git"
           git add docs/
           if git diff --cached --quiet; then
             echo "No doc changes"
@@ -103,7 +107,7 @@ jobs:
           $DOC_COUNT markdown files
           Source: ${{ inputs.source_repo }}
           Filter: ${{ inputs.doc_filter || 'all' }}"
-            git push
+            git push origin main
             echo "Pushed docs to KB repo"
           fi
 
