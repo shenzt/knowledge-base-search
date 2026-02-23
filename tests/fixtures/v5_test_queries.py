@@ -813,18 +813,18 @@ TEST_CASES_V5 = [
 ]
 
 # ══════════════════════════════════════════════════════════════
-# Golden DataSet — 20 个代表性 case，覆盖所有 category + 已知问题
-# EVAL_DATASET=golden 快速回归（~30min vs full eval ~3h）
+# Golden DataSet — CI 快速回归，仅包含 Redis + 本地 docs 的 case
+# LLM 类 case (llm-agent/llm-fw/llm-rag) 依赖 awesome-llm-apps，
+# 路径尚未迁移到 KB repo，暂不纳入 CI golden
+# EVAL_DATASET=golden 快速回归
 # ══════════════════════════════════════════════════════════════
 GOLDEN_IDS = [
-    "redis-dt-001", "redis-ops-009", "redis-so-010", "redis-dt-002",  # Redis
-    "llm-agent-001", "llm-fw-004", "llm-rag-002",                     # LLM
-    "local-003", "local-002", "local-015",                             # 本地
-    "notfound-003", "notfound-002",                                    # Notfound
-    "multi-hop-002", "multi-hop-003", "cross-src-002", "ambiguous-001",# 新维度
+    "redis-dt-001", "redis-dt-002", "redis-ops-002", "redis-ops-009", # Redis 数据类型+运维
+    "redis-so-003", "redis-so-010",                                    # Redis 排障
+    "local-003", "local-002", "local-015",                             # 本地 docs (api/runbook)
+    "notfound-003", "notfound-002",                                    # Notfound (负例)
+    "multi-hop-002", "multi-hop-003", "cross-src-002", "ambiguous-001",# 多维度
     "long-ans-003", "ambiguous-004",                                   # 边界
-    "redis-ops-002",   # 概念+操作混合 — 测早停是否误伤操作类问题
-    "redis-so-003",    # 中文排障 — 测跨语言改写是否命中英文文档
 ]
 
 GOLDEN_CASES = [tc for tc in TEST_CASES_V5 if tc["id"] in GOLDEN_IDS]
