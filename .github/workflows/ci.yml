@@ -115,7 +115,7 @@ jobs:
 
       - name: Run E2E golden tests
         if: env.QWEN_API_KEY != ''
-        timeout-minutes: 30
+        timeout-minutes: 60
         run: |
           USE_ROUTER=1 ROUTER_URL=http://127.0.0.1:3456 \
           USE_MCP=1 EVAL_DATASET=golden \

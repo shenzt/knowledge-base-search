@@ -530,7 +530,7 @@ async def run_single_case(i: int, tc: Dict, sem: asyncio.Semaphore,
             def flush(self): pass
 
         # 单次 call 超时保护（防止 API hang 住，如 Kimi K2.5 case 16）
-        QUERY_TIMEOUT = int(os.environ.get("EVAL_QUERY_TIMEOUT", "600"))  # 默认 10 分钟
+        QUERY_TIMEOUT = int(os.environ.get("EVAL_QUERY_TIMEOUT", "300"))  # 默认 5 分钟
         try:
             result = await asyncio.wait_for(
                 run_query(prompt, None, BufWriter()),
