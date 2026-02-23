@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ── 预处理流水线 ──────────────────────────────────────────────
-# 串联：预处理 → 索引 → 导出快照 → 同步到 kb repo → push
+# 串联：预处理 → 同步到 kb repo → 索引(从 kb repo 路径) → 导出快照 → push
 #
 # 用法:
 #   scripts/preprocess_pipeline.sh --kb-repo kb/kb-redis-docs --source ../my-agent-kb/docs/redis-docs
@@ -77,8 +77,8 @@ echo "════════════════════════�
 if $DRY_RUN; then
     echo "[dry-run] 以下步骤将被执行:"
     $SKIP_PREPROCESS || echo "  1. LLM 预处理: $VENV scripts/doc_preprocess.py --dir $SOURCE_DIR"
-    $SKIP_INDEX || echo "  2. 全量索引: $VENV scripts/index.py --full $SOURCE_DIR"
-    echo "  3. 同步文档: rsync $SOURCE_DIR/ → $KB_REPO/docs/$DOC_SUBDIR/"
+    echo "  2. 同步文档: rsync $SOURCE_DIR/ → $KB_REPO/docs/$DOC_SUBDIR/"
+    $SKIP_INDEX || echo "  3. 全量索引: $VENV scripts/index.py --full $KB_REPO/docs/$DOC_SUBDIR"
     echo "  4. 导出快照: $VENV scripts/index.py --snapshot-export $SNAPSHOT_PATH"
     echo "  5. Git commit + push: $KB_REPO"
     exit 0
@@ -94,23 +94,23 @@ else
     echo "── Step 1/5: LLM 预处理 [跳过] ──"
 fi
 
-# Step 2: 全量索引
-if ! $SKIP_INDEX; then
-    echo ""
-    echo "── Step 2/5: 全量索引 ──"
-    $VENV "$PROJECT_ROOT/scripts/index.py" --full "$SOURCE_DIR"
-else
-    echo ""
-    echo "── Step 2/5: 全量索引 [跳过] ──"
-fi
-
-# Step 3: 同步文档到 KB 仓库
+# Step 2: 同步文档到 KB 仓库（在索引之前，确保路径一致）
 echo ""
-echo "── Step 3/5: 同步文档 ──"
+echo "── Step 2/5: 同步文档 ──"
 mkdir -p "$KB_REPO/docs/$DOC_SUBDIR"
 rsync -a --delete "$SOURCE_DIR/" "$KB_REPO/docs/$DOC_SUBDIR/"
 DOC_COUNT=$(find "$KB_REPO/docs/$DOC_SUBDIR" -name "*.md" | wc -l)
 echo "同步完成: $DOC_COUNT 个 markdown 文件"
+
+# Step 3: 全量索引（从 KB 仓库路径索引，确保 Qdrant 中的 path 在本地和 CI 都可用）
+if ! $SKIP_INDEX; then
+    echo ""
+    echo "── Step 3/5: 全量索引 ──"
+    $VENV "$PROJECT_ROOT/scripts/index.py" --full "$KB_REPO/docs/$DOC_SUBDIR"
+else
+    echo ""
+    echo "── Step 3/5: 全量索引 [跳过] ──"
+fi
 
 # Step 4: 导出快照
 echo ""

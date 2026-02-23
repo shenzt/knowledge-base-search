@@ -147,11 +147,11 @@ if USE_MCP:
 1. Redis 官方文档（294 docs，在 Qdrant 索引中）：
    - develop/: data-types/, programmability/, reference/, pubsub/, get-started/
    - operate/: management/(sentinel, security, optimization), install/, reference/
-   路径示例: ../my-agent-kb/docs/redis-docs/develop/data-types/streams.md
+   路径示例: kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams.md
 
 2. awesome-llm-apps（207 docs，在 Qdrant 索引中）：
    - rag_tutorials/, advanced_ai_agents/, starter_ai_agents/, ai_agent_framework_crash_course/
-   路径示例: ../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/xxx/README.md
+   路径示例: kb/kb-awesome-llm-apps/docs/awesome-llm-apps/rag_tutorials/xxx/README.md
 
 3. 本地文档（Grep 可搜索）：
    - docs/runbook/    — 运维 runbook（Redis 故障恢复、K8s 排障）
@@ -164,11 +164,11 @@ if USE_MCP:
 知识库文件只在以下目录：
 - docs/runbook/    — 运维 runbook（Redis 故障恢复、K8s 排障）
 - docs/api/        — API 设计文档（认证、授权）
-- ../my-agent-kb/docs/  — Qdrant 索引的完整文档（hybrid_search 返回的 path）
+- kb/kb-redis-docs/docs/  — Qdrant 索引的完整文档（hybrid_search 返回的 path）
 
 正确: Grep(pattern="sentinel", path="docs/runbook/")
 正确: Grep(pattern="OAuth", path="docs/api/")
-正确: Read(file_path="../my-agent-kb/docs/redis-docs/operate/...")  ← 来自 hybrid_search 返回的 path
+正确: Read(file_path="kb/kb-redis-docs/docs/redis-docs/operate/...")  ← 来自 hybrid_search 返回的 path
 错误: Grep(pattern="sentinel", path="docs/")  ← 会搜到 ragbench/crag 噪声
 错误: Grep(pattern="sentinel", path=".")  ← 会搜到 tests/eval/scripts
 错误: Read(file_path="docs/ragbench-techqa/...")  ← 评测数据，不是知识库
