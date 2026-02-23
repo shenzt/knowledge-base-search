@@ -6,4 +6,4 @@
 	url = https://github.com/redis/docs.git
 [submodule "kb/kb-redis-docs"]
 	path = kb/kb-redis-docs
-	url = git@github.com:shenzt/kb-redis-docs.git
+	url = https://github.com/shenzt/kb-redis-docs.git

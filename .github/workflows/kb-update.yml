@@ -1,10 +1,18 @@
 name: KB Update
 
+# Sync source docs to KB repo. Indexing + snapshot export must be done
+# locally (BGE-M3 on CPU is too slow for CI — 294 docs ≈ 2.5h).
+#
+# Usage:
+#   1. Trigger this workflow to sync latest docs from source repo
+#   2. Run locally: scripts/preprocess_pipeline.sh --kb-repo kb/kb-redis-docs --source kb/kb-redis-docs/docs/redis-docs --skip-preprocess
+#   3. Push snapshot to KB repo
+
 on:
   workflow_dispatch:
     inputs:
       kb_name:
-        description: "KB repo name (e.g. kb-redis-docs)"
+        description: "KB repo name"
         required: true
         default: "kb-redis-docs"
         type: choice
@@ -15,130 +23,114 @@ on:
         required: true
         default: "https://github.com/redis/docs.git"
       source_subdir:
-        description: "Subdirectory within source repo to index (empty = root)"
+        description: "Subdirectory within source repo (e.g. content)"
         required: false
-        default: ""
-      skip_preprocess:
-        description: "Skip LLM preprocessing"
+        default: "content"
+      doc_filter:
+        description: "Only sync these subdirs (comma-separated, empty = all)"
         required: false
-        default: true
-        type: boolean
+        default: "develop,operate"
 
 jobs:
-  update-kb:
+  sync-docs:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
-    services:
-      qdrant:
-        image: qdrant/qdrant:latest
-        ports: ["6333:6333"]
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
           lfs: true
-          token: ${{ secrets.KB_PUSH_TOKEN || github.token }}
+          token: ${{ secrets.KB_PUSH_TOKEN }}
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: scripts/requirements.txt
-
-      - name: Cache HuggingFace models
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/huggingface/hub
-          key: hf-bge-m3-v1
-
-      - name: Install dependencies
-        run: pip install -r scripts/requirements.txt
-
-      # Clone source docs
       - name: Clone source repo
         run: |
           git clone --depth 1 ${{ inputs.source_repo }} /tmp/source-docs
+
+          SOURCE_ROOT="/tmp/source-docs"
           if [ -n "${{ inputs.source_subdir }}" ]; then
-            SOURCE_PATH="/tmp/source-docs/${{ inputs.source_subdir }}"
-          else
-            SOURCE_PATH="/tmp/source-docs"
+            SOURCE_ROOT="/tmp/source-docs/${{ inputs.source_subdir }}"
           fi
-          echo "SOURCE_PATH=$SOURCE_PATH" >> $GITHUB_ENV
+          echo "SOURCE_ROOT=$SOURCE_ROOT" >> $GITHUB_ENV
 
-          # Count docs
-          DOC_COUNT=$(find "$SOURCE_PATH" -name "*.md" | wc -l)
-          echo "Found $DOC_COUNT markdown files in source"
+          DOC_COUNT=$(find "$SOURCE_ROOT" -name "*.md" | wc -l)
+          echo "Source has $DOC_COUNT markdown files"
 
-      # Rsync to KB repo
       - name: Sync docs to KB repo
         run: |
           KB_REPO="kb/${{ inputs.kb_name }}"
           KB_NAME="${{ inputs.kb_name }}"
           DOC_SUBDIR="${KB_NAME#kb-}"
+          FILTER="${{ inputs.doc_filter }}"
 
-          mkdir -p "$KB_REPO/docs/$DOC_SUBDIR"
-          rsync -a --delete "$SOURCE_PATH/" "$KB_REPO/docs/$DOC_SUBDIR/"
+          if [ -n "$FILTER" ]; then
+            # Sync only specified subdirs
+            mkdir -p "$KB_REPO/docs/$DOC_SUBDIR"
+            IFS=',' read -ra DIRS <<< "$FILTER"
+            for dir in "${DIRS[@]}"; do
+              dir=$(echo "$dir" | xargs)  # trim whitespace
+              if [ -d "$SOURCE_ROOT/$dir" ]; then
+                mkdir -p "$KB_REPO/docs/$DOC_SUBDIR/$dir"
+                rsync -a --delete "$SOURCE_ROOT/$dir/" "$KB_REPO/docs/$DOC_SUBDIR/$dir/"
+                echo "Synced: $dir"
+              else
+                echo "WARNING: $SOURCE_ROOT/$dir not found, skipping"
+              fi
+            done
+          else
+            # Sync everything
+            mkdir -p "$KB_REPO/docs/$DOC_SUBDIR"
+            rsync -a --delete "$SOURCE_ROOT/" "$KB_REPO/docs/$DOC_SUBDIR/"
+          fi
 
           DOC_COUNT=$(find "$KB_REPO/docs/$DOC_SUBDIR" -name "*.md" | wc -l)
-          echo "Synced $DOC_COUNT markdown files to $KB_REPO/docs/$DOC_SUBDIR/"
+          echo "KB repo now has $DOC_COUNT markdown files"
 
           echo "DOC_SUBDIR=$DOC_SUBDIR" >> $GITHUB_ENV
           echo "KB_REPO=$KB_REPO" >> $GITHUB_ENV
           echo "DOC_COUNT=$DOC_COUNT" >> $GITHUB_ENV
 
-      # Index
-      - name: Build vector index
-        run: |
-          python scripts/index.py --full "$KB_REPO/docs/$DOC_SUBDIR"
-        env:
-          QDRANT_URL: http://localhost:6333
-
-      - name: Verify index
-        run: python scripts/index.py --status
-        env:
-          QDRANT_URL: http://localhost:6333
-
-      # Export snapshot
-      - name: Export Qdrant snapshot
-        run: |
-          mkdir -p "$KB_REPO/snapshots"
-          python scripts/index.py --snapshot-export "$KB_REPO/snapshots/knowledge-base.snapshot"
-          SNAP_SIZE=$(du -h "$KB_REPO/snapshots/knowledge-base.snapshot" | cut -f1)
-          echo "Snapshot exported: $SNAP_SIZE"
-          echo "SNAP_SIZE=$SNAP_SIZE" >> $GITHUB_ENV
-        env:
-          QDRANT_URL: http://localhost:6333
-
-      # Commit and push KB repo
       - name: Commit and push KB repo
         run: |
           cd "$KB_REPO"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add docs/
           if git diff --cached --quiet; then
-            echo "No changes to commit"
+            echo "No doc changes"
           else
-            git commit -m "chore: update $DOC_SUBDIR docs + snapshot ($(date +%Y-%m-%d))
+            git commit -m "docs: sync $DOC_SUBDIR from upstream ($(date +%Y-%m-%d))
 
-          $DOC_COUNT markdown files, snapshot $SNAP_SIZE
-
+          $DOC_COUNT markdown files
           Source: ${{ inputs.source_repo }}
-          Triggered by: workflow_dispatch"
+          Filter: ${{ inputs.doc_filter || 'all' }}"
             git push
-            echo "Pushed to KB repo"
+            echo "Pushed docs to KB repo"
           fi
 
-      # Update submodule ref in main repo
       - name: Update submodule reference
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add "$KB_REPO"
+          git add "kb/${{ inputs.kb_name }}"
           if git diff --cached --quiet; then
             echo "Submodule ref unchanged"
           else
             git commit -m "chore: update ${{ inputs.kb_name }} submodule ref"
             git push
-            echo "Updated submodule ref in main repo"
+            echo "Updated submodule ref"
           fi
+
+      - name: Summary
+        run: |
+          echo "## KB Update Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- KB: ${{ inputs.kb_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Source: ${{ inputs.source_repo }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Filter: ${{ inputs.doc_filter || 'all' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Docs synced: $DOC_COUNT" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Next step**: Run locally to rebuild index + snapshot:" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "git pull && git submodule update --remote kb/${{ inputs.kb_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "scripts/preprocess_pipeline.sh --kb-repo kb/${{ inputs.kb_name }} --source kb/${{ inputs.kb_name }}/docs/${DOC_SUBDIR} --skip-preprocess" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
