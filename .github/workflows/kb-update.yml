@@ -139,6 +139,7 @@ jobs:
           DOC_PROCESS_MODEL: deepseek-chat
           DOC_PROCESS_BASE_URL: https://api.deepseek.com
           DOC_PROCESS_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          PREPROCESS_WORKERS: "16"
 
       - name: Build index (OpenRouter BGE-M3 API)
         if: ${{ !inputs.skip_indexing }}

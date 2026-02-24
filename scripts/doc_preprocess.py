@@ -30,7 +30,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)
 
 SIDECAR_DIR = ".preprocess"
-MAX_WORKERS = 8
+MAX_WORKERS = int(os.environ.get("PREPROCESS_WORKERS", "8"))
 CACHE_FILE = "scripts/.preprocess_cache.json"
 SCHEMA_VERSION = 1
 PROMPT_VERSION = "doc_preprocess_v1"
