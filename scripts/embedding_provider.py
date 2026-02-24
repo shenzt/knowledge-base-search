@@ -90,14 +90,33 @@ class OpenAICompatibleProvider(EmbeddingProvider):
         log.info(f"使用外部 embedding API: {base_url} model={model} dim={dim}")
 
     def encode_texts(self, texts: list[str], batch_size: int = 256) -> dict:
+        import time
+
+        # 外部 API 用较小 batch 避免超时/空响应（OpenRouter 等限制）
+        api_batch = min(batch_size, 64)
         all_vecs = []
-        for start in range(0, len(texts), batch_size):
-            batch = texts[start : start + batch_size]
-            resp = self._client.embeddings.create(input=batch, model=self._model)
-            vecs = [item.embedding for item in resp.data]
-            all_vecs.extend(vecs)
-            if len(texts) > batch_size:
+        max_retries = 3
+
+        for start in range(0, len(texts), api_batch):
+            batch = texts[start : start + api_batch]
+            for attempt in range(max_retries):
+                try:
+                    resp = self._client.embeddings.create(input=batch, model=self._model)
+                    vecs = [item.embedding for item in resp.data]
+                    if not vecs:
+                        raise ValueError("No embedding data received")
+                    all_vecs.extend(vecs)
+                    break
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        wait = 2 ** (attempt + 1)
+                        log.warning(f"  API batch {start} 失败 (attempt {attempt + 1}): {e}, {wait}s 后重试")
+                        time.sleep(wait)
+                    else:
+                        raise
+            if len(texts) > api_batch:
                 log.info(f"  API embedding {start + len(batch)}/{len(texts)}")
+
         return {
             "dense_vecs": np.array(all_vecs, dtype=np.float32),
             "lexical_weights": None,
