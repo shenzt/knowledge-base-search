@@ -38,27 +38,26 @@ from typing import Optional
 
 import frontmatter
 import numpy as np
-from FlagEmbedding import BGEM3FlagModel
 from qdrant_client import QdrantClient, models
+
+from embedding_provider import EmbeddingProvider, get_embedding_provider
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)
 
 QDRANT_URL = os.environ.get("QDRANT_URL", "http://localhost:6333")
 COLLECTION = os.environ.get("COLLECTION_NAME", "knowledge-base")
-MODEL_NAME = os.environ.get("BGE_M3_MODEL", "BAAI/bge-m3")
 MAX_CHUNK_CHARS = 3200
 
-_model = None
+_provider = None
 
 
-def get_model() -> BGEM3FlagModel:
-    """延迟加载 BGE-M3 模型。"""
-    global _model
-    if _model is None:
-        log.info(f"加载模型 {MODEL_NAME}...")
-        _model = BGEM3FlagModel(MODEL_NAME, use_fp16=True)
-    return _model
+def get_provider() -> EmbeddingProvider:
+    """延迟加载 embedding provider。"""
+    global _provider
+    if _provider is None:
+        _provider = get_embedding_provider()
+    return _provider
 
 
 def get_qdrant() -> QdrantClient:
@@ -66,7 +65,7 @@ def get_qdrant() -> QdrantClient:
 
 
 def ensure_collection(client: QdrantClient) -> None:
-    """确保 collection 存在。"""
+    """确保 collection 存在，包含 dense 向量、sparse 向量和 text 全文索引。"""
     collections = [c.name for c in client.get_collections().collections]
     if COLLECTION not in collections:
         log.info(f"创建 collection: {COLLECTION}")
@@ -79,6 +78,18 @@ def ensure_collection(client: QdrantClient) -> None:
                 "sparse": models.SparseVectorParams(),
             },
         )
+        # 全文索引用于 BM25-like 检索（当 sparse 向量不可用时作为 RRF 第二信号）
+        client.create_payload_index(
+            collection_name=COLLECTION,
+            field_name="text",
+            field_schema=models.TextIndexParams(
+                type=models.TextIndexType.TEXT,
+                tokenizer=models.TokenizerType.MULTILINGUAL,
+                min_token_len=2,
+                max_token_len=20,
+            ),
+        )
+        log.info("已创建 text 全文索引（multilingual tokenizer）")
 
 
 # ── 标题分块 ──────────────────────────────────────────────────────
@@ -224,7 +235,7 @@ def index_chunks(chunks: list[dict], batch_size: int = 256) -> None:
         log.info("没有 chunks 需要索引")
         return
 
-    model = get_model()
+    provider = get_provider()
     client = get_qdrant()
     ensure_collection(client)
 
@@ -242,12 +253,11 @@ def index_chunks(chunks: list[dict], batch_size: int = 256) -> None:
         encode_texts.append("\n".join(p for p in parts if p))
 
     log.info(f"编码 {len(encode_texts)} 个 chunks（batch_size={batch_size}）...")
-    output = model.encode(encode_texts, return_dense=True, return_sparse=True,
-                          batch_size=batch_size)
+    output = provider.encode_texts(encode_texts, batch_size=batch_size)
+    has_sparse = output["lexical_weights"] is not None
 
     points = []
     for i, chunk in enumerate(chunks):
-        sparse = output["lexical_weights"][i]
         point_id = hashlib.md5(chunk["chunk_id"].encode()).hexdigest()
 
         payload = {
@@ -257,15 +267,17 @@ def index_chunks(chunks: list[dict], batch_size: int = 256) -> None:
         }
         payload.update(chunk.get("metadata", {}))
 
+        vector: dict = {"dense": output["dense_vecs"][i].tolist()}
+        if has_sparse:
+            sparse = output["lexical_weights"][i]
+            vector["sparse"] = models.SparseVector(
+                indices=list(map(int, sparse.keys())),
+                values=list(sparse.values()),
+            )
+
         points.append(models.PointStruct(
             id=point_id,
-            vector={
-                "dense": output["dense_vecs"][i].tolist(),
-                "sparse": models.SparseVector(
-                    indices=list(map(int, sparse.keys())),
-                    values=list(sparse.values()),
-                ),
-            },
+            vector=vector,
             payload=payload,
         ))
 

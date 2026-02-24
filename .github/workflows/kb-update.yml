@@ -1,12 +1,11 @@
 name: KB Update
 
-# Sync source docs to KB repo + LLM preprocess.
-# Indexing + snapshot export must be done locally (BGE-M3 on CPU is too slow for CI).
+# Sync source docs to KB repo + LLM preprocess + indexing via OpenRouter API.
+# Snapshot is exported and committed to KB repo for local restore.
 #
 # Usage:
-#   1. Trigger this workflow to sync latest docs + preprocess
-#   2. Pull locally, run indexing: scripts/preprocess_pipeline.sh --kb-repo kb/kb-redis-docs --source kb/kb-redis-docs/docs/redis-docs --skip-preprocess
-#   3. Push snapshot to KB repo
+#   1. Trigger this workflow to sync latest docs + preprocess + index
+#   2. Pull locally, restore snapshot: .venv/bin/python scripts/index.py --snapshot-import kb/kb-redis-docs/snapshots/latest.snapshot
 
 on:
   workflow_dispatch:
@@ -35,11 +34,21 @@ on:
         required: false
         default: false
         type: boolean
+      skip_indexing:
+        description: "Skip indexing (embedding + Qdrant)"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   sync-docs:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
+    services:
+      qdrant:
+        image: qdrant/qdrant:latest
+        ports:
+          - 6333:6333
     steps:
       - uses: actions/checkout@v4
         with:
@@ -131,6 +140,36 @@ jobs:
           DOC_PROCESS_BASE_URL: https://api.deepseek.com
           DOC_PROCESS_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
 
+      - name: Build index (OpenRouter BGE-M3 API)
+        if: ${{ !inputs.skip_indexing }}
+        run: |
+          echo "Waiting for Qdrant to be ready..."
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:6333/healthz > /dev/null 2>&1; then
+              echo "Qdrant is ready"
+              break
+            fi
+            sleep 2
+          done
+
+          python scripts/index.py --full "$KB_REPO/docs/$DOC_SUBDIR"
+        env:
+          QDRANT_URL: http://localhost:6333
+          EMBEDDING_PROVIDER: openai
+          EMBEDDING_BASE_URL: https://openrouter.ai/api/v1
+          EMBEDDING_API_KEY: ${{ secrets.EMBEDDING_API_KEY }}
+          EMBEDDING_MODEL: baai/bge-m3
+          EMBEDDING_DIM: "1024"
+
+      - name: Export snapshot
+        if: ${{ !inputs.skip_indexing }}
+        run: |
+          SNAPSHOT_DIR="$KB_REPO/snapshots"
+          mkdir -p "$SNAPSHOT_DIR"
+          python scripts/index.py --snapshot-export "$SNAPSHOT_DIR/latest.snapshot"
+          ls -lh "$SNAPSHOT_DIR/latest.snapshot"
+          echo "SNAPSHOT_EXPORTED=true" >> $GITHUB_ENV
+
       - name: Commit and push KB repo
         run: |
           cd "$KB_REPO"
@@ -176,9 +215,19 @@ jobs:
           echo "- Filter: ${{ inputs.doc_filter || 'all' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Docs synced: $DOC_COUNT" >> $GITHUB_STEP_SUMMARY
           echo "- Preprocess: ${{ inputs.skip_preprocess && 'skipped' || 'done' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Indexing: ${{ inputs.skip_indexing && 'skipped' || 'done' }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Snapshot: ${SNAPSHOT_EXPORTED:-false}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Next step**: Run locally to rebuild index + snapshot:" >> $GITHUB_STEP_SUMMARY
-          echo '```bash' >> $GITHUB_STEP_SUMMARY
-          echo "git pull && git submodule update --remote kb/${{ inputs.kb_name }}" >> $GITHUB_STEP_SUMMARY
-          echo "scripts/preprocess_pipeline.sh --kb-repo kb/${{ inputs.kb_name }} --source kb/${{ inputs.kb_name }}/docs/${DOC_SUBDIR} --skip-preprocess" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ "${SNAPSHOT_EXPORTED}" = "true" ]; then
+            echo "**Next step**: Pull and restore snapshot locally:" >> $GITHUB_STEP_SUMMARY
+            echo '```bash' >> $GITHUB_STEP_SUMMARY
+            echo "git pull && git submodule update --remote kb/${{ inputs.kb_name }}" >> $GITHUB_STEP_SUMMARY
+            echo ".venv/bin/python scripts/index.py --snapshot-import kb/${{ inputs.kb_name }}/snapshots/latest.snapshot" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**Next step**: Run locally to rebuild index + snapshot:" >> $GITHUB_STEP_SUMMARY
+            echo '```bash' >> $GITHUB_STEP_SUMMARY
+            echo "git pull && git submodule update --remote kb/${{ inputs.kb_name }}" >> $GITHUB_STEP_SUMMARY
+            echo "scripts/preprocess_pipeline.sh --kb-repo kb/${{ inputs.kb_name }} --source kb/${{ inputs.kb_name }}/docs/${DOC_SUBDIR} --skip-preprocess" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi

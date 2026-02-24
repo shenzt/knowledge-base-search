@@ -11,31 +11,32 @@ import json
 import logging
 import os
 
-from FlagEmbedding import BGEM3FlagModel, FlagReranker
+from FlagEmbedding import FlagReranker
 from mcp.server.fastmcp import FastMCP
 from qdrant_client import QdrantClient, models
+
+from embedding_provider import EmbeddingProvider, get_embedding_provider
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 log = logging.getLogger(__name__)
 
 QDRANT_URL = os.environ.get("QDRANT_URL", "http://localhost:6333")
 COLLECTION = os.environ.get("COLLECTION_NAME", "knowledge-base")
-MODEL_NAME = os.environ.get("BGE_M3_MODEL", "BAAI/bge-m3")
 RERANKER_NAME = os.environ.get("RERANKER_MODEL", "BAAI/bge-reranker-v2-m3")
 
 # 初始化
 mcp = FastMCP("knowledge-base")
-_model = None
+_provider = None
 _reranker = None
 _qdrant = None
 
 
-def get_model():
-    global _model
-    if _model is None:
-        log.info(f"加载 embedding 模型: {MODEL_NAME}")
-        _model = BGEM3FlagModel(MODEL_NAME, use_fp16=True)
-    return _model
+def get_provider() -> EmbeddingProvider:
+    """延迟加载 embedding provider。"""
+    global _provider
+    if _provider is None:
+        _provider = get_embedding_provider()
+    return _provider
 
 
 def get_reranker():
@@ -68,18 +69,14 @@ def hybrid_search(
         min_score: 最低 rerank 得分
         scope: 限定目录范围，如 runbook/adr/api
     """
-    model = get_model()
+    model = get_provider()
     reranker = get_reranker()
     client = get_qdrant()
 
     # 编码查询
-    q = model.encode([query], return_dense=True, return_sparse=True)
-    dense_vec = q["dense_vecs"][0].tolist()
-    sparse = q["lexical_weights"][0]
-    sparse_vec = models.SparseVector(
-        indices=list(map(int, sparse.keys())),
-        values=list(sparse.values()),
-    )
+    q = model.encode_query(query)
+    dense_vec = q["dense_vec"]
+    sparse_vec = q["sparse_vec"]  # 可能为 None（外部 API 模式）
 
     # 过滤条件
     filter_cond = None
@@ -91,23 +88,75 @@ def hybrid_search(
             )
         ])
 
-    # Qdrant hybrid search
+    # Qdrant hybrid search — sparse_vec 为 None 时用 BM25 全文检索替代
     try:
-        results = client.query_points(
-            collection_name=COLLECTION,
-            prefetch=[
-                models.Prefetch(
-                    query=dense_vec, using="dense",
-                    limit=20, filter=filter_cond,
-                ),
+        prefetch_list = [
+            models.Prefetch(
+                query=dense_vec, using="dense",
+                limit=20, filter=filter_cond,
+            ),
+        ]
+        if sparse_vec is not None:
+            prefetch_list.append(
                 models.Prefetch(
                     query=sparse_vec, using="sparse",
                     limit=20, filter=filter_cond,
                 ),
-            ],
-            query=models.FusionQuery(fusion=models.Fusion.RRF),
-            limit=top_k * 3,
-        )
+            )
+
+        if len(prefetch_list) > 1:
+            # hybrid: dense + sparse → RRF 融合
+            results = client.query_points(
+                collection_name=COLLECTION,
+                prefetch=prefetch_list,
+                query=models.FusionQuery(fusion=models.Fusion.RRF),
+                limit=top_k * 3,
+            )
+        else:
+            # dense + BM25 全文检索 → RRF 融合
+            # Qdrant 的 MatchText 用 multilingual tokenizer 做 BM25-like 匹配
+            bm25_filter = models.Filter(must=[
+                models.FieldCondition(
+                    key="text",
+                    match=models.MatchText(text=query),
+                )
+            ])
+            if filter_cond and filter_cond.must:
+                bm25_filter.must.extend(filter_cond.must)
+
+            # 先用 BM25 拿候选，再和 dense 做 RRF
+            bm25_results = client.scroll(
+                collection_name=COLLECTION,
+                scroll_filter=bm25_filter,
+                limit=20,
+                with_vectors=False,
+            )
+            bm25_ids = [p.id for p in bm25_results[0]] if bm25_results[0] else []
+
+            if bm25_ids:
+                # 有 BM25 命中：用 dense prefetch + BM25 ID 过滤做 RRF
+                bm25_prefetch = models.Prefetch(
+                    query=dense_vec, using="dense",
+                    limit=20,
+                    filter=models.Filter(must=[
+                        models.HasIdCondition(has_id=bm25_ids),
+                    ]),
+                )
+                results = client.query_points(
+                    collection_name=COLLECTION,
+                    prefetch=[prefetch_list[0], bm25_prefetch],
+                    query=models.FusionQuery(fusion=models.Fusion.RRF),
+                    limit=top_k * 3,
+                )
+            else:
+                # BM25 无命中：降级为 dense-only
+                results = client.query_points(
+                    collection_name=COLLECTION,
+                    query=dense_vec,
+                    using="dense",
+                    limit=top_k * 3,
+                    query_filter=filter_cond,
+                )
     except Exception as e:
         return json.dumps({"error": str(e)}, ensure_ascii=False)
 
