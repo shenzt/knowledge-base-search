@@ -253,16 +253,7 @@ jobs:
           # Show eval results if available
           if [ -f "eval/so-redis-eval-results.json" ]; then
             echo "### Retrieval Eval" >> $GITHUB_STEP_SUMMARY
-            python3 -c "
-import json
-with open('eval/so-redis-eval-results.json') as f:
-    data = json.load(f)
-s = data['summary']
-print(f\"- Pass rate: {s['passed']}/{s['total']} ({s['pass_rate']}%)\")
-if 'avg_faithfulness' in s:
-    print(f\"- Avg faithfulness: {s['avg_faithfulness']}\")
-    print(f\"- Min faithfulness: {s['min_faithfulness']}\")
-" >> $GITHUB_STEP_SUMMARY
+            python3 -c "import json; d=json.load(open('eval/so-redis-eval-results.json')); s=d['summary']; print(f\"- Pass rate: {s['passed']}/{s['total']} ({s['pass_rate']}%)\"); f=s.get('avg_faithfulness'); print(f'- Avg faithfulness: {f}') if f else None" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
           fi
           if [ "${SNAPSHOT_EXPORTED}" = "true" ]; then
