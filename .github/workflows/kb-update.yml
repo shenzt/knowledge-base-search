@@ -178,6 +178,21 @@ jobs:
           EMBEDDING_DIM: "1024"
           EMBEDDING_CONCURRENCY: "6"
 
+      - name: Eval — retrieval quality
+        if: ${{ !inputs.skip_indexing }}
+        run: |
+          python scripts/eval_retrieval.py --ragas
+        env:
+          QDRANT_URL: http://localhost:6333
+          EMBEDDING_PROVIDER: openai
+          EMBEDDING_BASE_URL: https://openrouter.ai/api/v1
+          EMBEDDING_API_KEY: ${{ secrets.EMBEDDING_API_KEY }}
+          EMBEDDING_MODEL: baai/bge-m3
+          EMBEDDING_DIM: "1024"
+          JUDGE_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          JUDGE_MODEL: deepseek-chat
+          JUDGE_BASE_URL: https://api.deepseek.com
+
       - name: Export snapshot
         if: ${{ !inputs.skip_indexing }}
         run: |
@@ -235,6 +250,21 @@ jobs:
           echo "- Indexing: ${{ inputs.skip_indexing && 'skipped' || 'done' }}" >> $GITHUB_STEP_SUMMARY
           echo "- Snapshot: ${SNAPSHOT_EXPORTED:-false}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          # Show eval results if available
+          if [ -f "eval/so-redis-eval-results.json" ]; then
+            echo "### Retrieval Eval" >> $GITHUB_STEP_SUMMARY
+            python3 -c "
+import json
+with open('eval/so-redis-eval-results.json') as f:
+    data = json.load(f)
+s = data['summary']
+print(f\"- Pass rate: {s['passed']}/{s['total']} ({s['pass_rate']}%)\")
+if 'avg_faithfulness' in s:
+    print(f\"- Avg faithfulness: {s['avg_faithfulness']}\")
+    print(f\"- Min faithfulness: {s['min_faithfulness']}\")
+" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+          fi
           if [ "${SNAPSHOT_EXPORTED}" = "true" ]; then
             echo "**Next step**: Pull and restore snapshot locally:" >> $GITHUB_STEP_SUMMARY
             echo '```bash' >> $GITHUB_STEP_SUMMARY

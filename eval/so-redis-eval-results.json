@@ -1,0 +1,1167 @@
+{
+  "summary": {
+    "total": 35,
+    "passed": 35,
+    "failed": 0,
+    "pass_rate": 100.0,
+    "top_k": 5,
+    "elapsed_sec": 108.8
+  },
+  "results": [
+    {
+      "id": "so-001",
+      "topic": "pipelining",
+      "question": "I'm building a Python app that needs to execute ~5000 Redis SET commands to update user session data. I've read about both pipelining and MULTI/EXEC transactions but I'm confused about the difference.",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/nodejs/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 0.7440803
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/jedis/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 0.73529196
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/dotnet/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 0.734687
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 0.7198621
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
+          "title": "Redis pipelining",
+          "score": 0.7091441
+        }
+      ]
+    },
+    {
+      "id": "so-002",
+      "topic": "pipelining",
+      "question": "I'm using redis-py in a high-latency network environment (cross-region, ~50ms RTT). Sending 200 individual GET commands takes about 10 seconds. I know pipelining can help reduce round trip time by bat",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
+          "title": "Redis pipelining",
+          "score": 0.81778646
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
+          "title": "Redis pipelining",
+          "score": 0.81278
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
+          "title": "Redis pipelining",
+          "score": 0.74300754
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/hiredis/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 0.7383146
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/nodejs/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 0.7357649
+        }
+      ]
+    },
+    {
+      "id": "so-003",
+      "topic": "sentinel",
+      "question": "I have a Redis Sentinel setup with 3 sentinels and 1 master + 2 replicas on CentOS 7. When I stop the master with `redis-cli -p 6379 DEBUG SLEEP 60`, the sentinels detect +sdown but never reach +odown",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.77547944
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.7731117
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.76393175
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/sentinel-clients.md",
+          "title": "Sentinel client spec",
+          "score": 0.7364893
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.73547786
+        }
+      ]
+    },
+    {
+      "id": "so-004",
+      "topic": "sentinel",
+      "question": "I'm setting up Redis Sentinel for high availability in production with 3 servers. Each server runs both a Redis instance and a Sentinel instance. Server A is master, B and C are replicas. I want autom",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.8157096
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.79169357
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.7823317
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.7736325
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.7702552
+        }
+      ]
+    },
+    {
+      "id": "so-005",
+      "topic": "data-types",
+      "question": "I'm building a real-time leaderboard for a mobile game with ~100K daily active users. I need to store player scores and quickly retrieve the top 100 players, as well as a specific player's rank. I ini",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
+          "title": "Redis sorted sets",
+          "score": 0.7065691
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
+          "title": "Redis sorted sets",
+          "score": 0.6881833
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
+          "title": "Redis sorted sets",
+          "score": 0.6764546
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/whats-new/7-2.md",
+          "title": "Redis 7.2",
+          "score": 0.63690794
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/agent-builder/agent-concepts.md",
+          "title": "agent-concepts.md",
+          "score": 0.6338122
+        }
+      ]
+    },
+    {
+      "id": "so-006",
+      "topic": "data-types",
+      "question": "I'm trying to understand Redis internals for a systems design interview. I know Redis has Strings, Lists, Sets, Sorted Sets, and Hashes as user-facing data types, but what data structures does Redis a",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/_index.md",
+          "title": "Redis data types",
+          "score": 0.75213635
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+          "title": "Memory optimization",
+          "score": 0.7404596
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/lists.md",
+          "title": "Redis lists",
+          "score": 0.71818435
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/compare-data-types.md",
+          "title": "Compare data types",
+          "score": 0.7110485
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/search-and-query/administration/overview.md",
+          "title": "Technical overview",
+          "score": 0.702518
+        }
+      ]
+    },
+    {
+      "id": "so-007",
+      "topic": "data-types",
+      "question": "I need to store user profile data in Redis. Each user has fields like name, email, age, and preferences. I'm debating between using a Redis Hash (HSET user:123 name 'John' email 'john@example.com') vs",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.1/user_guide/hash_vs_json.md",
+          "title": "Hash vs JSON Storage",
+          "score": 0.75740445
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.12.1/user_guide/hash_vs_json.md",
+          "title": "Hash vs JSON Storage",
+          "score": 0.75740445
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.12.0/user_guide/hash_vs_json.md",
+          "title": "Hash vs JSON Storage",
+          "score": 0.75740445
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/user_guide/hash_vs_json.md",
+          "title": "Hash vs JSON Storage",
+          "score": 0.75740445
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.6.0/user_guide/hash_vs_json.md",
+          "title": "Hash vs JSON Storage",
+          "score": 0.7540776
+        }
+      ]
+    },
+    {
+      "id": "so-008",
+      "topic": "persistence",
+      "question": "I'm running Redis in production as a primary data store (not just cache) and need to configure persistence. I understand there are two options: RDB snapshots and AOF (Append Only File). RDB creates po",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+          "title": "Redis persistence",
+          "score": 0.84702873
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/configure/database-persistence.md",
+          "title": "database-persistence.md",
+          "score": 0.84501195
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/databases/configure/database-persistence.md",
+          "title": "database-persistence.md",
+          "score": 0.84501195
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/databases/configure/database-persistence.md",
+          "title": "database-persistence.md",
+          "score": 0.84501195
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/configure/database-persistence.md",
+          "title": "database-persistence.md",
+          "score": 0.8429028
+        }
+      ]
+    },
+    {
+      "id": "so-009",
+      "topic": "persistence",
+      "question": "I'm looking at my Redis AOF file and noticed it starts with the string 'REDIS' followed by binary data, which looks like an RDB preamble. Then the rest of the file has the normal AOF command format (*",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+          "title": "Redis persistence",
+          "score": 0.7254991
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+          "title": "Redis persistence",
+          "score": 0.7153235
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+          "title": "Redis persistence",
+          "score": 0.7092024
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+          "title": "Redis persistence",
+          "score": 0.7068485
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+          "title": "Redis persistence",
+          "score": 0.7022921
+        }
+      ]
+    },
+    {
+      "id": "so-010",
+      "topic": "memory",
+      "question": "I stored about 500MB of string data in Redis (verified by summing the sizes of all values), but `INFO memory` shows `used_memory_human: 4.8G` — almost 10x more than my actual data. I'm using Redis 6.2",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+          "title": "Memory optimization",
+          "score": 0.71723664
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/references/metrics/resource-usage.md",
+          "title": "resource-usage.md",
+          "score": 0.7168386
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/references/metrics/resource-usage.md",
+          "title": "resource-usage.md",
+          "score": 0.7168386
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/references/metrics/resource-usage.md",
+          "title": "resource-usage.md",
+          "score": 0.7168386
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/references/metrics/resource-usage.md",
+          "title": "resource-usage.md",
+          "score": 0.7168386
+        }
+      ]
+    },
+    {
+      "id": "so-011",
+      "topic": "memory",
+      "question": "I'm running Redis as a session cache with `maxmemory 2gb` and `maxmemory-policy volatile-lru`. Today I noticed Redis is using 2.3GB according to `INFO memory`, which exceeds my maxmemory setting. I th",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
+          "title": "Key eviction",
+          "score": 0.7979998
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
+          "title": "Key eviction",
+          "score": 0.768484
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
+          "title": "Key eviction",
+          "score": 0.75397706
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+          "title": "Memory optimization",
+          "score": 0.7514137
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/memory-performance/_index.md",
+          "title": "_index.md",
+          "score": 0.7384058
+        }
+      ]
+    },
+    {
+      "id": "so-012",
+      "topic": "security",
+      "question": "I just upgraded to Redis 6.0 and want to use the new ACL feature to create separate users for different microservices. Currently everything connects with the default user and `requirepass`. I want to ",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
+          "title": "configure-acls.md",
+          "score": 0.78197634
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+          "title": "ACL",
+          "score": 0.76875275
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
+          "title": "configure-acls.md",
+          "score": 0.76188326
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/security/access-control/redis-acl-overview.md",
+          "title": "redis-acl-overview.md",
+          "score": 0.74894786
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/security/access-control/redis-acl-overview.md",
+          "title": "redis-acl-overview.md",
+          "score": 0.7486796
+        }
+      ]
+    },
+    {
+      "id": "so-013",
+      "topic": "security",
+      "question": "I just installed Redis on an Ubuntu server and it's accessible without any authentication. I need to set a password before exposing it to the network. I know I can use `requirepass` in redis.conf, but",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/admin.md",
+          "title": "Redis administration",
+          "score": 0.7787281
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/_index.md",
+          "title": "Redis security",
+          "score": 0.76646113
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/install/archive/install-redis/_index.md",
+          "title": "Install Redis",
+          "score": 0.7577163
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/_index.md",
+          "title": "Redis security",
+          "score": 0.74733174
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/_index.md",
+          "title": "Redis security",
+          "score": 0.74351734
+        }
+      ]
+    },
+    {
+      "id": "so-014",
+      "topic": "pubsub-streams",
+      "question": "I need to implement a message queue in Redis for processing background jobs. I've been using Pub/Sub but realized that if a subscriber is disconnected when a message is published, it misses that messa",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/pubsub/_index.md",
+          "title": "Redis Pub/sub",
+          "score": 0.7462894
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+          "title": "Redis Streams",
+          "score": 0.7176278
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+          "title": "Redis Streams",
+          "score": 0.71441203
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+          "title": "Redis Streams",
+          "score": 0.7080552
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+          "title": "Redis Streams",
+          "score": 0.7070716
+        }
+      ]
+    },
+    {
+      "id": "so-015",
+      "topic": "cluster",
+      "question": "I'm migrating from a single Redis instance to Redis Cluster for horizontal scaling. I understand the cluster uses 16384 hash slots distributed across nodes. When I run a command, Redis computes CRC16(",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+          "title": "Redis cluster specification",
+          "score": 0.806797
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+          "title": "Redis cluster specification",
+          "score": 0.80387616
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+          "title": "Redis cluster specification",
+          "score": 0.7806641
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+          "title": "Redis cluster specification",
+          "score": 0.775748
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+          "title": "Scale with Redis Cluster",
+          "score": 0.76950574
+        }
+      ]
+    },
+    {
+      "id": "so-016",
+      "topic": "cluster",
+      "question": "I need high availability for my Redis deployment and I'm confused about whether to use Redis Sentinel or Redis Cluster. My dataset is about 8GB and fits on a single machine. I don't need sharding, jus",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.77388084
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/sentinel-clients.md",
+          "title": "Sentinel client spec",
+          "score": 0.7287581
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.7263723
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.7255707
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.72046065
+        }
+      ]
+    },
+    {
+      "id": "so-017",
+      "topic": "replication",
+      "question": "I'm setting up Redis replication with 1 master and 2 replicas. During initial sync, I see in the logs that the master is doing a BGSAVE and sending the RDB file to the replica (full synchronization). ",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+          "title": "Redis replication",
+          "score": 0.75374943
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+          "title": "Redis replication",
+          "score": 0.7440781
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+          "title": "Redis replication",
+          "score": 0.7389238
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+          "title": "Redis replication",
+          "score": 0.7145072
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/active-active/syncer.md",
+          "title": "syncer.md",
+          "score": 0.70764256
+        }
+      ]
+    },
+    {
+      "id": "so-018",
+      "topic": "clients",
+      "question": "I'm new to Redis and trying to connect from a Python application using redis-py. I installed it with `pip install redis` and wrote `r = redis.Redis(host='localhost', port=6379, db=0)` but I'm not sure",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/connect.md",
+          "title": "Connect to the server",
+          "score": 0.8036989
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/pools-and-muxing.md",
+          "title": "Connection pools and multiplexing",
+          "score": 0.77211565
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/ioredis/connect.md",
+          "title": "Connect to the server",
+          "score": 0.7305131
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/references/connecting-to-redis.md",
+          "title": "connecting-to-redis.md",
+          "score": 0.71441174
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/references/connecting-to-redis.md",
+          "title": "connecting-to-redis.md",
+          "score": 0.71441174
+        }
+      ]
+    },
+    {
+      "id": "so-019",
+      "topic": "ai",
+      "question": "I want to use Redis as a vector database for a RAG (Retrieval Augmented Generation) application. I have ~1M document embeddings (768-dimensional vectors from sentence-transformers) and need to do k-ne",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/search-and-query/vectors/_index.md",
+          "title": "Vector search concepts",
+          "score": 0.78107345
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/vecsearch.md",
+          "title": "Index and query vectors",
+          "score": 0.7735096
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.9.0/_index.md",
+          "title": "RedisVL",
+          "score": 0.7688718
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.1/_index.md",
+          "title": "RedisVL",
+          "score": 0.7688718
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.8.2/_index.md",
+          "title": "RedisVL",
+          "score": 0.7688718
+        }
+      ]
+    },
+    {
+      "id": "so-020",
+      "topic": "scripting",
+      "question": "I need to implement a rate limiter in Redis that atomically checks and increments a counter. Using separate GET and INCR commands has a race condition in concurrent scenarios. I know I can use EVAL wi",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/eval-intro.md",
+          "title": "Scripting with Lua",
+          "score": 0.7555752
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/functions-intro.md",
+          "title": "Redis functions",
+          "score": 0.71915483
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/eval-intro.md",
+          "title": "Scripting with Lua",
+          "score": 0.7178091
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/eval-intro.md",
+          "title": "Scripting with Lua",
+          "score": 0.71123827
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/_index.md",
+          "title": "Redis programmability",
+          "score": 0.7096139
+        }
+      ]
+    },
+    {
+      "id": "so-021",
+      "topic": "security",
+      "question": "I need to enable TLS encryption for Redis connections in production. Our security team requires all data in transit to be encrypted. I'm running Redis 6.2 and I see there's a `tls-port` config option.",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/php/connect.md",
+          "title": "Connect to the server",
+          "score": 0.8181743
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/database-security/tls-ssl.md",
+          "title": "tls-ssl.md",
+          "score": 0.8117618
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/encryption.md",
+          "title": "TLS",
+          "score": 0.798617
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/go/connect.md",
+          "title": "Connect to the server",
+          "score": 0.78532714
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/database-security/tls-ssl.md",
+          "title": "tls-ssl.md",
+          "score": 0.7834569
+        }
+      ]
+    },
+    {
+      "id": "so-022",
+      "topic": "cloud",
+      "question": "I want to try Redis Cloud for a new project instead of self-hosting. How do I create a subscription and get a database endpoint? I see there's a free tier. After creating the database, how do I connec",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/stack-quickstart.md",
+          "title": "Redis Open Source quick start",
+          "score": 0.83713514
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/stack-quickstart.md",
+          "title": "Redis Open Source quick start",
+          "score": 0.81000185
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/rc-quickstart.md",
+          "title": "rc-quickstart.md",
+          "score": 0.79134876
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/databases/create-database/create-free-database.md",
+          "title": "create-free-database.md",
+          "score": 0.7781682
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/api/examples/create-database.md",
+          "title": "create-database.md",
+          "score": 0.77512455
+        }
+      ]
+    },
+    {
+      "id": "so-023",
+      "topic": "kubernetes",
+      "question": "I'm deploying Redis Enterprise on Kubernetes using the Redis Enterprise Operator. I've installed the operator via Helm but I'm confused about the CRDs — there's RedisEnterpriseCluster and RedisEnterpr",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.4.6/deployment/_index.md",
+          "title": "_index.md",
+          "score": 0.81637263
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.4.6/faqs/_index.md",
+          "title": "_index.md",
+          "score": 0.8036678
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.8.4/faqs/_index.md",
+          "title": "_index.md",
+          "score": 0.8036678
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.22/deployment/_index.md",
+          "title": "_index.md",
+          "score": 0.80185634
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/deployment/_index.md",
+          "title": "_index.md",
+          "score": 0.80185634
+        }
+      ]
+    },
+    {
+      "id": "so-024",
+      "topic": "data-types",
+      "question": "I need to store complex nested JSON documents in Redis and query them by nested fields. For example, I have user profiles like `{name: 'John', address: {city: 'NYC', zip: '10001'}, tags: ['premium', '",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/json/use_cases.md",
+          "title": "Use cases",
+          "score": 0.7658406
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/user_guide/hash_vs_json.md",
+          "title": "Hash vs JSON Storage",
+          "score": 0.7537482
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.12.1/user_guide/hash_vs_json.md",
+          "title": "Hash vs JSON Storage",
+          "score": 0.7537482
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.0/user_guide/hash_vs_json.md",
+          "title": "Hash vs JSON Storage",
+          "score": 0.7537482
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.6.0/user_guide/hash_vs_json.md",
+          "title": "Hash vs JSON Storage",
+          "score": 0.7537482
+        }
+      ]
+    },
+    {
+      "id": "so-025",
+      "topic": "benchmark",
+      "question": "I want to benchmark my Redis server to establish a performance baseline before deploying to production. I know there's a built-in `redis-benchmark` tool. How do I use it to test specific commands like",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/benchmarks/index.md",
+          "title": "Redis benchmark",
+          "score": 0.7614765
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/benchmarks/index.md",
+          "title": "Redis benchmark",
+          "score": 0.74603796
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/json/performance/_index.md",
+          "title": "Performance",
+          "score": 0.7377451
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/clusters/optimize/memtier-benchmark.md",
+          "title": "memtier-benchmark.md",
+          "score": 0.73726535
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/clusters/optimize/memtier-benchmark.md",
+          "title": "memtier-benchmark.md",
+          "score": 0.73174417
+        }
+      ]
+    },
+    {
+      "id": "cn-001",
+      "topic": "pipelining",
+      "question": "我在用 Python 开发一个批量数据导入工具，需要往 Redis 里写入大约 5 万条数据。我看到 Redis 有 pipeline（管道）和 MULTI/EXEC（事务）两种批量执行方式。pipeline 是把多条命令打包发送减少网络往返，而事务是保证原子性执行。这两者能一起用吗？我的场景不需要原子性，只需要高吞吐，应该选哪个？pipeline 一次打包多少条命令比较合适？",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/nodejs/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 0.7651242
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/hiredis/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 0.7357634
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
+          "title": "Redis pipelining",
+          "score": 0.7249416
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/jedis/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 0.71810025
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/dotnet/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 0.71537185
+        }
+      ]
+    },
+    {
+      "id": "cn-002",
+      "topic": "sentinel",
+      "question": "我在 3 台 CentOS 服务器上部署了 Redis Sentinel 哨兵模式，1 主 2 从，每台机器上都跑了一个 sentinel 进程。配置了 `sentinel monitor mymaster 10.0.1.10 6379 2`，quorum 设为 2。但是当我手动 kill 掉 master 进程后，sentinel 日志只显示 +sdown，一直没有触发 +odown 和 fai",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.75166976
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.74764484
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.7373631
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.7201766
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.7175602
+        }
+      ]
+    },
+    {
+      "id": "cn-003",
+      "topic": "persistence",
+      "question": "我们的 Redis 是作为主数据库使用的（不只是缓存），需要配置持久化防止数据丢失。RDB 是定时快照，AOF 是记录每条写命令。我担心 RDB 模式下如果 Redis 崩溃会丢失两次快照之间的数据（比如 5 分钟）。AOF 的 everysec 策略最多丢 1 秒数据，但听说有性能开销。生产环境应该用哪个？能不能 RDB 和 AOF 同时开启？Redis 7.0 的 AOF 文件格式是不是变了，",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+          "title": "Redis persistence",
+          "score": 0.83259964
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+          "title": "Redis persistence",
+          "score": 0.8323823
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/databases/configure/database-persistence.md",
+          "title": "database-persistence.md",
+          "score": 0.8020519
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/configure/database-persistence.md",
+          "title": "database-persistence.md",
+          "score": 0.8020519
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/databases/configure/database-persistence.md",
+          "title": "database-persistence.md",
+          "score": 0.8020519
+        }
+      ]
+    },
+    {
+      "id": "cn-004",
+      "topic": "memory",
+      "question": "我的 Redis 实例设置了 `maxmemory 4gb`，淘汰策略是 `volatile-lru`。但是 `INFO memory` 显示 `used_memory` 已经到了 4.6GB，超过了 maxmemory 限制。而且我发现一些没有设置 TTL 的 key 也被淘汰了，volatile-lru 不是应该只淘汰有过期时间的 key 吗？另外，`mem_fragmentation_rat",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+          "title": "Memory optimization",
+          "score": 0.7571685
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
+          "title": "Key eviction",
+          "score": 0.7357643
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/flash/_index.md",
+          "title": "_index.md",
+          "score": 0.72045577
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/memory-performance/_index.md",
+          "title": "_index.md",
+          "score": 0.7109237
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
+          "title": "Key eviction",
+          "score": 0.71053016
+        }
+      ]
+    },
+    {
+      "id": "cn-005",
+      "topic": "cluster",
+      "question": "我们要从单机 Redis 迁移到 Redis Cluster 集群模式。我知道集群用 16384 个哈希槽来分片数据，每个 key 通过 CRC16(key) % 16384 计算属于哪个槽。但我有几个疑问：1) 新加节点后需要手动迁移哈希槽吗？还是自动重新分配？2) 迁移过程中客户端会收到 MOVED 和 ASK 重定向，这两个有什么区别？3) 多 key 操作（如 MGET）在集群模式下是不是",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+          "title": "Redis cluster specification",
+          "score": 0.7361196
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+          "title": "Scale with Redis Cluster",
+          "score": 0.7343654
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+          "title": "Redis cluster specification",
+          "score": 0.72344685
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+          "title": "Redis cluster specification",
+          "score": 0.7219384
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+          "title": "Scale with Redis Cluster",
+          "score": 0.7088151
+        }
+      ]
+    },
+    {
+      "id": "cn-006",
+      "topic": "data-types",
+      "question": "我在做一个手游实时排行榜，日活大概 10 万用户。需要存储玩家分数，快速查询 Top 100 和某个玩家的排名。一开始用 Redis List 存储，但更新分数需要先删除再插入，效率很低。后来看到 Sorted Set 可以用 ZADD 更新分数、ZREVRANK 查排名、ZREVRANGE 取 Top N，时间复杂度都是 O(log N)。Sorted Set 和 List 各自适合什么场景？如",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
+          "title": "Redis sorted sets",
+          "score": 0.6925373
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
+          "title": "Redis sorted sets",
+          "score": 0.6772369
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
+          "title": "Redis sorted sets",
+          "score": 0.6642462
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
+          "title": "Redis sorted sets",
+          "score": 0.6434752
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/active-active/develop/data-types/sorted-sets.md",
+          "title": "sorted-sets.md",
+          "score": 0.6422765
+        }
+      ]
+    },
+    {
+      "id": "cn-007",
+      "topic": "pubsub-streams",
+      "question": "我需要在 Redis 里实现一个消息队列来处理异步任务。之前用 Pub/Sub 做的，但发现如果消费者断线期间发布的消息会丢失，没有重放机制。而且 Pub/Sub 没有消息确认，消费者处理失败了消息就没了。听说 Redis 5.0 引入的 Streams 支持消费者组、消息持久化和 ACK 确认机制（XADD/XREADGROUP/XACK）。Pub/Sub 和 Streams 的主要区别是什么？",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/tools/insight/release-notes/v.2.4.0.md",
+          "title": "v.2.4.0.md",
+          "score": 0.7359594
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/pubsub/_index.md",
+          "title": "Redis Pub/sub",
+          "score": 0.7275042
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+          "title": "Redis Streams",
+          "score": 0.7088196
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+          "title": "Redis Streams",
+          "score": 0.7082367
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+          "title": "Redis Streams",
+          "score": 0.7040919
+        }
+      ]
+    },
+    {
+      "id": "cn-008",
+      "topic": "security",
+      "question": "我们升级到 Redis 6.0 后想用 ACL 功能给不同的微服务分配不同的访问权限。之前所有服务都用同一个 requirepass 密码连接。现在想创建一个只读用户 'readonly' 只能执行 GET/HGETALL 等读命令，访问 'cache:*' 前缀的 key；另一个用户 'admin' 有完全权限。ACL SETUSER 的语法是什么？key 的模式匹配怎么写？能不能限制用户只能访",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
+          "title": "configure-acls.md",
+          "score": 0.8231688
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+          "title": "ACL",
+          "score": 0.789262
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+          "title": "ACL",
+          "score": 0.77473944
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
+          "title": "configure-acls.md",
+          "score": 0.7743753
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+          "title": "ACL",
+          "score": 0.7665728
+        }
+      ]
+    },
+    {
+      "id": "cn-009",
+      "topic": "ai",
+      "question": "我想用 Redis 做向量相似度搜索，存储大约 100 万条文档的 embedding 向量（768 维，用 sentence-transformers 生成）。需要支持 KNN 查询找最相似的 Top-K 文档。我看到 Redis Stack 有向量搜索功能，支持 FLAT 和 HNSW 两种索引类型。FLAT 是暴力搜索，HNSW 是近似最近邻。100 万条数据应该选哪种？有没有 Python",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisearch/redisearch-2.4-release-notes.md",
+          "title": "redisearch-2.4-release-notes.md",
+          "score": 0.7013936
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/api/schema.md",
+          "title": "Schema",
+          "score": 0.7007544
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.12.1/api/schema.md",
+          "title": "Schema",
+          "score": 0.7007544
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.0/api/schema.md",
+          "title": "Schema",
+          "score": 0.6932192
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.1/api/schema.md",
+          "title": "Schema",
+          "score": 0.6932192
+        }
+      ]
+    },
+    {
+      "id": "cn-010",
+      "topic": "replication",
+      "question": "我在搭建 Redis 主从复制，1 主 2 从。初始同步时看到 master 日志在做 BGSAVE 然后把 RDB 文件发给 replica（全量同步）。同步完成后切换到增量的复制流。我的问题是：1) 什么情况下会触发全量同步？什么情况下是增量同步？2) 如果 replica 短暂断开后重连，是不是一定要重新全量同步？3) repl-backlog-size 复制积压缓冲区应该设多大才能避免不必",
+      "status": "PASS",
+      "hits": [
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/references/rest-api/objects/bdb/replica_sync.md",
+          "title": "replica_sync.md",
+          "score": 0.68726814
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/references/rest-api/objects/bdb/replica_sync.md",
+          "title": "replica_sync.md",
+          "score": 0.68726814
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/references/rest-api/objects/bdb/replica_sync.md",
+          "title": "replica_sync.md",
+          "score": 0.68726814
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/references/rest-api/objects/bdb/replica_sync.md",
+          "title": "replica_sync.md",
+          "score": 0.68726814
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+          "title": "Redis replication",
+          "score": 0.68350583
+        }
+      ]
+    }
+  ]
+}
