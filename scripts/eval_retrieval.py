@@ -32,11 +32,17 @@ log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 
 
-def load_test_cases() -> list[dict]:
+# Golden subset: 6 representative cases across key topics (for fast CI eval)
+GOLDEN_IDS = {"so-001", "so-003", "so-008", "so-015", "so-019", "cn-003"}
+
+
+def load_test_cases(golden_only: bool = False) -> list[dict]:
     """Load SO test cases from tests/so_redis_test.py."""
     test_dir = Path(__file__).parent.parent / "tests"
     sys.path.insert(0, str(test_dir))
     from so_redis_test import SO_TEST_CASES
+    if golden_only:
+        return [tc for tc in SO_TEST_CASES if tc["id"] in GOLDEN_IDS]
     return SO_TEST_CASES
 
 
@@ -147,9 +153,9 @@ def ragas_score(query: str, answer: str, contexts: list[str]) -> dict:
         return {"faithfulness": -1, "error": str(e)[:100]}
 
 
-def run_eval(top_k: int = 5, use_ragas: bool = False) -> dict:
+def run_eval(top_k: int = 5, use_ragas: bool = False, golden_only: bool = False) -> dict:
     """Run the full evaluation."""
-    cases = load_test_cases()
+    cases = load_test_cases(golden_only=golden_only)
     log.info(f"Running {len(cases)} test cases (top_k={top_k}, ragas={use_ragas})\n")
 
     passed = 0
@@ -240,10 +246,11 @@ def run_eval(top_k: int = 5, use_ragas: bool = False) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="Redis docs KB retrieval eval")
     parser.add_argument("--ragas", action="store_true", help="Enable RAGAS faithfulness scoring")
+    parser.add_argument("--golden", action="store_true", help="Run only golden subset (~6 cases)")
     parser.add_argument("--top-k", type=int, default=5, help="Number of results to retrieve")
     args = parser.parse_args()
 
-    summary = run_eval(top_k=args.top_k, use_ragas=args.ragas)
+    summary = run_eval(top_k=args.top_k, use_ragas=args.ragas, golden_only=args.golden)
 
     # Exit with error if pass rate < 90%
     if summary["pass_rate"] < 90:

@@ -1,0 +1,89 @@
+name: KB Eval
+
+# Full retrieval eval with RAGAS faithfulness scoring.
+# Runs all 35 SO test cases + generates answers via DeepSeek + RAGAS judge.
+#
+# Triggers:
+#   - Manual dispatch (workflow_dispatch)
+#   - Auto after KB Update succeeds (workflow_run)
+
+on:
+  workflow_dispatch:
+    inputs:
+      ragas:
+        description: "Run RAGAS faithfulness scoring"
+        type: boolean
+        default: true
+      top_k:
+        description: "Number of results to retrieve"
+        type: number
+        default: 5
+  workflow_run:
+    workflows: ["KB Update"]
+    types: [completed]
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    if: >
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    services:
+      qdrant:
+        image: qdrant/qdrant:latest
+        ports: ["6333:6333"]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          lfs: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: scripts/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r scripts/requirements.txt
+
+      - name: Restore Qdrant snapshot
+        run: python scripts/index.py --snapshot-import kb/kb-redis-docs/snapshots/knowledge-base.snapshot
+        env:
+          QDRANT_URL: http://localhost:6333
+
+      - name: Run eval
+        run: |
+          ARGS=""
+          if [ "${{ inputs.ragas || 'true' }}" = "true" ]; then
+            ARGS="--ragas"
+          fi
+          python scripts/eval_retrieval.py $ARGS --top-k ${{ inputs.top_k || '5' }}
+        env:
+          QDRANT_URL: http://localhost:6333
+          EMBEDDING_PROVIDER: openai
+          EMBEDDING_BASE_URL: https://openrouter.ai/api/v1
+          EMBEDDING_API_KEY: ${{ secrets.EMBEDDING_API_KEY }}
+          EMBEDDING_MODEL: baai/bge-m3
+          EMBEDDING_DIM: "1024"
+          JUDGE_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          JUDGE_MODEL: deepseek-chat
+          JUDGE_BASE_URL: https://api.deepseek.com
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## KB Eval Results" >> $GITHUB_STEP_SUMMARY
+          if [ -f "eval/so-redis-eval-results.json" ]; then
+            python3 -c "import json; d=json.load(open('eval/so-redis-eval-results.json')); s=d['summary']; print(f\"- Pass rate: {s['passed']}/{s['total']} ({s['pass_rate']}%)\"); f=s.get('avg_faithfulness'); print(f'- Avg faithfulness: {f}') if f else None" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "No results found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload eval results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-results
+          path: eval/so-redis-eval-results.json

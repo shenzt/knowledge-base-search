@@ -76,6 +76,14 @@ jobs:
         env:
           QDRANT_URL: http://localhost:6333
 
+      - name: Retrieval eval (golden subset + RAGAS)
+        run: python scripts/eval_retrieval.py --golden --ragas
+        env:
+          QDRANT_URL: http://localhost:6333
+          JUDGE_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          JUDGE_MODEL: deepseek-chat
+          JUDGE_BASE_URL: https://api.deepseek.com
+
       # ── E2E Golden ──
       - name: Install Claude Code
         run: npm install -g @anthropic-ai/claude-code@latest
