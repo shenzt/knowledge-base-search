@@ -294,7 +294,7 @@ SO_TEST_CASES = [
             "RedisVL that simplifies this? What index types are supported — FLAT vs HNSW?"
         ),
         "source": "general SO redis vector questions",
-        "expected_paths": ["ai", "redisvl"],
+        "expected_paths": ["ai", "redisvl", "vector", "rag"],
         "topic": "ai",
     },
     # Lua Scripting
@@ -501,7 +501,7 @@ SO_TEST_CASES = [
             "有没有 Python 客户端（比如 RedisVL）可以简化向量索引的创建和查询？"
         ),
         "source": "general vector search",
-        "expected_paths": ["ai", "redisvl"],
+        "expected_paths": ["ai", "redisvl", "vector", "rag"],
         "topic": "ai",
     },
     {
