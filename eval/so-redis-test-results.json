@@ -1,0 +1,1502 @@
+[
+  {
+    "id": "so-001",
+    "question": "What is the difference between Redis pipelining and transactions?",
+    "source": "stackoverflow.com/questions/29327544",
+    "expected_paths": [
+      "using-commands/pipelining",
+      "using-commands/transactions",
+      "transpipe"
+    ],
+    "topic": "pipelining",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/nodejs/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Execute a transaction",
+        "score": 0.7219573
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/jedis/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Watch keys for changes",
+        "score": 0.71918905
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/go/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Watch keys for changes",
+        "score": 0.7090694
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/dotnet/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Watch keys for changes",
+        "score": 0.7048006
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Watch keys for changes",
+        "score": 0.70345783
+      }
+    ]
+  },
+  {
+    "id": "so-002",
+    "question": "How do Redis clients implement pipelining to reduce round trip time?",
+    "source": "stackoverflow.com/questions/7929885",
+    "expected_paths": [
+      "using-commands/pipelining"
+    ],
+    "topic": "pipelining",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
+        "title": "Redis pipelining",
+        "section_path": "Request/Response protocols and round-trip time (RTT)",
+        "score": 0.7403729
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
+        "title": "Redis pipelining",
+        "section_path": "It's not just a matter of RTT",
+        "score": 0.7007843
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
+        "title": "Redis pipelining",
+        "section_path": "Appendix: Why are busy loops slow even on the loopback interface?",
+        "score": 0.6652485
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/nodejs/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Execute a transaction",
+        "score": 0.6399919
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/hiredis/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Execute a pipeline",
+        "score": 0.6380547
+      }
+    ]
+  },
+  {
+    "id": "so-003",
+    "question": "Redis sentinel failover not working, stopping master doesn't trigger failover",
+    "source": "stackoverflow.com/questions/48579228",
+    "expected_paths": [
+      "oss_and_stack",
+      "sentinel"
+    ],
+    "topic": "sentinel",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "A quick tutorial > Testing the failover",
+        "score": 0.7099323
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/sentinel-clients.md",
+        "title": "Sentinel client spec",
+        "section_path": "Redis service discovery via Sentinel",
+        "score": 0.6860892
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Sentinel quick start > Configuring Sentinel",
+        "score": 0.6844866
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+        "title": "Scale with Redis Cluster",
+        "section_path": "Create and use a Redis Cluster > Test the failover",
+        "score": 0.6775272
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Sentinel quick start > Example Sentinel deployments > Example 1: just two Sentinels, DON'T DO THIS",
+        "score": 0.67409337
+      }
+    ]
+  },
+  {
+    "id": "so-004",
+    "question": "How to configure Redis Sentinel for high availability with 3 nodes?",
+    "source": "stackoverflow.com/questions/51524234",
+    "expected_paths": [
+      "sentinel"
+    ],
+    "topic": "sentinel",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Sentinel quick start > Example Sentinel deployments > Example 4: Sentinel client side with less than three clients",
+        "score": 0.7407153
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Sentinel as a distributed system",
+        "score": 0.7231878
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Algorithms and internals > Consistency under partitions",
+        "score": 0.721974
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Sentinel quick start > Example Sentinel deployments > Example 2: basic setup with three boxes",
+        "score": 0.7156616
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "A quick tutorial",
+        "score": 0.7115021
+      }
+    ]
+  },
+  {
+    "id": "so-005",
+    "question": "Why use Redis Sorted Set instead of List? When should I choose one over the other?",
+    "source": "stackoverflow.com/questions/48630763",
+    "expected_paths": [
+      "data-types/sorted-sets",
+      "data-types/lists"
+    ],
+    "topic": "data-types",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/lists.md",
+        "title": "Redis lists",
+        "section_path": "Examples > What are Lists?",
+        "score": 0.6956766
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/databases/active-active/develop/data-types/sets.md",
+        "title": "sets.md",
+        "section_path": "",
+        "score": 0.6741975
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/databases/active-active/develop/data-types/sets.md",
+        "title": "sets.md",
+        "section_path": "",
+        "score": 0.6741975
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/active-active/develop/data-types/sets.md",
+        "title": "sets.md",
+        "section_path": "",
+        "score": 0.6741975
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/active-active/develop/data-types/sets.md",
+        "title": "sets.md",
+        "section_path": "",
+        "score": 0.6741975
+      }
+    ]
+  },
+  {
+    "id": "so-006",
+    "question": "What are the underlying data structures used for Redis internally?",
+    "source": "stackoverflow.com/questions/9625246",
+    "expected_paths": [
+      "data-types"
+    ],
+    "topic": "data-types",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/_index.md",
+        "title": "Redis data types",
+        "section_path": "Data types",
+        "score": 0.70142394
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/get-started/faq.md",
+        "title": "Redis FAQ",
+        "section_path": "Why does Redis keep its entire dataset in memory?",
+        "score": 0.6915917
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/_index.md",
+        "title": "Redis products",
+        "section_path": "Product features > Security",
+        "score": 0.6876969
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.4.6/architecture/_index.md",
+        "title": "_index.md",
+        "section_path": "Network-attached persistent storage {#networkattached-persistent-storage}",
+        "score": 0.6804338
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/search-and-query/administration/overview.md",
+        "title": "Technical overview",
+        "section_path": "Data structures > Inverted index",
+        "score": 0.6800457
+      }
+    ]
+  },
+  {
+    "id": "so-007",
+    "question": "Redis set vs hash - when to use which data type?",
+    "source": "stackoverflow.com/questions/13557075",
+    "expected_paths": [
+      "data-types/sets",
+      "data-types/hashes",
+      "hash_vs_json"
+    ],
+    "topic": "data-types",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.12.1/user_guide/hash_vs_json.md",
+        "title": "Hash vs JSON Storage",
+        "section_path": "Hash or JSON -- how to choose?",
+        "score": 0.7303224
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.12.0/user_guide/hash_vs_json.md",
+        "title": "Hash vs JSON Storage",
+        "section_path": "Hash or JSON -- how to choose?",
+        "score": 0.7303224
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.1/user_guide/hash_vs_json.md",
+        "title": "Hash vs JSON Storage",
+        "section_path": "Hash or JSON -- how to choose?",
+        "score": 0.7303224
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/user_guide/hash_vs_json.md",
+        "title": "Hash vs JSON Storage",
+        "section_path": "Hash or JSON -- how to choose?",
+        "score": 0.7303224
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.8.0/user_guide/hash_vs_json.md",
+        "title": "Hash vs JSON Storage",
+        "section_path": "Hash or JSON -- how to choose?",
+        "score": 0.72956324
+      }
+    ]
+  },
+  {
+    "id": "so-008",
+    "question": "What is the difference between Redis RDB and AOF persistence? When should I use each?",
+    "source": "stackoverflow.com/questions/39953542",
+    "expected_paths": [
+      "oss_and_stack",
+      "persistence"
+    ],
+    "topic": "persistence",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "title": "Redis persistence",
+        "section_path": "AOF disadvantages",
+        "score": 0.76156723
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "title": "Redis persistence",
+        "section_path": "RDB disadvantages",
+        "score": 0.76040804
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "title": "Redis persistence",
+        "section_path": "Backing up Redis data > Backing up AOF persistence",
+        "score": 0.7102785
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "title": "Redis persistence",
+        "section_path": "Backing up Redis data",
+        "score": 0.71012247
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/databases/configure/database-persistence.md",
+        "title": "database-persistence.md",
+        "section_path": "Active-Active data persistence",
+        "score": 0.7092165
+      }
+    ]
+  },
+  {
+    "id": "so-009",
+    "question": "Is Redis AOF file a mix of AOF and RDB format?",
+    "source": "stackoverflow.com/questions/73415771",
+    "expected_paths": [
+      "persistence"
+    ],
+    "topic": "persistence",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "title": "Redis persistence",
+        "section_path": "Append-only file",
+        "score": 0.66179156
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "title": "Redis persistence",
+        "section_path": "AOF disadvantages",
+        "score": 0.6615992
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "title": "Redis persistence",
+        "section_path": "RDB disadvantages",
+        "score": 0.6608975
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "title": "Redis persistence",
+        "section_path": "Backing up Redis data > Backing up AOF persistence",
+        "score": 0.660219
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "title": "Redis persistence",
+        "section_path": "Backing up Redis data",
+        "score": 0.650511
+      }
+    ]
+  },
+  {
+    "id": "so-010",
+    "question": "Redis uses 10x more memory than my actual data size, why?",
+    "source": "stackoverflow.com/questions/10004565",
+    "expected_paths": [
+      "oss_and_stack",
+      "memory"
+    ],
+    "topic": "memory",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+        "title": "Memory optimization",
+        "section_path": "Memory allocation",
+        "score": 0.73286283
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/get-started/faq.md",
+        "title": "Redis FAQ",
+        "section_path": "Why does Redis keep its entire dataset in memory?",
+        "score": 0.69706976
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/databases/configuration/sizing.md",
+        "title": "sizing.md",
+        "section_path": "Throughput",
+        "score": 0.68361366
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
+        "title": "Key eviction",
+        "section_path": "Using the `maxmemory` configuration directive {#maxmem}",
+        "score": 0.6823715
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
+        "title": "Key eviction",
+        "section_path": "Using the `maxmemory` configuration directive {#maxmem} > Setting `maxmemory` for a replicated or persisted instance",
+        "score": 0.6784449
+      }
+    ]
+  },
+  {
+    "id": "so-011",
+    "question": "What does Redis do when it runs out of memory? How to configure maxmemory?",
+    "source": "stackoverflow.com/questions/5068518",
+    "expected_paths": [
+      "oss_and_stack",
+      "memory"
+    ],
+    "topic": "memory",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
+        "title": "Key eviction",
+        "section_path": "Using the `maxmemory` configuration directive {#maxmem}",
+        "score": 0.7776258
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+        "title": "Memory optimization",
+        "section_path": "Memory allocation",
+        "score": 0.7737872
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/clients.md",
+        "title": "Redis client handling",
+        "section_path": "Client Eviction",
+        "score": 0.73122483
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/admin.md",
+        "title": "Redis administration",
+        "section_path": "Redis setup tips > Replication",
+        "score": 0.7207016
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
+        "title": "Key eviction",
+        "section_path": "Using the `maxmemory` configuration directive {#maxmem} > Setting `maxmemory` for a replicated or persisted instance",
+        "score": 0.7197801
+      }
+    ]
+  },
+  {
+    "id": "so-012",
+    "question": "How to enable ACL feature in Redis and create users with specific permissions?",
+    "source": "stackoverflow.com/questions/64226667",
+    "expected_paths": [
+      "security",
+      "acl"
+    ],
+    "topic": "security",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
+        "title": "configure-acls.md",
+        "section_path": "Define permissions with ACL syntax",
+        "score": 0.7750926
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+        "title": "ACL",
+        "section_path": "When ACLs are useful",
+        "score": 0.7730275
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
+        "title": "configure-acls.md",
+        "section_path": "Define permissions with ACL syntax > Advanced capability command permissions",
+        "score": 0.7555451
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/security/access-control/create-combined-roles.md",
+        "title": "create-combined-roles.md",
+        "section_path": "Create roles with ACLs and cluster access {#create-role}",
+        "score": 0.7506189
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Redis Access Control List authentication",
+        "score": 0.74991137
+      }
+    ]
+  },
+  {
+    "id": "so-013",
+    "question": "How to set password for Redis using requirepass?",
+    "source": "stackoverflow.com/questions/7537905",
+    "expected_paths": [
+      "security"
+    ],
+    "topic": "security",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Redis Access Control List authentication > Redis password-only authentication",
+        "score": 0.70549977
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.8.4/security/manage-rec-credentials.md",
+        "title": "manage-rec-credentials.md",
+        "section_path": "Change the Redis Enterprise cluster (REC) credentials > Change both the REC username and password",
+        "score": 0.6973991
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/dotnet/connect.md",
+        "title": "Connect to the server",
+        "section_path": "Multiplexing",
+        "score": 0.6959518
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.4.6/security/manage-rec-credentials.md",
+        "title": "manage-rec-credentials.md",
+        "section_path": "Change the Redis Enterprise cluster (REC) credentials > Change both the REC username and password",
+        "score": 0.69525504
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/_index.md",
+        "title": "Redis security",
+        "section_path": "TLS support",
+        "score": 0.6900598
+      }
+    ]
+  },
+  {
+    "id": "so-014",
+    "question": "What are the main differences between Redis Pub/Sub and Redis Streams?",
+    "source": "stackoverflow.com/questions/59540563",
+    "expected_paths": [
+      "data-types/streams",
+      "pubsub"
+    ],
+    "topic": "pubsub-streams",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/tools/insight/release-notes/v.2.4.0.md",
+        "title": "v.2.4.0.md",
+        "section_path": "2.4.0 (June 2022) > Details",
+        "score": 0.677719
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/pubsub/_index.md",
+        "title": "Redis Pub/sub",
+        "section_path": "Delivery semantics",
+        "score": 0.67144847
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/Debugging.md",
+        "title": "Debugging",
+        "section_path": "Overview > Use Redis pub/sub",
+        "score": 0.6518478
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/pubsub/_index.md",
+        "title": "Redis Pub/sub",
+        "section_path": "Pattern-matching subscriptions",
+        "score": 0.64839756
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+        "title": "Redis Streams",
+        "section_path": "Listening for new items with XREAD",
+        "score": 0.64507633
+      }
+    ]
+  },
+  {
+    "id": "so-015",
+    "question": "How does Redis Cluster handle data sharding and hash slots?",
+    "source": "stackoverflow.com/questions/tagged/redis-cluster",
+    "expected_paths": [
+      "oss_and_stack",
+      "cluster"
+    ],
+    "topic": "cluster",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+        "title": "Scale with Redis Cluster",
+        "section_path": "Redis Cluster 101 > Redis Cluster master-replica model",
+        "score": 0.7607746
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/databases/configuration/clustering.md",
+        "title": "clustering.md",
+        "section_path": "How data is distributed",
+        "score": 0.7446637
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/databases/durability-ha/clustering.md",
+        "title": "clustering.md",
+        "section_path": "Number of shards",
+        "score": 0.7296204
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/durability-ha/clustering.md",
+        "title": "clustering.md",
+        "section_path": "Number of shards",
+        "score": 0.7296204
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/databases/durability-ha/clustering.md",
+        "title": "clustering.md",
+        "section_path": "Number of shards",
+        "score": 0.7207378
+      }
+    ]
+  },
+  {
+    "id": "so-016",
+    "question": "Redis cluster vs sentinel - which one should I use for high availability?",
+    "source": "stackoverflow.com/questions/tagged/redis-cluster+redis-sentinel",
+    "expected_paths": [
+      "oss_and_stack",
+      "cluster",
+      "sentinel"
+    ],
+    "topic": "cluster",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Sentinel as a distributed system",
+        "score": 0.70079553
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Sentinel quick start > Fundamental things to know about Sentinel before deploying",
+        "score": 0.6830076
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/sentinel-clients.md",
+        "title": "Sentinel client spec",
+        "section_path": "Redis service discovery via Sentinel",
+        "score": 0.68191683
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Algorithms and internals > Consistency under partitions",
+        "score": 0.67852414
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Sentinel quick start > Configuring Sentinel",
+        "score": 0.67724067
+      }
+    ]
+  },
+  {
+    "id": "so-017",
+    "question": "How does Redis replication work? What is the difference between full sync and partial sync?",
+    "source": "general SO replication questions",
+    "expected_paths": [
+      "oss_and_stack",
+      "replication"
+    ],
+    "topic": "replication",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "title": "Redis replication",
+        "section_path": "How Redis replication works",
+        "score": 0.72271025
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "title": "Redis replication",
+        "section_path": "Important facts about Redis replication",
+        "score": 0.6946141
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "title": "Redis replication",
+        "section_path": "",
+        "score": 0.6900263
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/import-export/replica-of/_index.md",
+        "title": "_index.md",
+        "section_path": "Replication process",
+        "score": 0.67828715
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "title": "Redis replication",
+        "section_path": "Partial sync after restarts and failovers",
+        "score": 0.6726434
+      }
+    ]
+  },
+  {
+    "id": "so-018",
+    "question": "How to connect to Redis using Python redis-py client library?",
+    "source": "general SO redis-py questions",
+    "expected_paths": [
+      "clients"
+    ],
+    "topic": "clients",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/_index.md",
+        "title": "redis-py guide (Python)",
+        "section_path": "More information",
+        "score": 0.78150046
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/connect/test-client-connectivity.md",
+        "title": "test-client-connectivity.md",
+        "section_path": "Test database connections > Connect with discovery service",
+        "score": 0.7345029
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/connect/test-client-connectivity.md",
+        "title": "test-client-connectivity.md",
+        "section_path": "Test database connections > Connect with discovery service",
+        "score": 0.7345029
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/databases/connect/test-client-connectivity.md",
+        "title": "test-client-connectivity.md",
+        "section_path": "Test database connections > Connect with discovery service",
+        "score": 0.7345029
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/databases/connect/test-client-connectivity.md",
+        "title": "test-client-connectivity.md",
+        "section_path": "Test database connections > Connect with discovery service",
+        "score": 0.7345029
+      }
+    ]
+  },
+  {
+    "id": "so-019",
+    "question": "How to use Redis as a vector database for similarity search?",
+    "source": "general SO redis vector questions",
+    "expected_paths": [
+      "ai",
+      "redisvl"
+    ],
+    "topic": "ai",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/get-started/vector-database.md",
+        "title": "Redis as a vector database quick start guide",
+        "section_path": "Create a Redis vector database",
+        "score": 0.7471435
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/search-and-query/query/vector-search.md",
+        "title": "Vector search",
+        "section_path": "",
+        "score": 0.74620783
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/search-and-query/vectors/_index.md",
+        "title": "Vector search concepts",
+        "section_path": "Create a vector index",
+        "score": 0.74441624
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/get-started/vector-database.md",
+        "title": "Redis as a vector database quick start guide",
+        "section_path": "Perform vector searches > 1. Embed your queries",
+        "score": 0.7437285
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisearch/redisearch-2.4-release-notes.md",
+        "title": "redisearch-2.4-release-notes.md",
+        "section_path": "v2.4.3 (March 2022) > What's new in 2.4",
+        "score": 0.73676175
+      }
+    ]
+  },
+  {
+    "id": "so-020",
+    "question": "How to use EVAL command for Lua scripting in Redis?",
+    "source": "general SO redis lua questions",
+    "expected_paths": [
+      "programmability"
+    ],
+    "topic": "scripting",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/eval-intro.md",
+        "title": "Scripting with Lua",
+        "section_path": "Getting started",
+        "score": 0.74955034
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/eval-intro.md",
+        "title": "Scripting with Lua",
+        "section_path": "Eval flags",
+        "score": 0.73537534
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/eval-intro.md",
+        "title": "Scripting with Lua",
+        "section_path": "Script cache",
+        "score": 0.7317059
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/lua-api.md",
+        "title": "Redis Lua API reference",
+        "section_path": "_redis_ object {#redis_object} > `redis.register_function` {#redis.register_function} > Script flags {#script_flags}",
+        "score": 0.71128106
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/functions-intro.md",
+        "title": "Redis functions",
+        "section_path": "Prologue (or, what's wrong with Eval Scripts?)",
+        "score": 0.710695
+      }
+    ]
+  },
+  {
+    "id": "so-021",
+    "question": "How to configure TLS/SSL encryption for Redis connections?",
+    "source": "forum.redis.com TLS questions",
+    "expected_paths": [
+      "security",
+      "tls",
+      "encryption"
+    ],
+    "topic": "security",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/encryption.md",
+        "title": "TLS",
+        "section_path": "Getting Started > Sentinel",
+        "score": 0.76286644
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/jedis/connect.md",
+        "title": "Connect to the server",
+        "section_path": "Basic connection > Connect to your production Redis with TLS",
+        "score": 0.76057774
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/php/connect.md",
+        "title": "Connect to the server",
+        "section_path": "Connect to your production Redis with TLS",
+        "score": 0.7603388
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/go/connect.md",
+        "title": "Connect to the server",
+        "section_path": "Connect to your production Redis with TLS",
+        "score": 0.759701
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/database-security/tls-ssl.md",
+        "title": "tls-ssl.md",
+        "section_path": "Connect over TLS",
+        "score": 0.7592455
+      }
+    ]
+  },
+  {
+    "id": "so-022",
+    "question": "How to create a Redis Cloud subscription and connect to it?",
+    "source": "general SO redis cloud questions",
+    "expected_paths": [
+      "rc"
+    ],
+    "topic": "cloud",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/stack-quickstart.md",
+        "title": "Redis Open Source quick start",
+        "section_path": "Set up a Redis Cloud database > Connect to the database",
+        "score": 0.794691
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/cloud-integrations/gcp-marketplace/_index.md",
+        "title": "_index.md",
+        "section_path": "Subscribe to Redis Cloud using Google Cloud marketplace",
+        "score": 0.7515359
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/rc-quickstart.md",
+        "title": "rc-quickstart.md",
+        "section_path": "Connect to a database",
+        "score": 0.7454219
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/api/examples/manage-subscriptions.md",
+        "title": "manage-subscriptions.md",
+        "section_path": "Redis Cloud Essentials > Delete an Essentials subscription",
+        "score": 0.73721004
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/subscriptions/bring-your-own-cloud/cloud-account-settings.md",
+        "title": "cloud-account-settings.md",
+        "section_path": "Add a new cloud account",
+        "score": 0.7360958
+      }
+    ]
+  },
+  {
+    "id": "so-023",
+    "question": "How to deploy Redis Enterprise on Kubernetes using the operator?",
+    "source": "general SO redis k8s questions",
+    "expected_paths": [
+      "kubernetes"
+    ],
+    "topic": "kubernetes",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/deployment/_index.md",
+        "title": "_index.md",
+        "section_path": "Next steps",
+        "score": 0.82572305
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.22/deployment/_index.md",
+        "title": "_index.md",
+        "section_path": "Next steps",
+        "score": 0.82572305
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.4.6/deployment/_index.md",
+        "title": "_index.md",
+        "section_path": "Compatibility",
+        "score": 0.7819835
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.8.4/architecture/_index.md",
+        "title": "_index.md",
+        "section_path": "Operator",
+        "score": 0.7787092
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.22/architecture/_index.md",
+        "title": "_index.md",
+        "section_path": "Operator",
+        "score": 0.7787092
+      }
+    ]
+  },
+  {
+    "id": "so-024",
+    "question": "How to store and query JSON documents in Redis?",
+    "source": "general SO redis json questions",
+    "expected_paths": [
+      "data-types/json",
+      "hash_vs_json",
+      "document-database"
+    ],
+    "topic": "data-types",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.7.0/user_guide/hash_vs_json.md",
+        "title": "Hash vs JSON Storage",
+        "section_path": "Hash or JSON -- how to choose?",
+        "score": 0.74595135
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.9.1/user_guide/hash_vs_json.md",
+        "title": "Hash vs JSON Storage",
+        "section_path": "Hash or JSON -- how to choose?",
+        "score": 0.74595135
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/get-started/document-database.md",
+        "title": "Redis as a document database quick start guide",
+        "section_path": "Create an index",
+        "score": 0.745819
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.9.0/user_guide/hash_vs_json.md",
+        "title": "Hash vs JSON Storage",
+        "section_path": "Hash or JSON -- how to choose?",
+        "score": 0.74474394
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.8.1/user_guide/hash_vs_json.md",
+        "title": "Hash vs JSON Storage",
+        "section_path": "Hash or JSON -- how to choose?",
+        "score": 0.74474394
+      }
+    ]
+  },
+  {
+    "id": "so-025",
+    "question": "How to benchmark Redis performance using redis-benchmark tool?",
+    "source": "general SO redis benchmark questions",
+    "expected_paths": [
+      "oss_and_stack",
+      "benchmark"
+    ],
+    "topic": "benchmark",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/benchmarks/index.md",
+        "title": "Redis benchmark",
+        "section_path": "Other Redis benchmarking tools",
+        "score": 0.7681433
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/json/performance/_index.md",
+        "title": "Performance",
+        "section_path": "",
+        "score": 0.7583599
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/clusters/optimize/memtier-benchmark.md",
+        "title": "memtier-benchmark.md",
+        "section_path": "Populate a database with testing data",
+        "score": 0.7299968
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/benchmarks/index.md",
+        "title": "Redis benchmark",
+        "section_path": "How fast is Redis?",
+        "score": 0.72920763
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/clusters/optimize/memtier-benchmark.md",
+        "title": "memtier-benchmark.md",
+        "section_path": "Populate a database with testing data",
+        "score": 0.7201228
+      }
+    ]
+  },
+  {
+    "id": "cn-001",
+    "question": "Redis 管道（pipeline）和事务（transaction）有什么区别？",
+    "source": "SO pipelining vs transaction",
+    "expected_paths": [
+      "using-commands/pipelining",
+      "using-commands/transactions",
+      "transpipe"
+    ],
+    "topic": "pipelining",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/nodejs/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Execute a transaction",
+        "score": 0.71805096
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/hiredis/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Execute a pipeline",
+        "score": 0.70136976
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/jedis/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Watch keys for changes",
+        "score": 0.69973755
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/go/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Watch keys for changes",
+        "score": 0.6996864
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/transpipe.md",
+        "title": "Pipelines and transactions",
+        "section_path": "Watch keys for changes",
+        "score": 0.6923176
+      }
+    ]
+  },
+  {
+    "id": "cn-002",
+    "question": "Redis Sentinel 哨兵模式怎么配置高可用？主从切换失败怎么排查？",
+    "source": "SO sentinel failover",
+    "expected_paths": [
+      "sentinel"
+    ],
+    "topic": "sentinel",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Sentinel API > Sentinel commands",
+        "score": 0.6926211
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "A quick tutorial",
+        "score": 0.68390495
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Sentinel quick start > Configuring Sentinel",
+        "score": 0.6770283
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "A quick tutorial > Testing the failover",
+        "score": 0.6736568
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Sentinel API > Reconfiguring Sentinel at Runtime",
+        "score": 0.67209387
+      }
+    ]
+  },
+  {
+    "id": "cn-003",
+    "question": "Redis 的 RDB 和 AOF 持久化有什么区别？生产环境应该用哪个？",
+    "source": "SO persistence RDB vs AOF",
+    "expected_paths": [
+      "persistence"
+    ],
+    "topic": "persistence",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "title": "Redis persistence",
+        "section_path": "RDB disadvantages",
+        "score": 0.7418387
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+        "title": "Redis persistence",
+        "section_path": "AOF disadvantages",
+        "score": 0.73689604
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/release-notes/rs-6-0-may-2020.md",
+        "title": "rs-6-0-may-2020.md",
+        "section_path": "Known limitations > Redis commands",
+        "score": 0.7007592
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/databases/configure/database-persistence.md",
+        "title": "database-persistence.md",
+        "section_path": "Active-Active data persistence",
+        "score": 0.69678545
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/configure/database-persistence.md",
+        "title": "database-persistence.md",
+        "section_path": "Active-Active data persistence",
+        "score": 0.69678545
+      }
+    ]
+  },
+  {
+    "id": "cn-004",
+    "question": "Redis 内存占用太高怎么优化？maxmemory 和淘汰策略怎么配置？",
+    "source": "SO memory optimization",
+    "expected_paths": [
+      "oss_and_stack",
+      "memory"
+    ],
+    "topic": "memory",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
+        "title": "Key eviction",
+        "section_path": "Using the `maxmemory` configuration directive {#maxmem}",
+        "score": 0.7588775
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+        "title": "Memory optimization",
+        "section_path": "Memory allocation",
+        "score": 0.74862444
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/memory-performance/_index.md",
+        "title": "_index.md",
+        "section_path": "Auto Tiering",
+        "score": 0.70636547
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
+        "title": "Key eviction",
+        "section_path": "Using the `maxmemory` configuration directive {#maxmem} > Setting `maxmemory` for a replicated or persisted instance",
+        "score": 0.7029363
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+        "title": "Memory optimization",
+        "section_path": "Use hashes when possible",
+        "score": 0.6949476
+      }
+    ]
+  },
+  {
+    "id": "cn-005",
+    "question": "Redis 集群模式的哈希槽是怎么分配的？数据分片原理是什么？",
+    "source": "SO cluster hash slots",
+    "expected_paths": [
+      "oss_and_stack",
+      "cluster"
+    ],
+    "topic": "cluster",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/databases/configuration/clustering.md",
+        "title": "clustering.md",
+        "section_path": "How data is distributed",
+        "score": 0.68627536
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+        "title": "Redis cluster specification",
+        "section_path": "Configuration handling, propagation, and failovers > Hash slots configuration propagation",
+        "score": 0.6563815
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+        "title": "Redis cluster specification",
+        "section_path": "Overview of Redis Cluster main components > Key distribution model",
+        "score": 0.63735676
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisce-7.4-release-notes.md",
+        "title": "redisce-7.4-release-notes.md",
+        "section_path": "Redis Community Edition 7.4-rc1 (June 2024)",
+        "score": 0.63688946
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+        "title": "Redis cluster specification",
+        "section_path": "Client and Server roles in the Redis cluster protocol",
+        "score": 0.6293418
+      }
+    ]
+  },
+  {
+    "id": "cn-006",
+    "question": "Redis 的 Sorted Set 和 List 应该怎么选？各自适合什么场景？",
+    "source": "SO sorted set vs list",
+    "expected_paths": [
+      "data-types/sorted-sets",
+      "data-types/lists"
+    ],
+    "topic": "data-types",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/databases/active-active/develop/data-types/sets.md",
+        "title": "sets.md",
+        "section_path": "",
+        "score": 0.6760582
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/active-active/develop/data-types/sets.md",
+        "title": "sets.md",
+        "section_path": "",
+        "score": 0.6760582
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/databases/active-active/develop/data-types/sets.md",
+        "title": "sets.md",
+        "section_path": "",
+        "score": 0.6760582
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/active-active/develop/data-types/sets.md",
+        "title": "sets.md",
+        "section_path": "",
+        "score": 0.6760582
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/lists.md",
+        "title": "Redis lists",
+        "section_path": "Examples > What are Lists?",
+        "score": 0.67426753
+      }
+    ]
+  },
+  {
+    "id": "cn-007",
+    "question": "Redis Pub/Sub 和 Streams 有什么区别？消息队列应该用哪个？",
+    "source": "SO pubsub vs streams",
+    "expected_paths": [
+      "data-types/streams",
+      "pubsub"
+    ],
+    "topic": "pubsub-streams",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/pubsub/_index.md",
+        "title": "Redis Pub/sub",
+        "section_path": "Delivery semantics",
+        "score": 0.71892565
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/tools/insight/release-notes/v.2.4.0.md",
+        "title": "v.2.4.0.md",
+        "section_path": "2.4.0 (June 2022) > Details",
+        "score": 0.71135795
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/pubsub/_index.md",
+        "title": "Redis Pub/sub",
+        "section_path": "Pattern-matching subscriptions",
+        "score": 0.6995723
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/deprecated-features/triggers-and-functions/Debugging.md",
+        "title": "Debugging",
+        "section_path": "Overview > Use Redis pub/sub",
+        "score": 0.690429
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+        "title": "Redis Streams",
+        "section_path": "Listening for new items with XREAD",
+        "score": 0.6893984
+      }
+    ]
+  },
+  {
+    "id": "cn-008",
+    "question": "Redis 6.0 的 ACL 访问控制列表怎么用？怎么创建用户和设置权限？",
+    "source": "SO ACL feature",
+    "expected_paths": [
+      "security",
+      "acl"
+    ],
+    "topic": "security",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+        "title": "High availability with Redis Sentinel",
+        "section_path": "Redis Access Control List authentication",
+        "score": 0.7802311
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+        "title": "ACL",
+        "section_path": "When ACLs are useful",
+        "score": 0.74512845
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/modules/modules-api-ref.md",
+        "title": "Modules API reference",
+        "section_path": "Modules ACL API > `RedisModule_GetModuleUserACLString`",
+        "score": 0.7410835
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
+        "title": "configure-acls.md",
+        "section_path": "Define permissions with ACL syntax",
+        "score": 0.74041504
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/create-roles.md",
+        "title": "create-roles.md",
+        "section_path": "",
+        "score": 0.7327018
+      }
+    ]
+  },
+  {
+    "id": "cn-009",
+    "question": "怎么用 Redis 做向量相似度搜索？支持哪些向量索引算法？",
+    "source": "general vector search",
+    "expected_paths": [
+      "ai",
+      "redisvl"
+    ],
+    "topic": "ai",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisearch/redisearch-2.4-release-notes.md",
+        "title": "redisearch-2.4-release-notes.md",
+        "section_path": "v2.4.3 (March 2022) > What's new in 2.4",
+        "score": 0.7125354
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisce/redisos-8.4-release-notes.md",
+        "title": "redisos-8.4-release-notes.md",
+        "section_path": "Redis Open Source 8.4.1 (February 2026) > Performance and resource utilization improvements",
+        "score": 0.7042459
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/search/_index.md",
+        "title": "_index.md",
+        "section_path": "Supported document types",
+        "score": 0.692768
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/search-and-query/query/vector-search.md",
+        "title": "Vector search",
+        "section_path": "",
+        "score": 0.6923912
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/whats-new/8-0.md",
+        "title": "Redis 8.0",
+        "section_path": "Improvements > Performance improvements",
+        "score": 0.69134486
+      }
+    ]
+  },
+  {
+    "id": "cn-010",
+    "question": "Redis 主从复制的原理是什么？全量同步和增量同步有什么区别？",
+    "source": "SO replication",
+    "expected_paths": [
+      "oss_and_stack",
+      "replication"
+    ],
+    "topic": "replication",
+    "status": "PASS",
+    "hits": [
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "title": "Redis replication",
+        "section_path": "How Redis replication works",
+        "score": 0.6893031
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "title": "Redis replication",
+        "section_path": "Important facts about Redis replication",
+        "score": 0.64830524
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+        "title": "Redis replication",
+        "section_path": "",
+        "score": 0.64676046
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/import-export/replica-of/_index.md",
+        "title": "_index.md",
+        "section_path": "Replication process",
+        "score": 0.64318013
+      },
+      {
+        "path": "kb/kb-redis-docs/docs/redis-docs/develop/get-started/faq.md",
+        "title": "Redis FAQ",
+        "section_path": "Why does Redis keep its entire dataset in memory?",
+        "score": 0.6397001
+      }
+    ]
+  }
+]
