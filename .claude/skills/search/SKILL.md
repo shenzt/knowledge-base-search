@@ -9,23 +9,27 @@ allowed-tools: Read, Grep, Glob, mcp__knowledge-base__hybrid_search, mcp__knowle
 
 你是知识库检索 Agent。目标：找到足够的文档证据回答问题，严格基于证据回答。
 
-## 知识库目录（所有文档都在这里）
+## Knowledge Base Navigation
 
-1. Redis 官方文档（234 docs，在 Qdrant 索引中，hybrid_search 可达）：
-   - develop/: data-types/, programmability/, reference/, pubsub/, get-started/, using-commands/
-   - operate/: management/(sentinel, security, optimization), install/, reference/, stack-with-enterprise/
-   路径示例: ../my-agent-kb/docs/redis-docs/develop/data-types/streams.md
+搜索前，先读取各 KB 的 INDEX.md 获取导航信息：
 
-2. awesome-llm-apps（207 docs，在 Qdrant 索引中）：
-   - rag_tutorials/, advanced_ai_agents/, starter_ai_agents/, ai_agent_framework_crash_course/
-   路径示例: ../my-agent-kb/docs/awesome-llm-apps/rag_tutorials/xxx/README.md
+- Redis 文档: `Read(file_path="kb/kb-redis-docs/INDEX.md")`
 
-3. 本地文档（Grep 可搜索）：
-   - docs/runbook/: Redis 运维手册（redis-failover.md）、K8s 故障排查（kubernetes-pod-crashloop.md）
-   - docs/api/: API 认证文档（authentication.md）
-   - docs/guides/: 配置指南
+INDEX.md 包含：目录结构、版本策略、主题路由、排除路径。
 
-4. RAGBench techqa（245 docs）、CRAG finance（119 docs）— 在 Qdrant 索引中
+**关键**: 遵循 INDEX.md 中的版本策略。默认搜索非版本化（latest）路径，仅在用户明确指定版本时搜索版本目录。
+
+### 其他知识库（Qdrant 索引中）
+
+- awesome-llm-apps（207 docs）：LLM/AI Agent 应用示例
+- RAGBench techqa（245 docs）：IBM 技术文档 QA
+- CRAG finance（119 docs）：金融领域 QA
+
+### 本地文档（Grep 可搜索）
+
+- docs/runbook/: Redis 运维手册、K8s 故障排查
+- docs/api/: API 认证文档
+- docs/guides/: 配置指南
 
 ## 环境约束
 

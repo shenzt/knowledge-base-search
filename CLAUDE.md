@@ -48,6 +48,7 @@
 - `/preprocess [--dir|--file|--status]` — LLM 文档预处理（生成 contextual_summary + evidence_flags + gap_flags）
 - `/index-docs [--status|--file|--full|--incremental]` — 索引管理（调 index.py）
 - `/review [--scope xxx] [--fix]` — 文档审查（Claude Code 用 Read/Grep 直接检查）
+- `/generate-index <kb-path>` — 探索 KB 仓库，生成 INDEX.md 导航指南（Agent 自主探索目录结构和版本策略）
 
 ## 数据导入链路
 
@@ -63,6 +64,7 @@ Git Repo / 文件 / URL
 - `scripts/doc_preprocess.py` — LLM 预处理（DeepSeek/GLM/Claude），生成 `.preprocess/*.json` sidecar
 - `scripts/llm_client.py` — 统一 LLM 调用接口（Anthropic + OpenAI-compatible）
 - `scripts/index.py` — 向量编码 + Qdrant 写入，自动读取 sidecar 注入 embedding 和 metadata
+- `scripts/embedding_provider.py` — Embedding 抽象层（LocalBGEM3Provider / OpenAICompatibleProvider），`EMBEDDING_PROVIDER` 环境变量切换
 - `scripts/mcp_server.py` — MCP Server，hybrid_search 输出包含 agent_hint / evidence_flags
 
 ## 架构规范
@@ -109,19 +111,17 @@ make test            # 全部测试
 - 文档语言：中英文均支持，回答跟随文档语言
 - 代码变更后必须运行测试验证
 - 编写测试用例前，必须先确认知识库中实际有哪些文档
-- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 2811 chunks（Redis + LLM Apps + 本地 + RAGBench + CRAG）
+- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 15,246 chunks（Redis 3,329 docs + LLM Apps + 本地 + RAGBench + CRAG）
 - 导入新数据源后，必须运行预处理 + 重建索引才能生效
 
 ## 知识库数据源
 
-### Qdrant 索引（2811 chunks，heading-based chunking + section_path + 预处理元数据）
-- Redis 官方文档 (294 docs, ~1256 chunks): redis/docs
-  - Data Types: Strings, Lists, Sets, Sorted Sets, Hashes, Streams, JSON, Probabilistic, TimeSeries, Vector Sets
-  - Management: Sentinel, Replication, Persistence, Scaling (Cluster), Config, Admin, Debugging, Troubleshooting
-  - Security: ACL, Encryption
-  - Optimization: Benchmarks, Latency, Memory, CPU Profiling
-  - Develop: Pipelining, Transactions, Pub/Sub, Keyspace, Lua Scripting
-  - Install: Linux, macOS, Docker, Build from source
+### Qdrant 索引（15,246 chunks，heading-based chunking + section_path + 预处理元数据）
+- Redis 官方文档 (3,329 docs, ~12,000+ chunks): redis/docs — CI 构建（OpenRouter BGE-M3 API）
+  - develop/: data-types, clients, ai (RedisVL, LangChain), tools, programmability, pubsub
+  - operate/: rs (Redis Software), kubernetes, oss_and_stack, rc (Redis Cloud), redisinsight
+  - 版本化区域: operate/rs/ (7.4, 7.8, 7.22), operate/kubernetes/ (7.4.6~7.22), develop/ai/redisvl/ (0.6.0~0.12.1)
+  - 导航指南: `kb/kb-redis-docs/INDEX.md`
 - awesome-llm-apps (207 docs, ~979 chunks): Shubhamsaboo/awesome-llm-apps
   - RAG Tutorials: hybrid search, agentic RAG, database routing, local RAG, Cohere RAG
   - AI Agents: research agent, data analysis, travel planner, sales intelligence, VC due diligence
@@ -160,12 +160,18 @@ hybrid_search 返回结果中包含 `agent_hint`（压缩的 doc_type + quality 
 knowledge-base-search/
 ├── .claude/
 │   ├── skills/              # Skills（Agent 行为约束）
-│   │   ├── search/          # 知识库检索（含预处理元数据使用指南）
+│   │   ├── search/          # 知识库检索（动态读取 INDEX.md 导航）
+│   │   ├── generate-index/  # 探索 KB 仓库，生成 INDEX.md
 │   │   ├── preprocess/      # LLM 文档预处理
 │   │   ├── ingest-repo/     # Git 仓库导入
 │   │   └── ...
 │   └── rules/               # 路径规则 + 经验教训
-├── docs/                    # 知识库文档
+├── kb/                      # 知识库仓库（Git submodules）
+│   └── kb-redis-docs/       # Redis 文档 KB
+│       ├── INDEX.md          # 搜索导航指南（/generate-index 生成）
+│       ├── docs/redis-docs/  # 3,329 个 .md 文件
+│       └── snapshots/        # Qdrant 快照（CI 导出）
+├── docs/                    # 本地知识库文档
 │   ├── design.md            # 系统设计
 │   ├── design-review.md     # 架构 Review
 │   ├── api/
@@ -173,6 +179,7 @@ knowledge-base-search/
 ├── scripts/
 │   ├── mcp_server.py        # MCP Server (hybrid_search + keyword_search + agent_hint)
 │   ├── index.py             # 索引工具 (标题分块 + section_path + sidecar 注入)
+│   ├── embedding_provider.py # Embedding 抽象层 (Local BGE-M3 / OpenAI-compatible API)
 │   ├── doc_preprocess.py    # LLM 文档预处理 (contextual_summary + gap_flags)
 │   ├── llm_client.py        # 统一 LLM 调用接口 (Anthropic + OpenAI-compatible)
 │   ├── workers/             # Worker 脚本
@@ -182,6 +189,8 @@ knowledge-base-search/
 │   ├── integration/         # 集成测试
 │   └── e2e/                 # 端到端测试
 ├── eval/                    # 评测结果
+├── .github/workflows/
+│   └── kb-update.yml        # CI: sync → preprocess → generate INDEX.md → index → snapshot
 ├── CLAUDE.md                # 本文件
 ├── Makefile                 # 快捷命令
 └── pyproject.toml           # Python 项目元数据

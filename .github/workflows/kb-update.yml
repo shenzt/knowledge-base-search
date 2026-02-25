@@ -39,6 +39,11 @@ on:
         required: false
         default: false
         type: boolean
+      regenerate_index:
+        description: "Regenerate INDEX.md (Agent explores repo structure)"
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   sync-docs:
@@ -140,6 +145,32 @@ jobs:
           DOC_PROCESS_BASE_URL: https://api.deepseek.com
           DOC_PROCESS_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           PREPROCESS_WORKERS: "16"
+
+      - name: Generate INDEX.md (Agent SDK)
+        if: ${{ inputs.regenerate_index == true }}
+        run: |
+          pip install claude-code-sdk
+          python -c "
+          import asyncio
+          from claude_code_sdk import query, ClaudeCodeOptions
+
+          async def main():
+              result = []
+              async for msg in query(
+                  prompt='/generate-index ${{ env.KB_REPO }}',
+                  options=ClaudeCodeOptions(
+                      allowed_tools=['Read', 'Glob', 'Grep', 'Write'],
+                      max_turns=20,
+                  ),
+              ):
+                  if hasattr(msg, 'content'):
+                      result.append(str(msg.content))
+              print('INDEX.md generation complete')
+
+          asyncio.run(main())
+          "
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 
       - name: Build index (OpenRouter BGE-M3 API)
         if: ${{ !inputs.skip_indexing }}

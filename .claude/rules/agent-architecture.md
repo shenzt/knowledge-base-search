@@ -61,6 +61,7 @@ Claude Code 的 subagent（`.claude/agents/`）和 skill 的 `context: fork` 是
 | `/search` | 自动 | Agent 自主选择 Grep/hybrid_search/Read |
 | `/review` | 自动 | 文档健康检查 |
 | `/build-index` | 自动 | 构建/增量更新分层目录索引 |
+| `/generate-index` | 手动 | 探索 KB 仓库，生成 INDEX.md 导航指南 |
 | `/ingest` | 手动 | 导入单个文档（PDF/URL/DOCX） |
 | `/ingest-repo` | 手动 | 导入 Git 仓库 |
 | `/preprocess` | 手动 | LLM 文档预处理 |
