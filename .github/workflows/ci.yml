@@ -40,6 +40,12 @@ jobs:
         image: qdrant/qdrant:latest
         ports: ["6333:6333"]
     steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost
+          sudo apt-get clean
+          df -h /
+
       - uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -80,6 +86,11 @@ jobs:
         run: python scripts/eval_retrieval.py --golden --ragas
         env:
           QDRANT_URL: http://localhost:6333
+          EMBEDDING_PROVIDER: openai
+          EMBEDDING_BASE_URL: https://openrouter.ai/api/v1
+          EMBEDDING_API_KEY: ${{ secrets.EMBEDDING_API_KEY }}
+          EMBEDDING_MODEL: baai/bge-m3
+          EMBEDDING_DIM: "1024"
           JUDGE_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           JUDGE_MODEL: deepseek-chat
           JUDGE_BASE_URL: https://api.deepseek.com
