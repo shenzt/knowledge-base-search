@@ -146,31 +146,15 @@ jobs:
           DOC_PROCESS_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           PREPROCESS_WORKERS: "16"
 
-      - name: Generate INDEX.md (Agent SDK)
+      - name: Generate INDEX.md (DeepSeek)
         if: ${{ inputs.regenerate_index == true }}
         run: |
-          pip install claude-code-sdk
-          python -c "
-          import asyncio
-          from claude_code_sdk import query, ClaudeCodeOptions
-
-          async def main():
-              result = []
-              async for msg in query(
-                  prompt='/generate-index ${{ env.KB_REPO }}',
-                  options=ClaudeCodeOptions(
-                      allowed_tools=['Read', 'Glob', 'Grep', 'Write'],
-                      max_turns=20,
-                  ),
-              ):
-                  if hasattr(msg, 'content'):
-                      result.append(str(msg.content))
-              print('INDEX.md generation complete')
-
-          asyncio.run(main())
-          "
+          python scripts/generate_index.py "$KB_REPO"
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          INDEX_GEN_PROVIDER: openai
+          INDEX_GEN_MODEL: deepseek-chat
+          INDEX_GEN_BASE_URL: https://api.deepseek.com
+          INDEX_GEN_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
 
       - name: Build index (OpenRouter BGE-M3 API)
         if: ${{ !inputs.skip_indexing }}
@@ -192,6 +176,7 @@ jobs:
           EMBEDDING_API_KEY: ${{ secrets.EMBEDDING_API_KEY }}
           EMBEDDING_MODEL: baai/bge-m3
           EMBEDDING_DIM: "1024"
+          EMBEDDING_CONCURRENCY: "6"
 
       - name: Export snapshot
         if: ${{ !inputs.skip_indexing }}

@@ -10,6 +10,7 @@
   EMBEDDING_BASE_URL=https://...    # API endpoint（openai 模式必需）
   EMBEDDING_MODEL=BAAI/bge-m3      # 模型名（openai 模式）
   EMBEDDING_DIM=1024                # 向量维度（openai 模式，默认 1024）
+  EMBEDDING_CONCURRENCY=4           # 并行 API 请求数（openai 模式，默认 4）
 """
 
 import logging
@@ -82,43 +83,69 @@ class OpenAICompatibleProvider(EmbeddingProvider):
         base_url: str,
         model: str = "BAAI/bge-m3",
         dim: int = 1024,
+        concurrency: int = 4,
     ):
         from openai import OpenAI
         self._client = OpenAI(api_key=api_key, base_url=base_url)
         self._model = model
         self._dim = dim
-        log.info(f"使用外部 embedding API: {base_url} model={model} dim={dim}")
+        self._concurrency = concurrency
+        log.info(f"使用外部 embedding API: {base_url} model={model} dim={dim} concurrency={concurrency}")
+
+    def _encode_batch(self, batch: list[str], batch_idx: int, total: int) -> list[list[float]]:
+        """编码单个 batch，带重试逻辑。"""
+        import time
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                resp = self._client.embeddings.create(input=batch, model=self._model)
+                vecs = [item.embedding for item in resp.data]
+                if not vecs:
+                    raise ValueError("No embedding data received")
+                if total > 64:
+                    log.info(f"  API embedding {batch_idx + len(batch)}/{total}")
+                return vecs
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    wait = 2 ** (attempt + 1)
+                    log.warning(f"  API batch {batch_idx} 失败 (attempt {attempt + 1}): {e}, {wait}s 后重试")
+                    time.sleep(wait)
+                else:
+                    raise
 
     def encode_texts(self, texts: list[str], batch_size: int = 256) -> dict:
-        import time
+        from concurrent.futures import ThreadPoolExecutor, as_completed
 
-        # 外部 API 用较小 batch 避免超时/空响应（OpenRouter 等限制）
         api_batch = min(batch_size, 64)
-        all_vecs = []
-        max_retries = 3
-
+        batches = []
         for start in range(0, len(texts), api_batch):
-            batch = texts[start : start + api_batch]
-            for attempt in range(max_retries):
-                try:
-                    resp = self._client.embeddings.create(input=batch, model=self._model)
-                    vecs = [item.embedding for item in resp.data]
-                    if not vecs:
-                        raise ValueError("No embedding data received")
-                    all_vecs.extend(vecs)
-                    break
-                except Exception as e:
-                    if attempt < max_retries - 1:
-                        wait = 2 ** (attempt + 1)
-                        log.warning(f"  API batch {start} 失败 (attempt {attempt + 1}): {e}, {wait}s 后重试")
-                        time.sleep(wait)
-                    else:
-                        raise
-            if len(texts) > api_batch:
-                log.info(f"  API embedding {start + len(batch)}/{len(texts)}")
+            batches.append((start, texts[start : start + api_batch]))
 
+        # 单 batch 不需要线程池
+        if len(batches) == 1:
+            vecs = self._encode_batch(batches[0][1], 0, len(texts))
+            return {
+                "dense_vecs": np.array(vecs, dtype=np.float32),
+                "lexical_weights": None,
+            }
+
+        all_vecs = [None] * len(batches)
+        workers = min(self._concurrency, len(batches))
+        log.info(f"  并行 embedding: {len(batches)} batches × {api_batch} texts, {workers} workers")
+
+        with ThreadPoolExecutor(max_workers=workers) as executor:
+            futures = {}
+            for i, (start, batch) in enumerate(batches):
+                future = executor.submit(self._encode_batch, batch, start, len(texts))
+                futures[future] = i
+
+            for future in as_completed(futures):
+                idx = futures[future]
+                all_vecs[idx] = future.result()
+
+        flat = [v for batch_vecs in all_vecs for v in batch_vecs]
         return {
-            "dense_vecs": np.array(all_vecs, dtype=np.float32),
+            "dense_vecs": np.array(flat, dtype=np.float32),
             "lexical_weights": None,
         }
 
@@ -146,12 +173,14 @@ def get_embedding_provider() -> EmbeddingProvider:
         base_url = os.environ.get("EMBEDDING_BASE_URL", "")
         model = os.environ.get("EMBEDDING_MODEL", "BAAI/bge-m3")
         dim = int(os.environ.get("EMBEDDING_DIM", "1024"))
+        concurrency = int(os.environ.get("EMBEDDING_CONCURRENCY", "4"))
         if not api_key or not base_url:
             raise ValueError(
                 "EMBEDDING_PROVIDER=openai 需要设置 EMBEDDING_API_KEY 和 EMBEDDING_BASE_URL"
             )
         _provider = OpenAICompatibleProvider(
-            api_key=api_key, base_url=base_url, model=model, dim=dim
+            api_key=api_key, base_url=base_url, model=model, dim=dim,
+            concurrency=concurrency,
         )
     else:
         model_name = os.environ.get("BGE_M3_MODEL", "BAAI/bge-m3")
