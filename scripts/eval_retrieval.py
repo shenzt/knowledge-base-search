@@ -46,8 +46,15 @@ def load_test_cases(golden_only: bool = False) -> list[dict]:
     return SO_TEST_CASES
 
 
-def search(query: str, top_k: int = 5) -> list[dict]:
-    """Dense vector search against Qdrant."""
+def search(query: str, top_k: int = 5, mode: str = "dense") -> list[dict]:
+    """Search against Qdrant. mode='dense' for dense-only, 'hybrid' for full pipeline."""
+    if mode == "hybrid":
+        return _hybrid_search(query, top_k)
+    return _dense_search(query, top_k)
+
+
+def _dense_search(query: str, top_k: int = 5) -> list[dict]:
+    """Dense-only vector search against Qdrant."""
     from embedding_provider import get_embedding_provider
     from qdrant_client import QdrantClient
 
@@ -71,6 +78,27 @@ def search(query: str, top_k: int = 5) -> list[dict]:
             "text": pt.payload.get("text", ""),
             "section_path": pt.payload.get("section_path", ""),
             "score": pt.score,
+        })
+    return hits
+
+
+def _hybrid_search(query: str, top_k: int = 5) -> list[dict]:
+    """Full hybrid search: dense + sparse/BM25 + RRF + reranker."""
+    from mcp_server import hybrid_search as _hs
+
+    raw = _hs(query, top_k=top_k)
+    # hybrid_search returns JSON string + hint text after \n\n
+    json_str = raw.split("\n\n[SEARCH NOTE]")[0]
+    items = json.loads(json_str)
+
+    hits = []
+    for item in items:
+        hits.append({
+            "path": item.get("path", ""),
+            "title": item.get("title", ""),
+            "text": item.get("text", ""),
+            "section_path": item.get("section_path", ""),
+            "score": item.get("score", 0),
         })
     return hits
 
@@ -153,10 +181,10 @@ def ragas_score(query: str, answer: str, contexts: list[str]) -> dict:
         return {"faithfulness": -1, "error": str(e)[:100]}
 
 
-def run_eval(top_k: int = 5, use_ragas: bool = False, golden_only: bool = False) -> dict:
+def run_eval(top_k: int = 5, use_ragas: bool = False, golden_only: bool = False, mode: str = "dense") -> dict:
     """Run the full evaluation."""
     cases = load_test_cases(golden_only=golden_only)
-    log.info(f"Running {len(cases)} test cases (top_k={top_k}, ragas={use_ragas})\n")
+    log.info(f"Running {len(cases)} test cases (top_k={top_k}, mode={mode}, ragas={use_ragas})\n")
 
     passed = 0
     failed = 0
@@ -165,7 +193,7 @@ def run_eval(top_k: int = 5, use_ragas: bool = False, golden_only: bool = False)
     t0 = time.time()
 
     for i, tc in enumerate(cases):
-        hits = search(tc["question"], top_k=top_k)
+        hits = search(tc["question"], top_k=top_k, mode=mode)
         hit = check_hit(hits, tc["expected_paths"])
 
         status = "PASS" if hit else "FAIL"
@@ -218,6 +246,7 @@ def run_eval(top_k: int = 5, use_ragas: bool = False, golden_only: bool = False)
         "failed": failed,
         "pass_rate": round(100 * passed / len(cases), 1),
         "top_k": top_k,
+        "mode": mode,
         "elapsed_sec": round(elapsed, 1),
     }
     if faith_scores:
@@ -247,10 +276,12 @@ def main():
     parser = argparse.ArgumentParser(description="Redis docs KB retrieval eval")
     parser.add_argument("--ragas", action="store_true", help="Enable RAGAS faithfulness scoring")
     parser.add_argument("--golden", action="store_true", help="Run only golden subset (~6 cases)")
+    parser.add_argument("--hybrid", action="store_true", help="Use full hybrid search (dense+sparse+reranker)")
     parser.add_argument("--top-k", type=int, default=5, help="Number of results to retrieve")
     args = parser.parse_args()
 
-    summary = run_eval(top_k=args.top_k, use_ragas=args.ragas, golden_only=args.golden)
+    mode = "hybrid" if args.hybrid else "dense"
+    summary = run_eval(top_k=args.top_k, use_ragas=args.ragas, golden_only=args.golden, mode=mode)
 
     # Exit with error if pass rate < 90%
     if summary["pass_rate"] < 90:

@@ -18,6 +18,10 @@ on:
         description: "Number of results to retrieve"
         type: number
         default: 5
+      hybrid:
+        description: "Use hybrid search (dense+sparse+reranker)"
+        type: boolean
+        default: false
   workflow_run:
     workflows: ["KB Update"]
     types: [completed]
@@ -25,7 +29,7 @@ on:
 jobs:
   eval:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     if: >
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
@@ -34,6 +38,11 @@ jobs:
         image: qdrant/qdrant:latest
         ports: ["6333:6333"]
     steps:
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost
+          sudo apt-get clean
+
       - uses: actions/checkout@v4
         with:
           submodules: recursive
@@ -44,6 +53,12 @@ jobs:
           python-version: "3.11"
           cache: pip
           cache-dependency-path: scripts/requirements.txt
+
+      - name: Cache HuggingFace models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface/hub
+          key: hf-bge-m3-reranker-v1
 
       - name: Install dependencies
         run: pip install -r scripts/requirements.txt
@@ -58,6 +73,9 @@ jobs:
           ARGS=""
           if [ "${{ inputs.ragas || 'true' }}" = "true" ]; then
             ARGS="--ragas"
+          fi
+          if [ "${{ inputs.hybrid || 'false' }}" = "true" ]; then
+            ARGS="$ARGS --hybrid"
           fi
           python scripts/eval_retrieval.py $ARGS --top-k ${{ inputs.top_k || '5' }}
         env:

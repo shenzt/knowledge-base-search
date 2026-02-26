@@ -5,7 +5,8 @@
     "failed": 0,
     "pass_rate": 100.0,
     "top_k": 5,
-    "elapsed_sec": 108.8
+    "mode": "hybrid",
+    "elapsed_sec": 1586.9
   },
   "results": [
     {
@@ -15,29 +16,29 @@
       "status": "PASS",
       "hits": [
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/nodejs/transpipe.md",
-          "title": "Pipelines and transactions",
-          "score": 0.7440803
-        },
-        {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/jedis/transpipe.md",
           "title": "Pipelines and transactions",
-          "score": 0.73529196
+          "score": 1.7248
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/dotnet/transpipe.md",
           "title": "Pipelines and transactions",
-          "score": 0.734687
+          "score": 1.1589
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/nodejs/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 0.1073
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/transpipe.md",
           "title": "Pipelines and transactions",
-          "score": 0.7198621
+          "score": 2.2776
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
           "title": "Redis pipelining",
-          "score": 0.7091441
+          "score": 2.1989
         }
       ]
     },
@@ -50,27 +51,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
           "title": "Redis pipelining",
-          "score": 0.81778646
+          "score": 2.6384
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
           "title": "Redis pipelining",
-          "score": 0.81278
+          "score": 1.9128
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
           "title": "Redis pipelining",
-          "score": 0.74300754
+          "score": 0.593
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/hiredis/transpipe.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/transpipe.md",
           "title": "Pipelines and transactions",
-          "score": 0.7383146
+          "score": 2.1767
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/nodejs/transpipe.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/go/transpipe.md",
           "title": "Pipelines and transactions",
-          "score": 0.7357649
+          "score": 1.8103
         }
       ]
     },
@@ -83,27 +84,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.77547944
+          "score": 2.2965
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.7731117
+          "score": 1.4916
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.76393175
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/sentinel-clients.md",
-          "title": "Sentinel client spec",
-          "score": 0.7364893
+          "score": 1.1246
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.73547786
+          "score": 1.0529
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 0.8248
         }
       ]
     },
@@ -116,27 +117,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.8157096
+          "score": 5.0319
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.79169357
+          "score": 3.6966
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.7823317
+          "score": 2.9928
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.7736325
+          "score": 4.5889
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.7702552
+          "score": 4.1737
         }
       ]
     },
@@ -149,27 +150,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
           "title": "Redis sorted sets",
-          "score": 0.7065691
+          "score": 1.0761
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
           "title": "Redis sorted sets",
-          "score": 0.6881833
+          "score": 0.8888
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
           "title": "Redis sorted sets",
-          "score": 0.6764546
+          "score": -1.0542
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/whats-new/7-2.md",
-          "title": "Redis 7.2",
-          "score": 0.63690794
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/active-active/develop/data-types/sorted-sets.md",
+          "title": "sorted-sets.md",
+          "score": -0.8049
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/agent-builder/agent-concepts.md",
-          "title": "agent-concepts.md",
-          "score": 0.6338122
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/databases/active-active/develop/data-types/sorted-sets.md",
+          "title": "sorted-sets.md",
+          "score": -0.8049
         }
       ]
     },
@@ -182,27 +183,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/_index.md",
           "title": "Redis data types",
-          "score": 0.75213635
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
-          "title": "Memory optimization",
-          "score": 0.7404596
+          "score": 2.1483
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/lists.md",
           "title": "Redis lists",
-          "score": 0.71818435
+          "score": 0.3702
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/compare-data-types.md",
-          "title": "Compare data types",
-          "score": 0.7110485
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+          "title": "Memory optimization",
+          "score": 0.1835
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/search-and-query/administration/overview.md",
           "title": "Technical overview",
-          "score": 0.702518
+          "score": 2.2211
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/compare-data-types.md",
+          "title": "Compare data types",
+          "score": 1.2925
         }
       ]
     },
@@ -213,29 +214,29 @@
       "status": "PASS",
       "hits": [
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.1/user_guide/hash_vs_json.md",
-          "title": "Hash vs JSON Storage",
-          "score": 0.75740445
-        },
-        {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.12.1/user_guide/hash_vs_json.md",
           "title": "Hash vs JSON Storage",
-          "score": 0.75740445
+          "score": 2.3814
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.12.0/user_guide/hash_vs_json.md",
           "title": "Hash vs JSON Storage",
-          "score": 0.75740445
+          "score": 2.3814
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/user_guide/hash_vs_json.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.1/user_guide/hash_vs_json.md",
           "title": "Hash vs JSON Storage",
-          "score": 0.75740445
+          "score": 2.3814
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.6.0/user_guide/hash_vs_json.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.8.0/user_guide/hash_vs_json.md",
           "title": "Hash vs JSON Storage",
-          "score": 0.7540776
+          "score": 3.0033
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.8.2/user_guide/hash_vs_json.md",
+          "title": "Hash vs JSON Storage",
+          "score": 3.0033
         }
       ]
     },
@@ -246,29 +247,29 @@
       "status": "PASS",
       "hits": [
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
-          "title": "Redis persistence",
-          "score": 0.84702873
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/configure/database-persistence.md",
-          "title": "database-persistence.md",
-          "score": 0.84501195
-        },
-        {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/databases/configure/database-persistence.md",
           "title": "database-persistence.md",
-          "score": 0.84501195
+          "score": 6.158
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/databases/configure/database-persistence.md",
           "title": "database-persistence.md",
-          "score": 0.84501195
+          "score": 6.158
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+          "title": "Redis persistence",
+          "score": 5.7006
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/configure/database-persistence.md",
+          "title": "database-persistence.md",
+          "score": 6.158
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/configure/database-persistence.md",
           "title": "database-persistence.md",
-          "score": 0.8429028
+          "score": 6.1169
         }
       ]
     },
@@ -281,27 +282,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
           "title": "Redis persistence",
-          "score": 0.7254991
+          "score": 3.0465
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
           "title": "Redis persistence",
-          "score": 0.7153235
+          "score": 1.2247
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
           "title": "Redis persistence",
-          "score": 0.7092024
+          "score": 0.246
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
           "title": "Redis persistence",
-          "score": 0.7068485
+          "score": 1.9023
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
           "title": "Redis persistence",
-          "score": 0.7022921
+          "score": 1.5331
         }
       ]
     },
@@ -312,29 +313,29 @@
       "status": "PASS",
       "hits": [
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
-          "title": "Memory optimization",
-          "score": 0.71723664
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/references/metrics/resource-usage.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/references/metrics/resource-usage.md",
           "title": "resource-usage.md",
-          "score": 0.7168386
+          "score": 0.7314
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/references/metrics/resource-usage.md",
           "title": "resource-usage.md",
-          "score": 0.7168386
+          "score": 0.7314
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
+          "title": "Memory optimization",
+          "score": -0.0481
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/references/metrics/resource-usage.md",
+          "title": "resource-usage.md",
+          "score": 0.7314
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/references/metrics/resource-usage.md",
           "title": "resource-usage.md",
-          "score": 0.7168386
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/references/metrics/resource-usage.md",
-          "title": "resource-usage.md",
-          "score": 0.7168386
+          "score": 0.7314
         }
       ]
     },
@@ -347,27 +348,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
           "title": "Key eviction",
-          "score": 0.7979998
+          "score": 5.2563
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
           "title": "Key eviction",
-          "score": 0.768484
+          "score": 4.8055
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
           "title": "Key eviction",
-          "score": 0.75397706
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
-          "title": "Memory optimization",
-          "score": 0.7514137
+          "score": 3.251
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/memory-performance/_index.md",
           "title": "_index.md",
-          "score": 0.7384058
+          "score": 5.3213
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/memory-performance/_index.md",
+          "title": "_index.md",
+          "score": 5.313
         }
       ]
     },
@@ -378,29 +379,29 @@
       "status": "PASS",
       "hits": [
         {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+          "title": "ACL",
+          "score": 3.0725
+        },
+        {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
           "title": "configure-acls.md",
-          "score": 0.78197634
+          "score": 2.6943
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
+          "title": "configure-acls.md",
+          "score": 1.2867
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
           "title": "ACL",
-          "score": 0.76875275
+          "score": 1.8316
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
-          "title": "configure-acls.md",
-          "score": 0.76188326
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/security/access-control/redis-acl-overview.md",
-          "title": "redis-acl-overview.md",
-          "score": 0.74894786
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/security/access-control/redis-acl-overview.md",
-          "title": "redis-acl-overview.md",
-          "score": 0.7486796
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+          "title": "ACL",
+          "score": 1.7543
         }
       ]
     },
@@ -411,29 +412,29 @@
       "status": "PASS",
       "hits": [
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/admin.md",
-          "title": "Redis administration",
-          "score": 0.7787281
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/_index.md",
-          "title": "Redis security",
-          "score": 0.76646113
-        },
-        {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/install/archive/install-redis/_index.md",
           "title": "Install Redis",
-          "score": 0.7577163
+          "score": 4.1075
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/admin.md",
+          "title": "Redis administration",
+          "score": 3.6094
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/_index.md",
           "title": "Redis security",
-          "score": 0.74733174
+          "score": 3.2296
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 2.3171
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/_index.md",
           "title": "Redis security",
-          "score": 0.74351734
+          "score": 1.3033
         }
       ]
     },
@@ -444,29 +445,29 @@
       "status": "PASS",
       "hits": [
         {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+          "title": "Redis Streams",
+          "score": 4.987
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+          "title": "Redis Streams",
+          "score": 1.3172
+        },
+        {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/pubsub/_index.md",
           "title": "Redis Pub/sub",
-          "score": 0.7462894
+          "score": 0.8819
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
           "title": "Redis Streams",
-          "score": 0.7176278
+          "score": 2.7483
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
           "title": "Redis Streams",
-          "score": 0.71441203
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
-          "title": "Redis Streams",
-          "score": 0.7080552
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
-          "title": "Redis Streams",
-          "score": 0.7070716
+          "score": 2.7077
         }
       ]
     },
@@ -479,27 +480,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
           "title": "Redis cluster specification",
-          "score": 0.806797
+          "score": 4.6499
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
           "title": "Redis cluster specification",
-          "score": 0.80387616
+          "score": 4.2708
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
           "title": "Redis cluster specification",
-          "score": 0.7806641
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
-          "title": "Redis cluster specification",
-          "score": 0.775748
+          "score": 1.8994
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
           "title": "Scale with Redis Cluster",
-          "score": 0.76950574
+          "score": 3.9463
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+          "title": "Scale with Redis Cluster",
+          "score": 2.901
         }
       ]
     },
@@ -512,27 +513,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.77388084
+          "score": 5.8192
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
+          "title": "High availability with Redis Sentinel",
+          "score": 3.9393
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/sentinel-clients.md",
           "title": "Sentinel client spec",
-          "score": 0.7287581
+          "score": 3.5196
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.7263723
+          "score": 3.8871
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
-          "title": "High availability with Redis Sentinel",
-          "score": 0.7255707
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
-          "title": "High availability with Redis Sentinel",
-          "score": 0.72046065
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+          "title": "Redis cluster specification",
+          "score": 3.6098
         }
       ]
     },
@@ -545,27 +546,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
           "title": "Redis replication",
-          "score": 0.75374943
+          "score": 4.1062
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
           "title": "Redis replication",
-          "score": 0.7440781
+          "score": 3.9984
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
           "title": "Redis replication",
-          "score": 0.7389238
+          "score": 1.6453
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
-          "title": "Redis replication",
-          "score": 0.7145072
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/active-active/syncer.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/databases/active-active/syncer.md",
           "title": "syncer.md",
-          "score": 0.70764256
+          "score": 4.0456
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/active-active/syncer.md",
+          "title": "syncer.md",
+          "score": 4.0456
         }
       ]
     },
@@ -578,27 +579,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/connect.md",
           "title": "Connect to the server",
-          "score": 0.8036989
+          "score": 3.7676
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/pools-and-muxing.md",
           "title": "Connection pools and multiplexing",
-          "score": 0.77211565
+          "score": 2.4312
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/ioredis/connect.md",
           "title": "Connect to the server",
-          "score": 0.7305131
+          "score": 2.3804
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/references/connecting-to-redis.md",
-          "title": "connecting-to-redis.md",
-          "score": 0.71441174
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/_index.md",
+          "title": "redis-py guide (Python)",
+          "score": 4.056
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/references/connecting-to-redis.md",
-          "title": "connecting-to-redis.md",
-          "score": 0.71441174
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/lettuce/connect.md",
+          "title": "Connect to the server",
+          "score": 3.4159
         }
       ]
     },
@@ -609,29 +610,29 @@
       "status": "PASS",
       "hits": [
         {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.1/_index.md",
+          "title": "RedisVL",
+          "score": 6.0509
+        },
+        {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/search-and-query/vectors/_index.md",
           "title": "Vector search concepts",
-          "score": 0.78107345
+          "score": 5.2417
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/vecsearch.md",
           "title": "Index and query vectors",
-          "score": 0.7735096
+          "score": 3.4528
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.9.0/_index.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.0/_index.md",
           "title": "RedisVL",
-          "score": 0.7688718
+          "score": 6.0509
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.1/_index.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.9.1/_index.md",
           "title": "RedisVL",
-          "score": 0.7688718
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.8.2/_index.md",
-          "title": "RedisVL",
-          "score": 0.7688718
+          "score": 6.0509
         }
       ]
     },
@@ -644,27 +645,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/eval-intro.md",
           "title": "Scripting with Lua",
-          "score": 0.7555752
+          "score": 2.775
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/functions-intro.md",
           "title": "Redis functions",
-          "score": 0.71915483
+          "score": 2.5611
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/eval-intro.md",
           "title": "Scripting with Lua",
-          "score": 0.7178091
+          "score": 1.5772
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/eval-intro.md",
           "title": "Scripting with Lua",
-          "score": 0.71123827
+          "score": 0.4486
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/programmability/_index.md",
           "title": "Redis programmability",
-          "score": 0.7096139
+          "score": 0.4442
         }
       ]
     },
@@ -675,29 +676,29 @@
       "status": "PASS",
       "hits": [
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/php/connect.md",
-          "title": "Connect to the server",
-          "score": 0.8181743
-        },
-        {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/database-security/tls-ssl.md",
           "title": "tls-ssl.md",
-          "score": 0.8117618
+          "score": 5.0149
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/php/connect.md",
+          "title": "Connect to the server",
+          "score": 4.0716
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/encryption.md",
           "title": "TLS",
-          "score": 0.798617
+          "score": 3.9329
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/go/connect.md",
-          "title": "Connect to the server",
-          "score": 0.78532714
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/security/encryption/tls/tls-protocols.md",
+          "title": "Configure TLS protocol",
+          "score": 3.6163
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/database-security/tls-ssl.md",
-          "title": "tls-ssl.md",
-          "score": 0.7834569
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/security/encryption/_index.md",
+          "title": "_index.md",
+          "score": 3.5957
         }
       ]
     },
@@ -710,27 +711,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/stack-quickstart.md",
           "title": "Redis Open Source quick start",
-          "score": 0.83713514
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/stack-quickstart.md",
-          "title": "Redis Open Source quick start",
-          "score": 0.81000185
+          "score": 5.9492
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/rc-quickstart.md",
           "title": "rc-quickstart.md",
-          "score": 0.79134876
+          "score": 2.9182
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/databases/create-database/create-free-database.md",
-          "title": "create-free-database.md",
-          "score": 0.7781682
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/stack-quickstart.md",
+          "title": "Redis Open Source quick start",
+          "score": 2.294
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/api/examples/create-database.md",
-          "title": "create-database.md",
-          "score": 0.77512455
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/api/_index.md",
+          "title": "_index.md",
+          "score": 4.6994
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/connect/_index.md",
+          "title": "_index.md",
+          "score": 4.0033
         }
       ]
     },
@@ -743,27 +744,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.4.6/deployment/_index.md",
           "title": "_index.md",
-          "score": 0.81637263
+          "score": 5.051
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.4.6/faqs/_index.md",
           "title": "_index.md",
-          "score": 0.8036678
+          "score": 3.1158
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.8.4/faqs/_index.md",
           "title": "_index.md",
-          "score": 0.8036678
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.22/deployment/_index.md",
-          "title": "_index.md",
-          "score": 0.80185634
+          "score": 3.1158
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/deployment/_index.md",
           "title": "_index.md",
-          "score": 0.80185634
+          "score": 5.8321
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/kubernetes/7.22/deployment/_index.md",
+          "title": "_index.md",
+          "score": 5.8321
         }
       ]
     },
@@ -776,27 +777,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/json/use_cases.md",
           "title": "Use cases",
-          "score": 0.7658406
+          "score": 4.0657
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/user_guide/hash_vs_json.md",
           "title": "Hash vs JSON Storage",
-          "score": 0.7537482
+          "score": 2.2434
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.12.1/user_guide/hash_vs_json.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.9.0/user_guide/hash_vs_json.md",
           "title": "Hash vs JSON Storage",
-          "score": 0.7537482
+          "score": 2.2434
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.0/user_guide/hash_vs_json.md",
-          "title": "Hash vs JSON Storage",
-          "score": 0.7537482
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/patterns/indexes/index.md",
+          "title": "Secondary indexing",
+          "score": 3.4667
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.6.0/user_guide/hash_vs_json.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.8.2/user_guide/hash_vs_json.md",
           "title": "Hash vs JSON Storage",
-          "score": 0.7537482
+          "score": 2.2434
         }
       ]
     },
@@ -809,27 +810,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/benchmarks/index.md",
           "title": "Redis benchmark",
-          "score": 0.7614765
+          "score": 3.8849
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/benchmarks/index.md",
           "title": "Redis benchmark",
-          "score": 0.74603796
+          "score": 2.7448
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/json/performance/_index.md",
           "title": "Performance",
-          "score": 0.7377451
+          "score": 1.6258
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/clusters/optimize/memtier-benchmark.md",
           "title": "memtier-benchmark.md",
-          "score": 0.73726535
+          "score": 2.7208
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/clusters/optimize/memtier-benchmark.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/clusters/optimize/memtier-benchmark.md",
           "title": "memtier-benchmark.md",
-          "score": 0.73174417
+          "score": 2.5144
         }
       ]
     },
@@ -840,29 +841,29 @@
       "status": "PASS",
       "hits": [
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/nodejs/transpipe.md",
-          "title": "Pipelines and transactions",
-          "score": 0.7651242
-        },
-        {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/hiredis/transpipe.md",
           "title": "Pipelines and transactions",
-          "score": 0.7357634
+          "score": 2.4891
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/nodejs/transpipe.md",
+          "title": "Pipelines and transactions",
+          "score": 1.6851
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/using-commands/pipelining.md",
           "title": "Redis pipelining",
-          "score": 0.7249416
+          "score": 1.5432
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/jedis/transpipe.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/redis-py/transpipe.md",
           "title": "Pipelines and transactions",
-          "score": 0.71810025
+          "score": 3.6773
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/dotnet/transpipe.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/clients/go/transpipe.md",
           "title": "Pipelines and transactions",
-          "score": 0.71537185
+          "score": 3.3777
         }
       ]
     },
@@ -875,27 +876,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.75166976
+          "score": 2.2436
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.74764484
+          "score": 1.8057
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.7373631
+          "score": 0.52
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.7201766
+          "score": 2.7674
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/sentinel.md",
           "title": "High availability with Redis Sentinel",
-          "score": 0.7175602
+          "score": 2.5966
         }
       ]
     },
@@ -908,27 +909,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
           "title": "Redis persistence",
-          "score": 0.83259964
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
-          "title": "Redis persistence",
-          "score": 0.8323823
+          "score": 3.5152
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/databases/configure/database-persistence.md",
           "title": "database-persistence.md",
-          "score": 0.8020519
+          "score": 3.3819
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+          "title": "Redis persistence",
+          "score": 3.1335
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/persistence.md",
+          "title": "Redis persistence",
+          "score": 4.1894
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/databases/configure/database-persistence.md",
           "title": "database-persistence.md",
-          "score": 0.8020519
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/databases/configure/database-persistence.md",
-          "title": "database-persistence.md",
-          "score": 0.8020519
+          "score": 3.3819
         }
       ]
     },
@@ -941,27 +942,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/optimization/memory-optimization.md",
           "title": "Memory optimization",
-          "score": 0.7571685
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
-          "title": "Key eviction",
-          "score": 0.7357643
+          "score": 2.1905
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/flash/_index.md",
           "title": "_index.md",
-          "score": 0.72045577
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/memory-performance/_index.md",
-          "title": "_index.md",
-          "score": 0.7109237
+          "score": 1.9734
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/reference/eviction/index.md",
           "title": "Key eviction",
-          "score": 0.71053016
+          "score": 1.9376
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/memory-performance/_index.md",
+          "title": "_index.md",
+          "score": 2.8179
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/databases/memory-performance/_index.md",
+          "title": "_index.md",
+          "score": 2.738
         }
       ]
     },
@@ -972,29 +973,29 @@
       "status": "PASS",
       "hits": [
         {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
+          "title": "Scale with Redis Cluster",
+          "score": 4.7461
+        },
+        {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
           "title": "Redis cluster specification",
-          "score": 0.7361196
+          "score": 4.4853
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
+          "title": "Redis cluster specification",
+          "score": 2.2764
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
           "title": "Scale with Redis Cluster",
-          "score": 0.7343654
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
-          "title": "Redis cluster specification",
-          "score": 0.72344685
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/reference/cluster-spec.md",
-          "title": "Redis cluster specification",
-          "score": 0.7219384
+          "score": 3.5691
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/scaling.md",
           "title": "Scale with Redis Cluster",
-          "score": 0.7088151
+          "score": 3.0693
         }
       ]
     },
@@ -1007,27 +1008,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
           "title": "Redis sorted sets",
-          "score": 0.6925373
+          "score": 0.8814
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
           "title": "Redis sorted sets",
-          "score": 0.6772369
+          "score": 0.5551
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
           "title": "Redis sorted sets",
-          "score": 0.6642462
+          "score": -2.0114
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/sorted-sets.md",
-          "title": "Redis sorted sets",
-          "score": 0.6434752
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/compare-data-types.md",
+          "title": "Compare data types",
+          "score": 0.7425
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/databases/active-active/develop/data-types/sorted-sets.md",
           "title": "sorted-sets.md",
-          "score": 0.6422765
+          "score": 0.263
         }
       ]
     },
@@ -1038,29 +1039,29 @@
       "status": "PASS",
       "hits": [
         {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
+          "title": "Redis Streams",
+          "score": 3.3485
+        },
+        {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/tools/insight/release-notes/v.2.4.0.md",
           "title": "v.2.4.0.md",
-          "score": 0.7359594
+          "score": 1.4664
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/pubsub/_index.md",
           "title": "Redis Pub/sub",
-          "score": 0.7275042
+          "score": 0.4899
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
           "title": "Redis Streams",
-          "score": 0.7088196
+          "score": 2.5596
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
           "title": "Redis Streams",
-          "score": 0.7082367
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/data-types/streams/_index.md",
-          "title": "Redis Streams",
-          "score": 0.7040919
+          "score": 2.5052
         }
       ]
     },
@@ -1073,27 +1074,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
           "title": "configure-acls.md",
-          "score": 0.8231688
+          "score": 3.0736
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
           "title": "ACL",
-          "score": 0.789262
+          "score": 2.7166
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
           "title": "ACL",
-          "score": 0.77473944
+          "score": 2.6743
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
+          "title": "ACL",
+          "score": 3.4733
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rc/security/access-control/data-access-control/configure-acls.md",
           "title": "configure-acls.md",
-          "score": 0.7743753
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/security/acl.md",
-          "title": "ACL",
-          "score": 0.7665728
+          "score": 3.1716
         }
       ]
     },
@@ -1106,27 +1107,27 @@
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/stack-with-enterprise/release-notes/redisearch/redisearch-2.4-release-notes.md",
           "title": "redisearch-2.4-release-notes.md",
-          "score": 0.7013936
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/api/schema.md",
-          "title": "Schema",
-          "score": 0.7007544
+          "score": 3.4078
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.12.1/api/schema.md",
           "title": "Schema",
-          "score": 0.7007544
+          "score": 2.8052
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.0/api/schema.md",
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/api/schema.md",
           "title": "Schema",
-          "score": 0.6932192
+          "score": 2.8052
         },
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.11.1/api/schema.md",
-          "title": "Schema",
-          "score": 0.6932192
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.8.1/_index.md",
+          "title": "RedisVL",
+          "score": 4.6358
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/develop/ai/redisvl/0.6.0/_index.md",
+          "title": "RedisVL",
+          "score": 4.6358
         }
       ]
     },
@@ -1137,29 +1138,29 @@
       "status": "PASS",
       "hits": [
         {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.4/references/rest-api/objects/bdb/replica_sync.md",
-          "title": "replica_sync.md",
-          "score": 0.68726814
-        },
-        {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.8/references/rest-api/objects/bdb/replica_sync.md",
           "title": "replica_sync.md",
-          "score": 0.68726814
-        },
-        {
-          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/references/rest-api/objects/bdb/replica_sync.md",
-          "title": "replica_sync.md",
-          "score": 0.68726814
+          "score": -1.1206
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/7.22/references/rest-api/objects/bdb/replica_sync.md",
           "title": "replica_sync.md",
-          "score": 0.68726814
+          "score": -1.1206
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/rs/references/rest-api/objects/bdb/replica_sync.md",
+          "title": "replica_sync.md",
+          "score": -1.1206
         },
         {
           "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
           "title": "Redis replication",
-          "score": 0.68350583
+          "score": 3.2973
+        },
+        {
+          "path": "kb/kb-redis-docs/docs/redis-docs/operate/oss_and_stack/management/replication.md",
+          "title": "Redis replication",
+          "score": 1.4342
         }
       ]
     }
