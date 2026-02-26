@@ -341,7 +341,7 @@ def main():
     parser.add_argument("--ragas", action="store_true", help="Enable RAGAS faithfulness scoring")
     parser.add_argument("--concurrency", type=int, default=1, help="Parallel sessions")
     parser.add_argument("--max-turns", type=int, default=10, help="Max Agent turns per case")
-    parser.add_argument("--timeout", type=int, default=300, help="Timeout per case (seconds)")
+    parser.add_argument("--timeout", type=int, default=600, help="Timeout per case (seconds)")
     args = parser.parse_args()
 
     summary = asyncio.run(run_eval(
