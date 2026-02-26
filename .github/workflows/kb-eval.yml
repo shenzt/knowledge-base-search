@@ -22,6 +22,14 @@ on:
         description: "Use hybrid search (dense+sparse+reranker)"
         type: boolean
         default: false
+      skill_eval:
+        description: "Run E2E /search skill eval (Agent pipeline)"
+        type: boolean
+        default: false
+      skill_concurrency:
+        description: "Parallel Agent sessions for skill eval"
+        type: number
+        default: 2
   workflow_run:
     workflows: ["KB Update"]
     types: [completed]
@@ -29,7 +37,7 @@ on:
 jobs:
   eval:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     if: >
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
@@ -68,7 +76,7 @@ jobs:
         env:
           QDRANT_URL: http://localhost:6333
 
-      - name: Run eval
+      - name: Run retrieval eval
         run: |
           ARGS=""
           if [ "${{ inputs.ragas || 'true' }}" = "true" ]; then
@@ -89,14 +97,34 @@ jobs:
           JUDGE_MODEL: deepseek-chat
           JUDGE_BASE_URL: https://api.deepseek.com
 
+      - name: Run skill eval (E2E Agent pipeline)
+        if: inputs.skill_eval == true
+        run: |
+          ARGS="--full --concurrency ${{ inputs.skill_concurrency || '2' }}"
+          if [ "${{ inputs.ragas || 'true' }}" = "true" ]; then
+            ARGS="$ARGS --ragas"
+          fi
+          python scripts/eval_skill.py $ARGS
+        env:
+          QDRANT_URL: http://localhost:6333
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          JUDGE_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          JUDGE_MODEL: deepseek-chat
+          JUDGE_BASE_URL: https://api.deepseek.com
+
       - name: Summary
         if: always()
         run: |
           echo "## KB Eval Results" >> $GITHUB_STEP_SUMMARY
+          echo "### Retrieval Eval" >> $GITHUB_STEP_SUMMARY
           if [ -f "eval/so-redis-eval-results.json" ]; then
             python3 -c "import json; d=json.load(open('eval/so-redis-eval-results.json')); s=d['summary']; print(f\"- Pass rate: {s['passed']}/{s['total']} ({s['pass_rate']}%)\"); f=s.get('avg_faithfulness'); print(f'- Avg faithfulness: {f}') if f else None" >> $GITHUB_STEP_SUMMARY
           else
-            echo "No results found" >> $GITHUB_STEP_SUMMARY
+            echo "No retrieval results found" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -f "eval/skill-eval-results.json" ]; then
+            echo "### Skill Eval (E2E Agent)" >> $GITHUB_STEP_SUMMARY
+            python3 -c "import json; d=json.load(open('eval/skill-eval-results.json')); s=d['summary']; print(f\"- Pass rate: {s['passed']}/{s['total']} ({s['pass_rate']}%)\"); f=s.get('avg_faithfulness'); print(f'- Avg faithfulness: {f}') if f else None; print(f\"- Time: {s['elapsed_sec']}s\")" >> $GITHUB_STEP_SUMMARY
           fi
 
       - name: Upload eval results
@@ -104,4 +132,6 @@ jobs:
         if: always()
         with:
           name: eval-results
-          path: eval/so-redis-eval-results.json
+          path: |
+            eval/so-redis-eval-results.json
+            eval/skill-eval-results.json
