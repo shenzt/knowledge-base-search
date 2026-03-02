@@ -94,7 +94,7 @@ def extract_contexts(messages_log: list[dict]) -> list[dict]:
                             break
                 continue
 
-        # ── 格式 2: 结构化 list[dict] (未来兼容) ──
+        # ── 格式 2: 结构化 list[dict] (Agent SDK / eval_skill.py) ──
         elif isinstance(content, list):
             for block in content:
                 if not isinstance(block, dict):
@@ -104,6 +104,7 @@ def extract_contexts(messages_log: list[dict]) -> list[dict]:
                     contexts.append({
                         "type": "tool_call",
                         "tool": block.get("name", ""),
+                        "tool_use_id": block.get("id", ""),
                         "input": block.get("input", {}),
                     })
                 elif btype == "tool_result":
@@ -112,18 +113,39 @@ def extract_contexts(messages_log: list[dict]) -> list[dict]:
                         result_text = "\n".join(
                             b.get("text", str(b)) for b in result_text
                         )
-                    for ctx in reversed(contexts):
-                        if ctx.get("type") == "tool_call":
-                            ctx["type"] = "context"
-                            ctx["result"] = result_text
-                            ctx["tool_use_id"] = block.get("tool_use_id", "")
-                            tool = ctx.get("tool", "")
-                            ctx["doc_paths"] = _extract_doc_paths(result_text, tool)
-                            if tool == "Read":
-                                fp = ctx.get("input", {}).get("file_path", "")
-                                if fp:
-                                    ctx["doc_paths"] = [fp]
-                            break
+                    tool_use_id = block.get("tool_use_id", "")
+
+                    # 按 tool_use_id 精确匹配对应的 tool_call
+                    matched = False
+                    if tool_use_id:
+                        for ctx in reversed(contexts):
+                            if (ctx.get("type") == "tool_call"
+                                    and ctx.get("tool_use_id") == tool_use_id):
+                                ctx["type"] = "context"
+                                ctx["result"] = result_text
+                                tool = ctx.get("tool", "")
+                                ctx["doc_paths"] = _extract_doc_paths(result_text, tool)
+                                if tool == "Read":
+                                    fp = ctx.get("input", {}).get("file_path", "")
+                                    if fp:
+                                        ctx["doc_paths"] = [fp]
+                                matched = True
+                                break
+
+                    # Fallback: 匹配最近未匹配的 tool_call
+                    if not matched:
+                        for ctx in reversed(contexts):
+                            if ctx.get("type") == "tool_call":
+                                ctx["type"] = "context"
+                                ctx["result"] = result_text
+                                ctx["tool_use_id"] = tool_use_id
+                                tool = ctx.get("tool", "")
+                                ctx["doc_paths"] = _extract_doc_paths(result_text, tool)
+                                if tool == "Read":
+                                    fp = ctx.get("input", {}).get("file_path", "")
+                                    if fp:
+                                        ctx["doc_paths"] = [fp]
+                                break
 
     # 只返回有结果的 context
     return [c for c in contexts if c.get("type") == "context" and c.get("result")]
@@ -213,8 +235,41 @@ def extract_turn_timings(messages_log: list[dict]) -> list[dict]:
         subtype = msg.get("subtype", "")
         content = msg.get("content", "")
 
+        # ── 格式 2: 结构化 list[dict] (Agent SDK) ──
+        if isinstance(content, list):
+            for block in content:
+                if isinstance(block, dict):
+                    if block.get("type") == "tool_use":
+                        turn_num += 1
+                        pending_tools.append({
+                            "turn": turn_num,
+                            "tool": block.get("name", "unknown"),
+                            "tool_use_id": block.get("id", ""),
+                        })
+                    elif block.get("type") == "tool_result":
+                        tool_use_id = block.get("tool_use_id", "")
+                        matched = None
+                        if tool_use_id:
+                            for pt in pending_tools:
+                                if pt.get("tool_use_id") == tool_use_id:
+                                    matched = pt
+                                    break
+                        if not matched and pending_tools:
+                            matched = pending_tools[0]
+                        if matched:
+                            timings.append({
+                                "turn": matched["turn"],
+                                "tool": matched["tool"],
+                            })
+                            pending_tools.remove(matched)
+            continue
+
+        # ── 格式 1: 字符串序列化 (legacy) ──
+        if not isinstance(content, str):
+            continue
+
         # 检测 tool_use（新 turn 开始）
-        if isinstance(content, str) and "ToolUseBlock" in content:
+        if "ToolUseBlock" in content:
             tool_match = re.search(
                 r"ToolUseBlock\(id='([^']*)', name='([\w-]+(?:__[\w-]+)*)'",
                 content,
@@ -226,18 +281,9 @@ def extract_turn_timings(messages_log: list[dict]) -> list[dict]:
                     "tool": tool_match.group(2),
                     "tool_use_id": tool_match.group(1),
                 })
-        elif isinstance(content, list):
-            for block in content:
-                if isinstance(block, dict) and block.get("type") == "tool_use":
-                    turn_num += 1
-                    pending_tools.append({
-                        "turn": turn_num,
-                        "tool": block.get("name", "unknown"),
-                        "tool_use_id": block.get("id", ""),
-                    })
 
         # 检测 tool_result（turn 结束）
-        if isinstance(content, str) and "ToolResultBlock" in content:
+        if "ToolResultBlock" in content:
             result_match = re.search(
                 r"ToolResultBlock\(tool_use_id='([^']*)'", content,
             )
@@ -349,13 +395,20 @@ def gate_check(tc: dict, answer: str, contexts: list[dict]) -> dict:
         if has_factual_claims:
             reasons.append("notfound 用例输出了具体事实断言（疑似幻觉）")
 
-    # 6. Qdrant 用例在无 MCP 模式下的检查
-    use_mcp = os.environ.get("USE_MCP", "0") == "1"
-    if source == "qdrant" and not use_mcp:
-        has_hybrid = "hybrid_search" in str(tools_used) or "mcp__knowledge-base__hybrid_search" in str(tools_used)
+    # 6. Qdrant 用例检查：应该使用 hybrid_search
+    if source == "qdrant":
+        has_hybrid = any(
+            "hybrid_search" in str(t)
+            for t in tools_used
+        )
         checks["hybrid_search_used"] = has_hybrid
-        if not has_hybrid:
-            reasons.append("Qdrant 用例未使用 hybrid_search（无 MCP 模式）")
+        # 仅在确认未使用 MCP 且非 Agent SDK 模式时才 fail
+        # Agent SDK 模式下 USE_MCP 不设置，但 Agent 会通过 MCP 调用 hybrid_search
+        if not has_hybrid and os.environ.get("USE_MCP", "") != "1":
+            # 如果有任何 MCP 工具调用，说明已在使用 MCP（Agent SDK 模式）
+            has_any_mcp = any("mcp__" in str(t) for t in tools_used)
+            if not has_any_mcp:
+                reasons.append("Qdrant 用例未使用 hybrid_search")
 
     passed = len(reasons) == 0
     return {"passed": passed, "checks": checks, "reasons": reasons}

@@ -114,18 +114,7 @@ jobs:
 
       - name: Summary
         if: always()
-        run: |
-          echo "## KB Eval Results" >> $GITHUB_STEP_SUMMARY
-          echo "### Retrieval Eval" >> $GITHUB_STEP_SUMMARY
-          if [ -f "eval/so-redis-eval-results.json" ]; then
-            python3 -c "import json; d=json.load(open('eval/so-redis-eval-results.json')); s=d['summary']; print(f\"- Pass rate: {s['passed']}/{s['total']} ({s['pass_rate']}%)\"); f=s.get('avg_faithfulness'); print(f'- Avg faithfulness: {f}') if f else None" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "No retrieval results found" >> $GITHUB_STEP_SUMMARY
-          fi
-          if [ -f "eval/skill-eval-results.json" ]; then
-            echo "### Skill Eval (E2E Agent)" >> $GITHUB_STEP_SUMMARY
-            python3 -c "import json; d=json.load(open('eval/skill-eval-results.json')); s=d['summary']; print(f\"- Pass rate: {s['passed']}/{s['total']} ({s['pass_rate']}%)\"); f=s.get('avg_faithfulness'); print(f'- Avg faithfulness: {f}') if f else None; print(f\"- Time: {s['elapsed_sec']}s\")" >> $GITHUB_STEP_SUMMARY
-          fi
+        run: python scripts/generate_eval_report.py --stdout >> $GITHUB_STEP_SUMMARY
 
       - name: Upload eval results
         uses: actions/upload-artifact@v4
@@ -135,3 +124,4 @@ jobs:
           path: |
             eval/so-redis-eval-results.json
             eval/skill-eval-results.json
+            eval/EVAL_RESULTS.md
