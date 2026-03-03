@@ -1,85 +1,92 @@
-# Plan: INDEX.md + Parallel Embedding + CLAUDE.md Update
+# Plan: Fix so-001 timeout + RAGAS default + CI DeepSeek v3.2
 
 ## Context
 
-The Redis docs KB repo has 3,329 markdown files with significant versioning complexity:
-- `develop/` (650 files): mostly non-versioned, except `ai/redisvl/` (12 versions)
-- `operate/rs/` (1,860 files): 3 versions (7.4, 7.8, 7.22) + non-versioned root
-- Massive duplication: same docs repeated across versions (~1,289 duplicated files)
-- No explicit `version` field in frontmatter — version is only in the URL path
+Three improvements to the eval system:
+1. **so-001 timeout** — the pipelining comparison case takes ~300s and times out with only 95 chars of answer
+2. **RAGAS default** — make faithfulness scoring run by default, not opt-in via `--ragas`
+3. **CI model** — use DeepSeek v3.2 (not Claude) for agent model in CI eval to save costs
 
-This causes problems:
-1. Search returns duplicate results from different versions of the same doc
-2. 15,246 chunks is inflated by ~40% due to version duplication
-3. Agent doesn't know which version is "latest" or how to handle version-specific queries
+---
 
-## Tasks
+## Task 1: Fix so-001 timeout
 
-### Task 1: Create INDEX.md for KB repo (search/generation guide)
+### Root Cause
 
-Create `kb/kb-redis-docs/INDEX.md` that serves as a guide for the Agent during search and answer generation.
+From `eval/skill-eval-results.json`:
+- so-001: **300.2s** timeout, answer_length: **95 chars**, status: FAIL
+- Agent found correct docs (pipelining.md + transactions.md) BUT also read 8+ noise docs
+- Retrieved: transpipe.md (nodejs, dotnet, jedis, hiredis), timeseries _index.md, benchmarks
+- Passing cases (single-topic): so-003=188s, so-008=191s, so-015=167s
 
-Contents:
-- **KB overview**: what this KB contains, source repo, last sync date
-- **Directory structure**: explain `develop/` vs `operate/` split
-- **Version strategy**:
-  - Default behavior: answer based on latest/non-versioned docs
-  - When user asks about a specific version: scope search to that version dir
-  - When user asks to compare versions: search across version dirs
-- **Version mapping**: which version dirs exist and which is "latest"
-  - `operate/rs/` (non-versioned) = latest
-  - `operate/rs/7.22/` = Redis Enterprise 7.22
-  - `operate/rs/7.8/` = Redis Enterprise 7.8
-  - `operate/rs/7.4/` = Redis Enterprise 7.4
-  - `develop/ai/redisvl/` (non-versioned) = latest
-  - `develop/ai/redisvl/0.12.1/` = RedisVL 0.12.1 (latest pinned)
-- **Search hints**: which directories to search for common query types
-  - Data types → `develop/data-types/`
-  - Client libraries → `develop/clients/`
-  - Cluster/HA/Sentinel → `operate/oss_and_stack/` or `operate/rs/`
-  - Kubernetes → `operate/kubernetes/`
-  - Redis Cloud → `operate/rc/`
-  - AI/Vector search → `develop/ai/`
-- **Answer generation rules**:
-  - Always cite the file path and section
-  - If answering from a versioned doc, state the version
-  - Prefer non-versioned (latest) docs unless version-specific query
+**Why slow:** Multi-doc comparison question → agent searches for BOTH topics → hybrid_search returns client-specific transpipe.md variants alongside core docs → agent reads these one by one → 10 turns exhausted on search+read loops → no turns left for synthesis → timeout.
 
-### Task 2: Update CLAUDE.md with current index stats
+### 1a. Align timeout defaults
 
-- Update "2811 chunks" → "15,246 chunks"
-- Update data source descriptions to reflect the CI-built Redis docs index
-- Add note about embedding provider abstraction (`EMBEDDING_PROVIDER` env var)
-- Add CI workflow description (kb-update.yml: sync → preprocess → index → snapshot)
+`eval_skill.py` line 233: `run_eval()` defaults to `timeout_sec=300` but CLI `--timeout` defaults to `600`. Inconsistent.
 
-### Task 3: Parallel embedding in CI (plan only, implement later)
+**Change:** `scripts/eval_skill.py:233` — `timeout_sec: int = 300` → `timeout_sec: int = 600`
 
-Add to `OpenAICompatibleProvider.encode_texts()`:
-- Use `ThreadPoolExecutor` or `asyncio` to send 4-8 concurrent API batches
-- Keep batch size at 64, but send multiple batches in parallel
-- Add `EMBEDDING_CONCURRENCY` env var (default 4)
-- Expected speedup: ~25 min → ~5-7 min for 15K chunks
+### 1b. Improve SKILL.md for comparison queries
 
-This is a plan item — implementation deferred until next CI rebuild is needed.
+**File:** `.claude/skills/search/SKILL.md` — add to Step 2 (chunk sufficiency):
 
-### Task 4: Consider version-aware indexing (future)
+- For comparison questions (A vs B), focus on core concept docs not client-specific variants
+- Prefer `using-commands/`, `data-types/`, `management/` over `clients/*/` for concepts
+- Once BOTH core concept docs are Read, stop searching and synthesize
 
-Options to reduce duplication in the index:
-- **Option A**: Only index non-versioned (latest) docs, skip version dirs entirely
-  - Pro: cuts index from 15K to ~9K chunks, cleaner search
-  - Con: can't answer version-specific questions
-- **Option B**: Index all but add `version` metadata to chunks
-  - Pro: can filter by version in search
-  - Con: still 15K chunks, need to update index.py to extract version from path
-- **Option C**: Index latest + keep version dirs as Read-only fallback
-  - Pro: small index + version access via Read tool
-  - Con: version content not searchable
+### 1c. Add MODEL_NAME env var support
 
-Recommendation: Start with Option A (skip version dirs in `doc_filter`), add version dirs back later if needed. The `doc_filter` input in kb-update.yml already supports this.
+`run_single_case()` doesn't pass `model` to `ClaudeAgentOptions`. Add support for `MODEL_NAME` env var (needed for Task 3).
 
-## Execution Order
+**File:** `scripts/eval_skill.py:100-112` — add model param to options dict
 
-- [x] Task 2: Update CLAUDE.md (quick, no dependencies)
-- [x] Task 1: Create INDEX.md (main deliverable)
-- [x] Task 3: Parallel embedding (EMBEDDING_CONCURRENCY + ThreadPoolExecutor)
-- [ ] Task 4: Version-aware indexing (future decision, on hold)
+---
+
+## Task 2: Make RAGAS scoring default
+
+### 2a. Default --ragas to True
+
+**File:** `scripts/eval_skill.py:341`
+- `--ragas` → `default=True`
+- Add `--no-ragas` opt-out flag
+
+### 2b. Score partial answers on timeout
+
+Line 211 skips RAGAS if `result["error"]` is truthy. Timeout cases with partial answers (so-001 has 95 chars) should still get scored.
+
+**Change:** `if use_ragas and result["answer"] and not result["error"]:` → `if use_ragas and result["answer"]:`
+
+---
+
+## Task 3: CI with DeepSeek v3.2
+
+### 3a. Update kb-eval.yml skill eval
+
+Replace `ANTHROPIC_API_KEY` (Claude) with `claude-code-router` + DeepSeek:
+
+1. Add `Install Claude Code` step
+2. Add `Install claude-code-router` step
+3. Add `Start claude-code-router (DeepSeek)` step — configure DeepSeek provider
+4. Update skill eval env: `ANTHROPIC_BASE_URL=http://127.0.0.1:3456`, `ANTHROPIC_AUTH_TOKEN=router-placeholder`
+5. Remove `ANTHROPIC_API_KEY` from skill eval step
+
+### 3b. ci.yml retrieval eval — no changes needed
+
+Already uses DeepSeek for RAGAS judge. E2E already uses Qwen via router.
+
+---
+
+## Implementation Order
+
+- [x] Task 1b: SKILL.md comparison query optimization
+- [x] Task 1a: Align timeout defaults (300→600 in run_single_case + run_eval)
+- [x] Task 1c: Add MODEL_NAME env var support
+- [x] Task 2a+2b: RAGAS defaults (--ragas=True, --no-ragas opt-out, score partial answers)
+- [x] Task 3a: CI workflow changes (DeepSeek via claude-code-router, no ANTHROPIC_API_KEY)
+
+## Verification
+
+- Run `python scripts/eval_skill.py` (golden subset, includes so-001) to verify timeout fix
+- Verify RAGAS scores appear in default output
+- CI changes verified by workflow dispatch after merge

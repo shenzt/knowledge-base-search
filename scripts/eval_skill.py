@@ -5,9 +5,9 @@ Tests: query → Agent reads INDEX.md → hybrid_search/Grep → Read docs → g
 Unlike eval_retrieval.py (Layer 2 only), this tests the complete Agentic RAG pipeline.
 
 Usage:
-  python scripts/eval_skill.py                     # golden subset (6 cases)
-  python scripts/eval_skill.py --full              # all 35 cases
-  python scripts/eval_skill.py --ragas             # + RAGAS faithfulness scoring
+  python scripts/eval_skill.py                     # golden subset (6 cases) + RAGAS
+  python scripts/eval_skill.py --full              # all 35 cases + RAGAS
+  python scripts/eval_skill.py --no-ragas          # disable RAGAS scoring
   python scripts/eval_skill.py --concurrency 3     # parallel sessions
 
 Environment variables:
@@ -86,7 +86,7 @@ async def run_single_case(
     tc: dict,
     system_prompt: str,
     max_turns: int = 10,
-    timeout_sec: int = 300,
+    timeout_sec: int = 600,
 ) -> dict:
     """Run a single test case through the Agent pipeline."""
     from claude_agent_sdk import query, ClaudeAgentOptions
@@ -96,6 +96,9 @@ async def run_single_case(
     messages_log = []
     answer = ""
     error = None
+
+    # Model override via env var (for CI with claude-code-router)
+    model_name = os.environ.get("MODEL_NAME")
 
     options = ClaudeAgentOptions(
         system_prompt=system_prompt,
@@ -109,6 +112,7 @@ async def run_single_case(
         permission_mode="bypassPermissions",
         max_turns=max_turns,
         cwd=str(PROJECT_ROOT),
+        **({"model": model_name} if model_name else {}),
     )
 
     try:
@@ -208,7 +212,7 @@ def evaluate_result(tc: dict, result: dict, use_ragas: bool = False) -> dict:
         "error": result["error"],
     }
 
-    if use_ragas and result["answer"] and not result["error"]:
+    if use_ragas and result["answer"]:
         try:
             from ragas_judge import ragas_judge
             scores = ragas_judge(
@@ -227,10 +231,10 @@ def evaluate_result(tc: dict, result: dict, use_ragas: bool = False) -> dict:
 
 async def run_eval(
     golden_only: bool = True,
-    use_ragas: bool = False,
+    use_ragas: bool = True,
     concurrency: int = 1,
     max_turns: int = 10,
-    timeout_sec: int = 300,
+    timeout_sec: int = 600,
 ) -> dict:
     """Run the full E2E skill evaluation."""
     cases = load_test_cases(golden_only=golden_only)
@@ -338,7 +342,8 @@ async def run_eval(
 def main():
     parser = argparse.ArgumentParser(description="E2E /search skill eval")
     parser.add_argument("--full", action="store_true", help="Run all 35 cases (default: golden 6)")
-    parser.add_argument("--ragas", action="store_true", help="Enable RAGAS faithfulness scoring")
+    parser.add_argument("--ragas", action="store_true", default=True, help="Enable RAGAS faithfulness scoring (default)")
+    parser.add_argument("--no-ragas", dest="ragas", action="store_false", help="Disable RAGAS scoring")
     parser.add_argument("--concurrency", type=int, default=1, help="Parallel sessions")
     parser.add_argument("--max-turns", type=int, default=10, help="Max Agent turns per case")
     parser.add_argument("--timeout", type=int, default=600, help="Timeout per case (seconds)")

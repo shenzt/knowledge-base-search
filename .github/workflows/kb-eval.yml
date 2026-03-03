@@ -97,17 +97,57 @@ jobs:
           JUDGE_MODEL: deepseek-chat
           JUDGE_BASE_URL: https://api.deepseek.com
 
+      # ── Skill eval: DeepSeek v3 via claude-code-router ──
+      - name: Install Claude Code
+        if: inputs.skill_eval == true
+        run: npm install -g @anthropic-ai/claude-code@latest
+        continue-on-error: true
+
+      - name: Install claude-code-router
+        if: inputs.skill_eval == true
+        run: npm install -g @musistudio/claude-code-router
+
+      - name: Start claude-code-router (DeepSeek)
+        if: inputs.skill_eval == true
+        run: |
+          mkdir -p ~/.claude-code-router
+          python3 -c "
+          import json, os
+          config = {
+            'PORT': 3456,
+            'Router': {'default': 'deepseek,deepseek-chat', 'think': 'deepseek,deepseek-chat'},
+            'Providers': [{
+              'name': 'deepseek',
+              'api_key': os.environ['DEEPSEEK_API_KEY'],
+              'api_base_url': 'https://api.deepseek.com/v1/chat/completions',
+              'models': ['deepseek-chat'],
+              'transformer': {'use': ['deepseek']}
+            }]
+          }
+          for name in ['config.json', 'config-router.json']:
+            path = os.path.expanduser('~/.claude-code-router/' + name)
+            with open(path, 'w') as f:
+              json.dump(config, f, indent=2)
+            print(f'Wrote: {path}')
+          "
+          ccr start &
+          sleep 10
+          curl -sf http://127.0.0.1:3456/health && echo "Router is up" || echo "WARNING: Router may not be ready"
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+
       - name: Run skill eval (E2E Agent pipeline)
         if: inputs.skill_eval == true
         run: |
           ARGS="--full --concurrency ${{ inputs.skill_concurrency || '2' }}"
-          if [ "${{ inputs.ragas || 'true' }}" = "true" ]; then
-            ARGS="$ARGS --ragas"
+          if [ "${{ inputs.ragas || 'true' }}" != "true" ]; then
+            ARGS="$ARGS --no-ragas"
           fi
           python scripts/eval_skill.py $ARGS
         env:
           QDRANT_URL: http://localhost:6333
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ANTHROPIC_BASE_URL: http://127.0.0.1:3456
+          ANTHROPIC_AUTH_TOKEN: "router-placeholder"
           JUDGE_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           JUDGE_MODEL: deepseek-chat
           JUDGE_BASE_URL: https://api.deepseek.com

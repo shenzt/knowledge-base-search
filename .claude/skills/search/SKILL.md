@@ -65,6 +65,11 @@ Grep(pattern="<关键词>", path="docs/runbook/")
 - `chunk_index > 0` 说明前面有更多内容，可能缺少前置上下文
 - 如果检索结果包含 `evidence_flags`（has_command/has_config 等）和 `gap_flags`，用它们辅助判断
 
+**比较类问题 (A vs B)**：
+- 如果用户比较两个概念（如 pipelining vs transactions），需要找到**两者的核心文档**
+- hybrid_search 可能返回 `clients/*/transpipe.md` 等语言专属指南 — 优先选择 `using-commands/`、`data-types/`、`management/` 下的**概念文档**
+- 一旦两个核心概念文档都已 Read，**立即停止搜索，开始综合回答**，不要继续读 client 变体
+
 ### Step 3: 扩展上下文（chunk 不充分时）
 
 - hybrid_search 返回的 path → 用 `Read(file_path=path)` 读取完整文档
