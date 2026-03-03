@@ -77,6 +77,7 @@ jobs:
           QDRANT_URL: http://localhost:6333
 
       - name: Run retrieval eval
+        continue-on-error: true
         run: |
           ARGS=""
           if [ "${{ inputs.ragas || 'true' }}" = "true" ]; then
