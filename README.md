@@ -199,7 +199,10 @@ knowledge-base-search/
 │   ├── index.py                 # 索引工具 (heading-based chunking + sidecar 注入)
 │   ├── doc_preprocess.py        # LLM 文档预处理 (contextual_summary + gap_flags)
 │   ├── llm_client.py            # 统一 LLM 调用接口 (Anthropic + OpenAI-compatible)
+│   ├── embedding_provider.py    # Embedding 抽象层 (Local BGE-M3 / OpenAI-compatible API)
 │   ├── eval_module.py           # 评估模块 (extract_contexts + gate_check)
+│   ├── eval_skill.py            # Skill 评测脚本 (Agent SDK, RAGAS 默认)
+│   ├── ragas_judge.py           # RAGAS faithfulness/relevancy 评分
 │   └── requirements.txt
 ├── docs/                        # 本地知识库文档
 ├── tests/

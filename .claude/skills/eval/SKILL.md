@@ -73,22 +73,29 @@ Agent 回答 + messages_log
   └─ 正确文档引用
 ```
 
-## 用例分布（v4, 64 个）
+## 用例分布（v5, 100 个）
 
-- Local: 17 (exact 5 / scenario 6 / cross-lang 2 / howto 3 / multi-doc 1)
-- Qdrant: 41 (Redis 20 + K8s 21, 含 HPA)
-- Notfound: 6 (MongoDB/Kafka/Prometheus/Nginx/MySQL/Docker Compose)
+- Local: 15 (exact / scenario / cross-lang / howto / multi-doc)
+- Qdrant: 75 (Redis 40 + LLM Apps 35，含 agent/framework/rag 等类别)
+- Notfound: 10 (MongoDB/Kafka/Prometheus/Nginx/MySQL/Docker Compose 等)
+- 扩展数据集: RAGBench techqa 50 + CRAG finance 50 = 200 total（EVAL_DATASET=all）
 
-## 基准结果
+## 基准结果（v5）
 
-- USE_MCP=0: Local 17/17 (100%), Notfound 6/6 (100%), Qdrant 0/41 (0%) = 23/64 (35.9%)
-- USE_MCP=1: Local 17/17 (100%), Notfound 6/6 (100%), Qdrant 37/41 (90%) ≈ 60/64 (93.8%)
+| 模型 | Gate | Faithfulness | Relevancy | Cost | 备注 |
+|------|------|-------------|-----------|------|------|
+| Claude Sonnet | 89/100 (89%) | ~0.72 | 0.93 | $6.71 | 最佳检索能力 |
+| Qwen 3.5 Plus | 118/120 (98%) | 0.80 | 0.80 | ~$0 | 最佳 faithfulness |
+| GLM-5 | 93/98 (95%) | 0.49 | - | $28.73 | 多轮检索，较慢 |
+| DeepSeek V3 | ~52% (partial) | 0.86 | - | - | 不适合 Agent 场景 |
 
 ## 关键文件
 
 - `scripts/eval_module.py` — 评估核心: extract_contexts + gate_check + llm_judge
-- `tests/e2e/test_agentic_rag_sdk.py` — E2E 测试脚本 (v4, 64 用例)
-- `tests/unit/test_eval_module.py` — 评估模块单元测试 (17 tests)
+- `scripts/eval_skill.py` — Skill 评测脚本: Agent SDK, 600s timeout, MODEL_NAME 支持, RAGAS 默认启用
+- `scripts/ragas_judge.py` — RAGAS faithfulness/relevancy 评分
+- `tests/e2e/test_agentic_rag_sdk.py` — E2E 测试脚本
+- `tests/unit/test_eval_module.py` — 评估模块单元测试
 - `eval/` — 评测结果目录（JSON + logs + detail.jsonl + 对比报告）
 
 ## 分析结果时的关注点
@@ -116,6 +123,6 @@ Agent 回答 + messages_log
 ## 禁止行为
 
 - 不要手动修改 eval/ 下的结果文件
-- 不要在评测中使用 LLM Judge（当前阶段只用 Gate + 质量检查）
+- 不要在评测中绕过 RAGAS（默认启用，如需关闭用 `--no-ragas`）
 - 不要把评测结果当作绝对指标，关注趋势和失败模式
 - 不要复用 session — 每个用例必须独立 session

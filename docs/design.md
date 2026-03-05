@@ -1,7 +1,7 @@
 # knowledge-base-search — 设计文档
 
-> 版本: v1.0 | 日期: 2025-02
-> 状态: 核心功能已验证，评测体系已建立
+> 版本: v2.0 | 日期: 2026-03
+> 状态: 核心功能完成，评测体系成熟，仓库导入验证通过，CI/CD 就绪
 > 部署模式: 纯本地
 
 ---
@@ -14,7 +14,8 @@
 - Git 仓库作为文档单一事实源（SSOT）：版本化、可追溯、可回滚
 - Claude Code 作为核心 agent：文档导入、检索、审查全部通过 Skills 编排
 - Qdrant 作为可再生索引层：本地混合检索，中英文均有一流支持
-- MCP Server 只做一件事：向量检索（因为需要常驻 BGE-M3 模型）
+- MCP Server 提供向量检索（hybrid_search + keyword_search + index_status），常驻 BGE-M3 模型
+- Embedding 抽象层（`embedding_provider.py`）支持本地 BGE-M3 和 OpenAI-compatible API 切换
 
 ### 设计原则
 
@@ -105,25 +106,26 @@
 
 ---
 
-## 4. Skills 设计
+## 4. Skills 设计（11 个）
 
-### /search — 知识库检索
+### /search — 知识库检索（自动触发）
 
 Agent 自主路由：Grep（精确关键词）/ hybrid_search（语义模糊）/ Read（完整上下文）。可并行调用。回答必须带引用 `[来源: docs/xxx.md > section_path]`。
 
-### /ingest — 单文档导入
+### /ingest — 单文档导入（手动触发）
 
 Claude Code 判断输入类型 → 调 CLI 转换 → 整理 Markdown + front-matter → 保存到 docs/ → git commit → 索引。
 
-### /ingest-repo — Git 仓库导入
+### /ingest-repo — Git 仓库导入（手动触发）
 
 核心能力。将任意 Git 仓库的 Markdown 文档导入知识库：
 1. Shallow clone 仓库到临时目录
 2. 扫描 .md 文件（格式路由预留 PDF/DOCX/HTML 桩）
 3. 注入溯源 front-matter（source_repo, source_path, source_commit）
 4. 输出到外部独立 Git 目录（`--target-dir`），保留原始目录结构
-5. Drop 旧索引 + 全量重建（按 source_repo 过滤删除）
-6. 在外部目录 git commit 保留历史版本
+5. LLM 预处理（contextual_summary + gap_flags + evidence_flags）
+6. Drop 旧索引 + 全量重建（按 source_repo 过滤删除）
+7. 在外部目录 git commit 保留历史版本
 
 设计要点：
 - 存储隔离：生成的文档不放在代码仓库中，输出到外部 Git 目录
@@ -131,17 +133,37 @@ Claude Code 判断输入类型 → 调 CLI 转换 → 整理 Markdown + front-ma
 - 每次重建：初期 repo 不大，drop + full rebuild 保证一致性
 - 格式扩展：未来 PDF 用 MinerU，可能需要 Subagent 做智能清洗
 
-### /index-docs — 索引管理
+### /preprocess — LLM 文档预处理（手动触发）
 
-纯 Bash 调用 index.py，支持 --status / --file / --full / --incremental / --delete-by-repo。
+调用 `doc_preprocess.py`，为每个文档生成 sidecar JSON（contextual_summary + gap_flags + evidence_flags + doc_type + quality_score + key_concepts）。支持 DeepSeek V3 / GLM-4.5 等模型。
 
-### /review — 文档审查
+### /index-docs — 索引管理（手动触发）
+
+纯 Bash 调用 index.py，支持 --status / --file / --full / --incremental / --delete-by-repo / --snapshot-export / --snapshot-import。
+
+### /review — 文档审查（自动触发）
 
 Claude Code 用 Read/Grep/Glob 直接检查 front-matter 完整性、时效性、TODO 标记等，输出健康度评分。
 
-### /eval — RAG 评测
+### /build-index — 分层目录索引（自动触发）
 
-64 个用例（Local 17 + Qdrant 41 + Notfound 6），两阶段评估：Gate 门禁（确定性规则）→ 质量检查。
+构建/增量更新文档目录的分层索引结构。
+
+### /generate-index — KB 导航指南生成（手动触发）
+
+探索 KB 仓库目录结构和版本策略，生成 INDEX.md 导航指南。
+
+### /eval — RAG 评测（手动触发）
+
+100+ 测试用例（v5: Local 15 + Qdrant 75 + Notfound 10），两阶段评估：Gate 门禁（确定性规则）→ RAGAS faithfulness/relevancy（默认启用）。支持多模型评测（Sonnet / Qwen / GLM-5 / DeepSeek）。
+
+### /convert-html — HTML → Markdown 转换（手动触发）
+
+批量将 HTML 文件转换为 Markdown 格式。
+
+### /sync-from-raw — 双仓同步（手动触发）
+
+原始文档仓库与知识库仓库之间的同步工作流。
 
 ---
 
@@ -185,6 +207,7 @@ knowledge-base-search/
 ├── CLAUDE.md                    # Agent 上下文
 ├── .mcp.json                    # MCP Server 配置
 ├── Makefile                     # 快捷命令
+├── pyproject.toml               # Python 项目元数据
 ├── docker-compose.yml           # Qdrant
 ├── .claude/
 │   ├── rules/                   # 约束规则
@@ -192,25 +215,43 @@ knowledge-base-search/
 │   │   ├── retrieval-strategy.md
 │   │   ├── doc-frontmatter.md
 │   │   ├── python-style.md
-│   │   └── testing-lessons.md
-│   └── skills/                  # Agent 技能
-│       ├── search/SKILL.md
-│       ├── ingest/SKILL.md
-│       ├── ingest-repo/SKILL.md
-│       ├── index-docs/SKILL.md
-│       ├── review/SKILL.md
-│       └── eval/SKILL.md
+│   │   ├── security.md
+│   │   └── testing-lessons.md   # 26 条经验教训
+│   └── skills/                  # Agent 技能（11 个）
+│       ├── search/SKILL.md       # 自动触发
+│       ├── review/SKILL.md       # 自动触发
+│       ├── build-index/SKILL.md  # 自动触发
+│       ├── ingest/SKILL.md       # 手动触发
+│       ├── ingest-repo/SKILL.md  # 手动触发
+│       ├── preprocess/SKILL.md   # 手动触发
+│       ├── index-docs/SKILL.md   # 手动触发
+│       ├── eval/SKILL.md         # 手动触发
+│       ├── generate-index/SKILL.md # 手动触发
+│       ├── convert-html/SKILL.md # 手动触发
+│       └── sync-from-raw/SKILL.md # 手动触发
 ├── scripts/
-│   ├── mcp_server.py            # 向量检索 MCP Server
-│   ├── index.py                 # 索引构建工具（heading-based chunking + section_path）
-│   ├── eval_module.py           # 评估模块（extract_contexts + gate_check）
+│   ├── mcp_server.py            # 向量检索 MCP Server（hybrid_search + keyword_search + index_status）
+│   ├── index.py                 # 索引构建工具（heading-based chunking + section_path + sidecar 注入）
+│   ├── doc_preprocess.py        # LLM 文档预处理（contextual_summary + gap_flags）
+│   ├── embedding_provider.py    # Embedding 抽象层（Local BGE-M3 / OpenAI-compatible API）
+│   ├── llm_client.py            # 统一 LLM 调用接口（Anthropic + OpenAI-compatible）
+│   ├── eval_module.py           # 评估模块（extract_contexts + gate_check + llm_judge）
+│   ├── eval_skill.py            # Skill 评测脚本（Agent SDK，支持多模型）
+│   ├── ragas_judge.py           # RAGAS faithfulness/relevancy 评分
+│   ├── generate_eval_report.py  # 评测报告生成
+│   ├── workers/                 # Worker 脚本
 │   └── requirements.txt
 ├── docs/                        # 知识库文档（Git 管理）
+├── kb/                          # 知识库仓库（Git submodules）
 ├── tests/
-│   ├── unit/                    # 单元测试 (40 tests)
+│   ├── unit/                    # 单元测试
 │   ├── integration/             # 集成测试
 │   └── e2e/                     # E2E 测试 (Agent SDK)
-└── eval/                        # 评测结果
+├── eval/                        # 评测结果
+└── .github/workflows/
+    ├── kb-update.yml            # CI: sync → preprocess → generate INDEX.md → index → snapshot
+    ├── kb-eval.yml              # CI: Skill 评测（DeepSeek v3.2 via claude-code-router）
+    └── ci.yml                   # CI: Retrieval 评测（Qwen via claude-code-router）
 ```
 
 ---
@@ -233,7 +274,7 @@ knowledge-base-search/
 ## 8. 进展
 
 ### Phase 1: 核心功能 ✅
-- [x] index.py 增量索引（基于 git diff + doc_hash）
+- [x] index.py 增量索引（基于 git diff）
 - [x] index.py 全量重建（--full）
 - [x] 语义分块：Heading-based 切分 + section_path 保留
 - [x] Agentic Router：Agent 自主路由，非串行 fallback
@@ -241,20 +282,25 @@ knowledge-base-search/
 - [x] delete_by_source_repo：按仓库批量删除索引
 
 ### Phase 2: 评测体系 ✅
-- [x] 64 个测试用例（Local 17 + Qdrant 41 + Notfound 6）
-- [x] Gate 门禁 + 质量检查两阶段评估
+- [x] 100 个测试用例 v5（Local 15 + Qdrant 75 + Notfound 10），另有 RAGBench 50 + CRAG 50
+- [x] Gate 门禁 + RAGAS faithfulness/relevancy 两阶段评估（RAGAS 默认启用）
 - [x] extract_contexts 从 Agent SDK messages_log 提取结构化 contexts
-- [x] USE_MCP=0: 23/64 (35.9%), USE_MCP=1: 60/64 (93.8%)
+- [x] 多模型评测：Sonnet 89% gate / Qwen 3.5 Plus 98% / GLM-5 95% / DeepSeek V3 52%（partial）
+- [x] Skill 评测脚本（eval_skill.py）：独立 session + 600s 超时 + MODEL_NAME 环境变量
 
-### Phase 3: 仓库导入 🔧 (当前)
-- [x] /ingest-repo skill 定义
+### Phase 3: 仓库导入 + 预处理 ✅
+- [x] /ingest-repo skill 定义 + 实际运行验证
 - [x] 架构规范（Skill vs Python vs Subagent）
-- [ ] 实际运行验证 /ingest-repo
+- [x] LLM 文档预处理管线（doc_preprocess.py + sidecar JSON）
+- [x] Redis 官方文档导入（3,329 docs, ~12K+ chunks）
+- [x] awesome-llm-apps 导入（207 docs, ~979 chunks）
+- [x] RAGBench + CRAG benchmark 数据导入
+- [x] CI/CD 管线（kb-update + kb-eval + ci）
 - [ ] 格式扩展：PDF (MinerU) / DOCX (Pandoc)
 
 ### Phase 4: 生态扩展
-- [ ] 算力解耦：MCP HTTP transport 支持远程 GPU 服务器
-- [ ] CI 集成检索回归
+- [x] CI 集成检索回归（kb-eval.yml + ci.yml，使用 DeepSeek/Qwen via claude-code-router）
+- [ ] 算力解耦：远程 GPU Embedding（通过 OpenAICompatibleProvider 指向自建 API）
 - [ ] 示例仓库：kb-example-sre-runbook
 
 ---

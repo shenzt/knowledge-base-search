@@ -49,6 +49,10 @@
 - `/index-docs [--status|--file|--full|--incremental]` — 索引管理（调 index.py）
 - `/review [--scope xxx] [--fix]` — 文档审查（Claude Code 用 Read/Grep 直接检查）
 - `/generate-index <kb-path>` — 探索 KB 仓库，生成 INDEX.md 导航指南（Agent 自主探索目录结构和版本策略）
+- `/build-index` — 构建/增量更新分层目录索引（自动触发）
+- `/eval [--mcp] [--quick] [--analyze <file>]` — RAG 评测（100+ 用例，Gate + RAGAS）
+- `/convert-html <dir>` — HTML → Markdown 批量转换
+- `/sync-from-raw` — 双仓同步（原始文档 ↔ 知识库）
 
 ## 数据导入链路
 
@@ -111,7 +115,7 @@ make test            # 全部测试
 - 文档语言：中英文均支持，回答跟随文档语言
 - 代码变更后必须运行测试验证
 - 编写测试用例前，必须先确认知识库中实际有哪些文档
-- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 15,246 chunks（Redis 3,329 docs + LLM Apps + 本地 + RAGBench + CRAG）
+- 区分数据源：本地 docs/ 只有 3 个技术文档，Qdrant 索引有 15,246 chunks（Redis 3,329 docs + LLM Apps + 本地）
 - 导入新数据源后，必须运行预处理 + 重建索引才能生效
 
 ## 知识库数据源
@@ -130,8 +134,6 @@ make test            # 全部测试
   - LLM Frameworks: LangChain, CrewAI, Phidata, OpenAI SDK
   - Advanced: resume matcher, content generator, voice AI
 - 本地 docs/ (21 docs, ~168 chunks): 项目 runbook + API 文档 + 设计文档
-- RAGBench techqa (245 docs, ~249 chunks): IBM 技术文档 QA，来自 rungalileo/ragbench
-- CRAG finance (119 docs, ~153 chunks): 金融领域 QA，来自 facebookresearch/CRAG（已清洗 JS/CSS 垃圾）
 - 来源: 通过 /ingest-repo 或导入脚本导入
 - 预处理: 462 docs 已完成 LLM 预处理（DeepSeek V3），sidecar 存储在 `.preprocess/` 目录
 - 查看: `.venv/bin/python scripts/index.py --status`
@@ -182,6 +184,10 @@ knowledge-base-search/
 │   ├── embedding_provider.py # Embedding 抽象层 (Local BGE-M3 / OpenAI-compatible API)
 │   ├── doc_preprocess.py    # LLM 文档预处理 (contextual_summary + gap_flags)
 │   ├── llm_client.py        # 统一 LLM 调用接口 (Anthropic + OpenAI-compatible)
+│   ├── eval_module.py       # 评估模块 (extract_contexts + gate_check + llm_judge)
+│   ├── eval_skill.py        # Skill 评测脚本 (Agent SDK, 600s timeout, RAGAS 默认)
+│   ├── ragas_judge.py       # RAGAS faithfulness/relevancy 评分
+│   ├── generate_eval_report.py # 评测报告生成
 │   ├── workers/             # Worker 脚本
 │   └── requirements.txt
 ├── tests/
@@ -190,7 +196,9 @@ knowledge-base-search/
 │   └── e2e/                 # 端到端测试
 ├── eval/                    # 评测结果
 ├── .github/workflows/
-│   └── kb-update.yml        # CI: sync → preprocess → generate INDEX.md → index → snapshot
+│   ├── kb-update.yml        # CI: sync → preprocess → generate INDEX.md → index → snapshot
+│   ├── kb-eval.yml          # CI: Skill 评测（DeepSeek v3.2 via claude-code-router）
+│   └── ci.yml               # CI: Retrieval 评测（Qwen via claude-code-router）
 ├── CLAUDE.md                # 本文件
 ├── Makefile                 # 快捷命令
 └── pyproject.toml           # Python 项目元数据

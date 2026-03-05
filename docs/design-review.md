@@ -38,17 +38,25 @@ Skills 定义行为约束，MCP 提供工具，Agent 自主决策调用什么、
 
 不是串行 fallback，是 Agent 根据查询特征自主路由（Agentic Router）。
 
-### 实际代码现状
+### 实际代码现状（已更新至 2026-03）
 
-| 组件 | 文件 | 行数 | 状态 |
-|------|------|------|------|
-| MCP Server | `scripts/mcp_server.py` | 198 | ✅ hybrid_search + keyword_search + index_status |
-| 索引工具 | `scripts/index.py` | ~500 | ✅ heading-based chunking + section_path + delete_by_source_repo |
-| 评估模块 | `scripts/eval_module.py` | 335 | ✅ extract_contexts + gate_check + llm_judge |
-| 检索 Skill | `.claude/skills/search/` | ~270 | ✅ Agentic Router 策略 |
-| 仓库导入 Skill | `.claude/skills/ingest-repo/` | ~160 | ✅ clone → 提取 → 溯源 front-matter → 索引 |
+| 组件 | 文件 | 状态 |
+|------|------|------|
+| MCP Server | `scripts/mcp_server.py` | ✅ hybrid_search + keyword_search + index_status |
+| 索引工具 | `scripts/index.py` | ✅ heading-based chunking + section_path + sidecar 注入 + incremental |
+| 评估模块 | `scripts/eval_module.py` | ✅ extract_contexts + gate_check + llm_judge |
+| Skill 评测 | `scripts/eval_skill.py` | ✅ Agent SDK, 600s timeout, RAGAS 默认, MODEL_NAME |
+| RAGAS Judge | `scripts/ragas_judge.py` | ✅ faithfulness + relevancy 评分 |
+| LLM 预处理 | `scripts/doc_preprocess.py` | ✅ contextual_summary + gap_flags + evidence_flags |
+| Embedding 抽象层 | `scripts/embedding_provider.py` | ✅ Local BGE-M3 / OpenAI-compatible API |
+| LLM 客户端 | `scripts/llm_client.py` | ✅ Anthropic + OpenAI-compatible 统一接口 |
+| 检索 Skill | `.claude/skills/search/` | ✅ Agentic Router 策略 |
+| 仓库导入 Skill | `.claude/skills/ingest-repo/` | ✅ clone → 提取 → 溯源 front-matter → 预处理 → 索引 |
+| CI/CD | `.github/workflows/` | ✅ kb-update + kb-eval (DeepSeek) + ci (Qwen) |
 
-### 已验证的数据
+### 已验证的数据（v4 baseline，历史基准）
+
+> **注**：以下为 v4 (64 用例) 的初始基准数据。当前 v5 (100+ 用例) 和多模型评测结果见 CLAUDE.md 和 testing-lessons.md。
 
 | 指标 | 结果 |
 |------|------|
@@ -83,14 +91,12 @@ Skills 定义行为约束，MCP 提供工具，Agent 自主决策调用什么、
 
 ## 当前待解决
 
-### 问题 6: 3 个 Qdrant 检索质量问题
+### 问题 6: 检索质量长尾问题
 
-37/41 通过，3 个失败是真实的检索质量问题：
-- `qdrant-redis-transactions-001`: 返回 Lua scripting 而非 transactions.md
-- `qdrant-redis-debug-001`: 返回 latency 而非 debugging.md
-- `qdrant-k8s-node-001`: 返回 taint/toleration 而非 nodes.md
-
-可能的改进方向：调整 chunk 大小、优化 rerank 阈值、或在 Agent 层做多轮检索。
+v4 时的 3 个具体失败已在 v5 数据集调整中重新评估。当前主要关注：
+- awesome-llm-apps 类别检索命中率偏低（Sonnet: llm-agent 62%）
+- 非 Sonnet 模型的 Grep 搜索污染（返回 ragbench/crag 噪声文件）
+- 详见 CLAUDE.md 中的多模型评测对比
 
 ### 问题 7: 格式扩展
 

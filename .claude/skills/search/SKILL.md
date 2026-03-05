@@ -22,20 +22,17 @@ INDEX.md 包含：目录结构、版本策略、主题路由、排除路径。
 ### 其他知识库（Qdrant 索引中）
 
 - awesome-llm-apps（207 docs）：LLM/AI Agent 应用示例
-- RAGBench techqa（245 docs）：IBM 技术文档 QA
-- CRAG finance（119 docs）：金融领域 QA
 
 ### 本地文档（Grep 可搜索）
 
 - docs/runbook/: Redis 运维手册、K8s 故障排查
 - docs/api/: API 认证文档
-- docs/guides/: 配置指南
 
 ## 环境约束
 
 - 当前工作目录：`/home/shenzt/ws/knowledge-base-search`
-- Grep/Glob 搜索范围：**仅限** `docs/runbook/`、`docs/api/`、`docs/guides/`
-- **严禁** Grep/Glob 扫描：`docs/ragbench-techqa/`、`docs/crag-finance/`、`eval/`、`.claude/`、`.git/`、`scripts/`、`tests/`
+- Grep/Glob 搜索范围：**仅限** `docs/runbook/`、`docs/api/`
+- **严禁** Grep/Glob 扫描：`eval/`、`.claude/`、`.git/`、`scripts/`、`tests/`
 - Read 路径：**只能使用** hybrid_search 返回的 `path` 字段，或 Grep/Glob 命中的路径
 
 ## 核心流程
